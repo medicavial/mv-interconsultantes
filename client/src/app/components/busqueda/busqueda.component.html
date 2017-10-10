@@ -1,0 +1,112 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Búsqueda de pacientes</h4>
+          <h6 class="card-subtitle mb-2 text-muted">Médica Vial | Zima</h6>
+          <p class="card-text">Introduzca en nombre o el folio del paciente</p>
+
+          <form [formGroup]="buscador" (ngSubmit)="busquedaFolio()">
+            <div class="row">
+              <div class="col-md-5">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon" style="min-width: 2.5em;">
+                      <i class="mdi mdi-account-card-details"></i>
+                    </div>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Por folio"
+                           formControlName="folio"
+                           style="text-transform:uppercase"
+                           autofocus>
+                           <!-- [(ngModel)]="paciente.folio"> -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-5">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon" style="min-width: 2.5em;">
+                      <i class="mdi mdi-account"></i>
+                    </div>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Por nombre"
+                           formControlName="nombre"
+                           style="text-transform:uppercase">
+                           <!-- [(ngModel)]="paciente.nombre"> -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-2">
+                <button type="submit"
+                        class="btn btn-primary btn-block"
+                        [disabled]="buscador.valid==false || buscador.pristine==true">
+                  <span>Buscar</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="card-footer" *ngIf="pacientes.length>0">
+          <button class="btn btn-outline-danger badge-pill badge-accion btn-sm" (click)="borrarParametros()">
+            <i class="mdi mdi-delete"></i>
+            Eliminar busqueda: {{ paciente.folio | uppercase  }} {{paciente.nombre | uppercase }}
+          </button>
+        </div>
+      </div> <!-- termina card de busqueda -->
+
+      <div class="espacio"></div>
+
+      <div class="loader" *ngIf="buscando==true">
+      </div>
+
+      <div class="card border-info mb-3" *ngFor="let paciente of pacientes let i = index">
+        <div class="card-body text-secondary">
+          <h4 class="card-title text-info">
+            <i class="mdi mdi-account" *ngIf="paciente.sexo==null"></i>
+            <i class="mdi mdi-human-female" *ngIf="paciente.sexo=='F'"></i>
+            <i class="mdi mdi-human-male" *ngIf="paciente.sexo=='M'"></i>
+            {{ paciente.nombre }} <span *ngIf="paciente.edad!=null">| {{ paciente.edad }} años</span>
+          </h4>
+          <h5 class="card-subtitle text-info">{{ paciente.folio }}</h5>
+
+          <div class="espacio"></div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <p class="card-text">Compañia: <strong>{{ paciente.nombreCompania }}</strong></p>
+              <p class="card-text">Producto: <strong>{{ paciente.nombreProducto }}</strong></p>
+              <p class="card-text">Póliza: <strong>{{ paciente.poliza }}</strong></p>
+              <p class="card-text">Riesgo: <strong>{{ paciente.nombreRiesgo }}</strong></p>
+            </div>
+
+            <div class="col-md-4">
+              <p class="card-text">Folio Electrónico: <strong>{{ paciente.folioElectronico }}</strong></p>
+              <p class="card-text">Siniestro: <strong>{{ paciente.siniestro }}</strong></p>
+              <p class="card-text">Reporte: <strong>{{ paciente.reporte }}</strong></p>
+              <p class="card-text">Observaciones: <strong>{{ paciente.observaciones }}</strong></p>
+            </div>
+
+            <div class="col-md-4">
+              <p class="card-text">Registrado en: <strong>{{ paciente.registro }}</strong></p>
+              <p class="card-text">Unidad: <strong>{{ paciente.nombreUnidad }}</strong></p>
+              <p class="card-text" *ngIf="paciente.REG_folioMV">Folio MV: <strong>{{ paciente.REG_folioMV }}</strong></p>
+              <p class="card-text" *ngIf="paciente.Fol_ZIMA">Folio Zima: <strong>{{ paciente.Fol_ZIMA }}</strong></p>
+              <p class="card-text">Fecha de registro: <strong>{{ paciente.fechaRegistro }}</strong></p>
+              <p class="card-text">Registrado por: <strong>{{ paciente.nombreUsuario }}</strong></p>
+            </div>
+          </div>
+        </div>
+      </div> <!-- termina card de resultados -->
+
+    </div>
+
+  </div>
+</div>
