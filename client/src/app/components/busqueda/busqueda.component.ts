@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { BusquedasService } from '../../services/busquedas.service';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { DatosLocalesService } from '../../services/datos-locales.service';
 
 @Component({
   selector: 'app-busqueda',
@@ -22,6 +23,7 @@ export class BusquedaComponent implements OnInit {
 
   constructor( private _busquedasService:BusquedasService,
                private _authService:AuthService,
+               private _datosLocalesService:DatosLocalesService,
                private router:Router) {
 
     this.buscador = new FormGroup({
@@ -37,6 +39,7 @@ export class BusquedaComponent implements OnInit {
   }
 
   ngOnInit() {
+    this._datosLocalesService.verificaRutaPaciente();
   }
 
   busquedaFolio(){
@@ -54,8 +57,8 @@ export class BusquedaComponent implements OnInit {
   }
 
   borrarParametros(){
-    console.log(this.paciente.folio);
-    console.log(this.paciente.nombre);
+    // console.log(this.paciente.folio);
+    // console.log(this.paciente.nombre);
     this.buscador.reset({
         nombre: '',
         correo: ''
@@ -65,6 +68,12 @@ export class BusquedaComponent implements OnInit {
     this.paciente.nombre = '';
 
     this.pacientes = [];
+  }
+
+  pacienteSeleccionado(paciente){
+    sessionStorage.setItem('paciente', JSON.stringify(paciente));
+
+    this.router.navigate(['paciente']);
   }
 
 }

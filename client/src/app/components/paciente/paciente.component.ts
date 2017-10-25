@@ -1,34 +1,38 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { BusquedasService } from '../../services/busquedas.service';
 import { AuthService } from '../../services/auth.service';
 import { DatosLocalesService } from '../../services/datos-locales.service';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html'
+  selector: 'app-paciente',
+  templateUrl: './paciente.component.html'
 })
-export class HomeComponent implements OnInit {
+export class PacienteComponent implements OnInit {
 
-  usuario = JSON.parse(sessionStorage.getItem('session'))[0];
   paciente:any = [];
+  buscando:boolean = false;
 
   constructor( private _busquedasService:BusquedasService,
                private _authService:AuthService,
                private _datosLocalesService:DatosLocalesService,
                private router:Router) {
-
+                 if (sessionStorage.getItem('paciente')) {
+                   this.paciente = JSON.parse(sessionStorage.getItem('paciente'));
+                 } else{
+                   this.router.navigate(['busqueda']);
+                 }
                }
 
   ngOnInit() {
-    this._datosLocalesService.verificaRutaPaciente();
-    // this.consultaPrueba();
-    // console.log(this.usuario);
+    console.log(this.paciente);
+    this.getDigitales();
   }
 
-  consultaPrueba(){
-    this._busquedasService.prueba()
+  getDigitales(){
+    this._busquedasService.getDigitales( this.paciente )
                           .subscribe( data => {
+                            this.buscando=false;
                             console.log(data);
                           });
   }

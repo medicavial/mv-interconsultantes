@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
+import { DatosLocalesService } from '../../services/datos-locales.service';
 
 declare var $: any;
 
@@ -13,7 +14,8 @@ export class NavegacionComponent implements OnInit {
   usuario = [];
 
   constructor( private router:Router,
-               public _authService:AuthService ) {
+               public _authService:AuthService,
+               public _datosLocalesService:DatosLocalesService ) {
                  this.router.events.subscribe( event => {
                   //  console.log(event instanceof NavigationEnd);
                    if (event instanceof NavigationEnd) {
@@ -27,7 +29,7 @@ export class NavegacionComponent implements OnInit {
                }
 
   ngOnInit() {
-    // this._authService.auth();
+    // this._datosLocalesService.verificaRutaPaciente();
   }
 
   logout(){

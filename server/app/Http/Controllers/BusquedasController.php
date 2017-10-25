@@ -127,7 +127,7 @@ class BusquedasController extends Controller {
 							 ->leftJoin('RiesgoAfectado', 'PURegistro.RIE_clave', '=', 'RiesgoAfectado.RIE_clave')
 							 ->leftJoin('PUUsuario', 'PURegistro.USU_login', '=', 'PUUsuario.PUUsu_login')
 							 ->leftJoin('Unidad', 'PURegistro.UNI_clave', '=', 'Unidad.UNI_clave')
-							 ->select('REG_folio as folio', 'PURegistro.UNI_clave as cveUnidad', 'REG_nombrecompleto as nombre',  'REG_edad as edad', 'REG_genero as sexo',
+							 ->select('REG_folio as folio', 'PURegistro.UNI_clave as cveUnidad', 'REG_nombrecompleto as nombre', 'REG_edad as edad', 'REG_genero as sexo',
 							 					'REG_siniestro as siniestro', 'REG_poliza as poliza', 'REG_reporte as reporte', 'REG_folioelectronico as folioElectronico',
 												'REG_fechahora as fechaRegistro', 'PURegistro.ASE_clave as cveCompania', 'PURegistro.USU_login as loginRegistro',
 												'REG_observaciones as observaciones', 'PURegistro.ProdZima_Clave as cveProducto', 'ASE_nomCorto as nombreCompania',
@@ -138,6 +138,21 @@ class BusquedasController extends Controller {
 							 ->orderBy('REG_nombrecompleto', 'asc')
 							 ->get();
 		return $expediente;
+	}
+
+	public function buscaDigitalizados($folio)
+	{
+		$urlTipos = 'http://medicavial.net/mvnuevo/api/api.php?funcion=listaTiposDigitales&usr=sistema';
+		$datosURL = file_get_contents($urlTipos);
+		$listaTipos = json_decode($datosURL, true);
+
+		$urlDigitales = 'http://medicavial.net/mvnuevo/api/api.php?funcion=digitalizados&fol='.$folio.'&usr=sistema';
+		$datosURL = file_get_contents($urlDigitales);
+		$listaDigitales = json_decode($datosURL, true);
+
+		$respuesta = array('tiposDigitales' => $listaTipos,
+											 'listaDigitales' => $listaDigitales);
+		return $respuesta;
 	}
 
 }

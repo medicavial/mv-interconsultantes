@@ -56,10 +56,13 @@
         </div>
 
         <div class="card-footer" *ngIf="pacientes.length>0">
-          <button class="btn btn-outline-danger badge-pill badge-accion btn-sm" (click)="borrarParametros()" style="max-width: 100%">
-            <i class="mdi mdi-delete"></i>
-            <span class="d-inline-block text-truncate" style="max-width: 90%">
-              Eliminar busqueda: {{ paciente.folio | uppercase  }} {{paciente.nombre | uppercase }}
+          <button class="btn btn-outline-danger badge-pill badge-accion btn-sm"
+                  style="max-width: 100%"
+                  (click)="borrarParametros()"
+                  [disabled]="buscando">
+            <span class="d-inline-block text-truncate" style="max-width: 100%">
+              <i class="mdi mdi-delete"></i>
+              Limpiar: {{ paciente.folio | uppercase  }} <span *ngIf="paciente.folio !='' && paciente.nombre !='' ">|</span> {{paciente.nombre | uppercase }}
             </span>
           </button>
         </div>
@@ -67,7 +70,9 @@
 
       <div class="espacio"></div>
 
-      <div class="card border-info mb-3" *ngFor="let paciente of pacientes let i = index">
+      <div class="card border-info mb-3 seleccion"
+           *ngFor="let paciente of pacientes let i = index"
+           (click)="pacienteSeleccionado(paciente)">
         <div class="card-body text-secondary">
           <h4 class="card-title text-info">
             <i class="mdi mdi-account" *ngIf="paciente.sexo==null"></i>

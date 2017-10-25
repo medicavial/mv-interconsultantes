@@ -73,3 +73,7 @@ body{
 .logo-navbar:hover{
   opacity: 1.0;
 }
+
+.seleccion{
+  cursor: pointer;
+}

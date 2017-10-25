@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { BusquedaComponent } from './components/busqueda/busqueda.component';
+import { PacienteComponent } from './components/paciente/paciente.component';
 
 import { AuthService } from "./services/auth.service";
 
@@ -19,6 +20,11 @@ const APP_ROUTES: Routes = [
   {
     path: 'busqueda',
     component: BusquedaComponent,
+    canActivate: [AuthService]
+  },
+  {
+    path: 'paciente',
+    component: PacienteComponent,
     canActivate: [AuthService]
   },
   {

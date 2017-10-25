@@ -41,4 +41,16 @@ export class BusquedasService {
                });
   }
 
+  getDigitales(datos){
+    let url = `${ this.api }/paciente/digitales-`+datos.folio;
+    let headers = new Headers({
+      'Content-Type':'aplication/json'
+    });
+
+    return this._http.post( url, datos, {headers} )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
 }

@@ -6,6 +6,7 @@ import { HttpModule } from '@angular/http';
 //SERVICIOS
 import { BusquedasService } from "./services/busquedas.service";
 import { AuthService } from "./services/auth.service";
+import { DatosLocalesService } from './services/datos-locales.service';
 
 import { APP_ROUTING } from './app.routes';
 
@@ -14,6 +15,7 @@ import { NavegacionComponent } from './components/navegacion/navegacion.componen
 import { HomeComponent } from './components/home/home.component';
 import { BusquedaComponent } from './components/busqueda/busqueda.component';
 import { LoginComponent } from './components/login/login.component';
+import { PacienteComponent } from './components/paciente/paciente.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,8 @@ import { LoginComponent } from './components/login/login.component';
     NavegacionComponent,
     HomeComponent,
     BusquedaComponent,
-    LoginComponent
+    LoginComponent,
+    PacienteComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +35,8 @@ import { LoginComponent } from './components/login/login.component';
   ],
   providers: [
     BusquedasService,
-    AuthService
+    AuthService,
+    DatosLocalesService
   ],
   bootstrap: [AppComponent]
 })
