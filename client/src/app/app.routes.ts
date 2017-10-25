@@ -4,6 +4,8 @@ import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { BusquedaComponent } from './components/busqueda/busqueda.component';
 
+import { AuthService } from "./services/auth.service";
+
 const APP_ROUTES: Routes = [
   {
     path: 'login',
@@ -11,21 +13,23 @@ const APP_ROUTES: Routes = [
   },
   {
     path: 'home',
-    component: HomeComponent
+    component: HomeComponent,
+    canActivate: [AuthService]
   },
   {
     path: 'busqueda',
-    component: BusquedaComponent
+    component: BusquedaComponent,
+    canActivate: [AuthService]
   },
   {
     path: '**',
     pathMatch:'full',
-    redirectTo: 'home'
+    redirectTo: 'login'
   },
   {
     path: '',
     pathMatch:'full',
-    redirectTo: 'home'
+    redirectTo: 'login'
   }
 ];
 

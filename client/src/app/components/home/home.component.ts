@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
 
+  usuario = JSON.parse(sessionStorage.getItem('session'))[0];
+
   constructor( private _busquedasService:BusquedasService,
                private _authService:AuthService,
                private router:Router) {
@@ -16,7 +18,8 @@ export class HomeComponent implements OnInit {
                }
 
   ngOnInit() {
-    this.consultaPrueba();
+    // this.consultaPrueba();
+    // console.log(this.usuario);
   }
 
   consultaPrueba(){

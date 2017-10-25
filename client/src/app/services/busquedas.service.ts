@@ -17,12 +17,23 @@ export class BusquedasService {
                });
   }
 
-  buscaPaciente(datos){
+  login( datos ){
+    let url = `${ this.api }/login`;
     let headers = new Headers({
       'Content-Type':'aplication/json'
     });
 
+    return this._http.post( url, datos, {headers} )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  buscaPaciente(datos){
     let url = `${ this.api }/busca`;
+    let headers = new Headers({
+      'Content-Type':'aplication/json'
+    });
 
     return this._http.post( url, datos, {headers} )
                .map( res => {

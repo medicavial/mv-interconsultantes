@@ -7,6 +7,15 @@ body{
   background-color: #0082cd !important;
 }
 
+.titulo-card{
+  color: #fff;
+  text-align: center;
+}
+
+.espacio-titulo-card{
+  height: 1rem;
+}
+
 .espacio{
   height: 2em;
 }
@@ -55,4 +64,12 @@ body{
 
 .badge-accion{
   cursor: pointer;
+}
+
+.logo-navbar{
+  opacity: 0.9;
+}
+
+.logo-navbar:hover{
+  opacity: 1.0;
 }

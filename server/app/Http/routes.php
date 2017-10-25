@@ -22,4 +22,5 @@
 
 Route::get('/', 'WelcomeController@index');
 Route::get('/inicio', 'BusquedasController@index');
+Route::post('/login', 'SesionController@buscaUsuario');
 Route::post('/busca', 'BusquedasController@buscaPaciente');

@@ -14,14 +14,14 @@
                 <div class="form-group">
                   <div class="input-group">
                     <div class="input-group-addon" style="min-width: 2.5em;">
-                      <i class="mdi mdi-account-card-details"></i>
+                      <i class="mdi mdi-barcode-scan"></i>
                     </div>
                     <input type="text"
                            class="form-control"
                            placeholder="Por folio"
                            formControlName="folio"
-                           style="text-transform:uppercase"
-                           autofocus>
+                           style="text-transform:uppercase">
+                           <!-- autofocus -->
                            <!-- [(ngModel)]="paciente.folio"> -->
                   </div>
                 </div>
@@ -46,8 +46,9 @@
               <div class="col-md-2">
                 <button type="submit"
                         class="btn btn-primary btn-block"
-                        [disabled]="buscador.valid==false || buscador.pristine==true">
-                  <span>Buscar</span>
+                        [disabled]="buscador.valid==false || buscador.pristine==true || buscando">
+                  <span *ngIf="!buscando">Buscar</span>
+                  <span *ngIf="buscando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
                 </button>
               </div>
             </div>
@@ -55,17 +56,16 @@
         </div>
 
         <div class="card-footer" *ngIf="pacientes.length>0">
-          <button class="btn btn-outline-danger badge-pill badge-accion btn-sm" (click)="borrarParametros()">
+          <button class="btn btn-outline-danger badge-pill badge-accion btn-sm" (click)="borrarParametros()" style="max-width: 100%">
             <i class="mdi mdi-delete"></i>
-            Eliminar busqueda: {{ paciente.folio | uppercase  }} {{paciente.nombre | uppercase }}
+            <span class="d-inline-block text-truncate" style="max-width: 90%">
+              Eliminar busqueda: {{ paciente.folio | uppercase  }} {{paciente.nombre | uppercase }}
+            </span>
           </button>
         </div>
       </div> <!-- termina card de busqueda -->
 
       <div class="espacio"></div>
-
-      <div class="loader" *ngIf="buscando==true">
-      </div>
 
       <div class="card border-info mb-3" *ngFor="let paciente of pacientes let i = index">
         <div class="card-body text-secondary">

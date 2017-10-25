@@ -24,17 +24,17 @@ export class BusquedaComponent implements OnInit {
                private _authService:AuthService,
                private router:Router) {
 
-this.buscador = new FormGroup({
-  'folio':new FormControl( '', [
-                                Validators.pattern("([a-zA-Z]{4}[0-9]{4,6}[a-zA-Z0-9]{1,2})$")
-                              ]),
-  'nombre':new FormControl( '', [
-                                Validators.minLength(3),
-                                Validators.pattern("^[a-zA-Z ]*$")
-                              ]),
-});
+    this.buscador = new FormGroup({
+      'folio':new FormControl( '', [
+                                    Validators.pattern("([a-zA-Z]{4}[0-9]{4,6}[a-zA-Z0-9]{1,2})$")
+                                  ]),
+      'nombre':new FormControl( '', [
+                                    Validators.minLength(3),
+                                    Validators.pattern("^[a-zA-Z ]*$")
+                                  ]),
+    });
 
-               }
+  }
 
   ngOnInit() {
   }

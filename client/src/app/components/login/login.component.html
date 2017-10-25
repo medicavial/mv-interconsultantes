@@ -1,3 +1,98 @@
-<p>
-  login works!
-</p>
+<div class="container">
+  <div class="d-none d-md-block d-lg-block">
+    <div class="espacio"></div>
+    <div class="espacio"></div>
+    <div class="espacio d-xl-block"></div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col col-md-8 col-sm-10 col-xs-12 col-lg-6 col-xl-5">
+      <div class="card">
+        <div class="card-header bg-mv titulo-card">
+          <div class="espacio-titulo-card"></div>
+          <h3>Inicio de sesión</h3>
+          <div class="espacio-titulo-card"></div>
+        </div>
+
+        <div class="card-body">
+          <div class="espacio-titulo-card"></div>
+
+          <small>
+            <p align="center" class="text-muted">
+              <i class="mdi mdi-information text-info"></i>
+              Puede ingresar con credenciales de MédicaVial y de PUZima.
+            </p>
+          </small>
+
+          <div class="espacio-titulo-card"></div>
+
+          <div class="container-fluid">
+            <form [formGroup]="login" (ngSubmit)="enviaCredenciales()">
+              <div class="form-group">
+                <label class="sr-only" for="inlineFormInputGroup">Username</label>
+                <div class="input-group mb-2 mb-sm-0">
+                  <div class="input-group-addon badge-danger"
+                       [ngClass]="{'badge-danger': !login.controls.username.valid && !login.controls.username.pristine}">
+                    <i class="mdi mdi-account-card-details"></i>
+                  </div>
+                  <input type="text"
+                         class="form-control"
+                         id="inlineFormInputGroup"
+                         placeholder="Nombre de usuario"
+                         formControlName="username"
+                         [ngClass]="{'is-invalid': !login.controls.username.valid && !login.controls.username.pristine}">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="sr-only" for="exampleInputPassword1">Password</label>
+                <div class="input-group mb-2 mb-sm-0">
+                  <div class="input-group-addon"
+                       [ngClass]="{'badge-danger': !login.controls.password.valid && !login.controls.password.pristine}">
+                    <i class="mdi mdi-key"></i>
+                  </div>
+                  <input type="password"
+                         class="form-control"
+                         id="exampleInputPassword1"
+                         placeholder="Contraseña"
+                         formControlName="password"
+                         [ngClass]="{'is-invalid': !login.controls.password.valid && !login.controls.password.pristine}">
+                </div>
+              </div>
+
+              <div class="form-check" align="center">
+                <label class="custom-control custom-checkbox">
+                  <input type="checkbox"
+                         class="custom-control-input"
+                         formControlName="remember">
+                  <span class="custom-control-indicator"></span>
+                  <small>
+                    <span class="custom-control-description text-muted">Mantener sesión abierta</span>
+                  </small>
+                </label>
+              </div>
+
+              <div class="espacio-titulo-card"></div>
+              <div class="text-center text-danger">
+                <small *ngIf="error && !trabajando">
+                  <i class="mdi mdi-alert"></i>
+                  Error al iniciar sesión. Verifica tus datos por favor.
+                </small>
+                <small *ngIf="!error || trabajando">&nbsp;</small>
+              </div>
+              <div class="espacio-titulo-card"></div>
+
+              <button type="submit"
+                      class="btn btn-success btn-block"
+                      [disabled]="!login.valid || trabajando">
+                <span *ngIf="!trabajando">Acceder</span>
+                <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

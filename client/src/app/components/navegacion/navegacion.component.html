@@ -1,10 +1,15 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-mv">
+<nav class="navbar navbar-expand-lg navbar-dark bg-mv" *ngIf="_authService.checkSession()">
   <a class="navbar-brand" [routerLink]="['home']">
-    <img src="assets/img/logos/logo-white-lineal.png" height="30">
+    <img src="assets/img/logos/logo-white-lineal.png" height="30" class="logo-navbar">
   </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+
+  <button class="navbar-toggler"
+          type="button"
+          data-toggle="collapse" data-target="#navbarTogglerDemo01"
+          aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+
   <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
       <li class="nav-item" routerLinkActive="active">
@@ -14,6 +19,32 @@
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['busqueda']"><i class="mdi mdi-magnify"></i> Búsqueda <span class="sr-only">(current)</span></a>
       </li>
+
+      <!-- Esta parte del menu se muestra en pantallas menores a 992 px -->
+      <div class="d-block d-sm-none d-none d-sm-block d-md-none d-md-block d-lg-none">
+        <li class="nav-item">
+          <a class="nav-link disabled">
+            <i class="mdi mdi-account-settings-variant"></i>
+            {{ usuario.fullName }}
+            <span class="sr-only">(current)</span>
+          </a>
+        </li>
+
+        <li class="nav-item" (click)="logout()" style="cursor:pointer">
+          <a class="nav-link"><i class="mdi mdi-logout"></i> Cerrar sesión <span class="sr-only">(current)</span></a>
+        </li>
+      </div>
     </ul>
+
+    <!-- esto se muestra solo en pantallas grandes y extragrandes >=992px -->
+    <div class="dropdown show d-none d-lg-block d-xl-block">
+      <a class="btn btn-primary btn-sm dropdown-toggle bg-mv" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="mdi mdi-account-circle"></i> {{ usuario.fullName }}
+      </a>
+
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="cursor:pointer">
+        <small class="dropdown-item" (click)="logout()"><i class="mdi mdi-logout"></i> Cerrar Sesión</small>
+      </div>
+    </div>
   </div>
 </nav>
