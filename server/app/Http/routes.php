@@ -33,5 +33,5 @@ Route::group(['prefix' => 'paciente'], function()
     //     return "funciona";
     // });
     // Route::get('digitales-{folio}', 'BusquedasController@buscaDigitalizados');
-    Route::post('digitales-{folio}', 'BusquedasController@buscaDigitalizados');
+    Route::post('digitales', 'BusquedasController@buscaDigitalizados');
 });

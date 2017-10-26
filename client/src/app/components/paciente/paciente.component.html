@@ -1,11 +1,193 @@
-<div class="container">
+<div class="container animated fadeIn fast">
   <div class="card border-warning mb-3">
-    <div class="card-header text-white bg-warning">Detalle del paciente</div>
+    <!-- <div class="card-header text-white bg-warning">Detalle del paciente</div> -->
     <div class="card-body">
       <h4 class="card-title">{{ paciente.nombre }}</h4>
-      <h6 class="card-subtitle mb-2 text-muted">{{ paciente.registro }}: {{ paciente.folio }}</h6>
+      <h6 class="card-subtitle mb-2 text-muted">{{ paciente.registro }}: {{ paciente.folio }}
+      </h6>
+      <span class="text-info animated fadeIn fast" *ngIf="buscando===true">Obteniendo datos <i class="fa fa-cog fa-spin fa-fw"></i></span>
+    </div>
+  </div>
 
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  <!-- <div class="espacio"></div> -->
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('notasMedicas')">
+        <img class="card-img img-bg-tarjeta" src="assets/img/bg/stethoscope.jpg">
+        <div class="card-img-overlay row align-items-center">
+          <h4 class="col card-title text-center con-sombra">Notas Médicas</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4" *ngIf="digitales.listaDigitales">
+      <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('digitales')">
+        <img class="card-img img-bg-tarjeta" src="assets/img/bg/documents.jpg">
+        <div class="card-img-overlay row align-items-center">
+          <h4 class="col card-title text-center con-sombra">Documentos digitales</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4" *ngIf="digitales.listaDigitales">
+      <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('facturas')">
+        <img class="card-img img-bg-tarjeta" src="assets/img/bg/credit-card.jpg">
+        <div class="card-img-overlay row align-items-center">
+          <h4 class="col card-title text-center con-sombra">Facturas</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- modal notas medicas -->
+<div class="modal fade" id="notasMedicas" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" >
+          <i class="mdi mdi-pencil-box-outline"></i>
+          Notas Médicas
+        </h5>
+        <button type="button" class="close text-white seleccion" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body text-muted">
+        <h6><i class="mdi mdi-file-document"></i> Nota SOAP</h6>
+        <h6><i class="mdi mdi-file-document"></i> Nota Prequirurgica</h6>
+        <h6><i class="mdi mdi-file-document"></i> Nota Postquirurgica</h6>
+        <h6><i class="mdi mdi-file-document"></i> Receta abierta</h6>
+        <h6><i class="mdi mdi-file-document"></i> Receta MV</h6>
+        <h6><i class="mdi mdi-file-document"></i> Receta de Interconsulta</h6>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-outline-primary">Alguna acción</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- modal digitales -->
+<div class="modal fade" id="digitales" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" >
+          <i class="mdi mdi-folder-open"></i>
+          Documentos digitales
+        </h5>
+        <button type="button" class="close text-white seleccion" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <!-- Digitales MV -->
+      <div class="modal-body" *ngIf="paciente.id_registro=='1'">
+        <table class="table table-bordered table-hover table-sm table-responsive">
+          <thead>
+            <tr>
+              <th class="text-center">#</th>
+              <th class="text-center">Tipo</th>
+              <th class="text-center">Archivo</th>
+              <th class="text-center">Fecha</th>
+              <th class="text-center">Usuario</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let doc of digitales.listaDigitales; let i = index">
+              <td class="text-center text-muted">
+                <small>{{ i+1 }}</small>
+              </td>
+              <td>{{ doc.TID_nombre }}</td>
+              <td class="text-center">
+                <small>
+                  <a href="http://medicavial.net/registro/{{ doc.Arc_Archivo }}" target="_blank" class="text-info">
+                    Visualizar
+                    <i class="mdi mdi-open-in-new"></i>
+                  </a>
+                </small>
+              </td>
+              <td class="text-center text-muted"><small>{{ doc.Arc_fecreg | slice:0:10 | date:'dd/MMMM/yyyy' }}</small></td>
+              <td class="text-center text-muted"><small>{{ doc.USU_login }}</small></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Digitales Zima -->
+      <div class="modal-body" *ngIf="paciente.id_registro=='2'">
+        <table class="table table-bordered table-hover table-sm table-responsive">
+          <thead>
+            <tr>
+              <th class="text-center">#</th>
+              <th class="text-center">Tipo</th>
+              <th class="text-center">Archivo</th>
+              <th class="text-center">Fecha</th>
+              <th class="text-center">Usuario</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let doc of digitales.listaDigitales; let i = index">
+              <td class="text-center text-muted">
+                <small>{{ i+1 }}</small>
+              </td>
+              <td>({{ doc.TipArc_nombre }}) <span class="text-muted">{{ doc.Arc_obs }}</span></td>
+              <td class="text-center">
+                <small>
+                  <a href="http://pmzima.net/{{ doc.Archivo_ruta }}" target="_blank" class="text-info">
+                    Visualizar
+                    <i class="mdi mdi-open-in-new"></i>
+                  </a>
+                </small>
+              </td>
+              <td class="text-center text-muted"><small>{{ doc.Arc_fecreg | slice:0:10 | date:'dd/MMMM/yyyy' }}</small></td>
+              <td class="text-center text-muted"><small>{{ doc.USU_login }}</small></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-outline-info">Alguna acción</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- modal facturas -->
+<div class="modal fade" id="facturas" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" >
+          <i class="mdi mdi-file-multiple"></i>
+          Facturas
+        </h5>
+        <button type="button" class="close text-white seleccion" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        hola
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-outline-success">Alguna acción</button>
+      </div>
     </div>
   </div>
 </div>

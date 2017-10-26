@@ -3,6 +3,7 @@ import { BusquedasService } from '../../services/busquedas.service';
 import { AuthService } from '../../services/auth.service';
 import { DatosLocalesService } from '../../services/datos-locales.service';
 import { Router } from '@angular/router';
+declare var $: any;
 
 @Component({
   selector: 'app-paciente',
@@ -11,6 +12,7 @@ import { Router } from '@angular/router';
 export class PacienteComponent implements OnInit {
 
   paciente:any = [];
+  digitales:any = [];
   buscando:boolean = false;
 
   constructor( private _busquedasService:BusquedasService,
@@ -30,11 +32,17 @@ export class PacienteComponent implements OnInit {
   }
 
   getDigitales(){
+    this.buscando = true;
     this._busquedasService.getDigitales( this.paciente )
                           .subscribe( data => {
                             this.buscando=false;
-                            console.log(data);
+                            this.digitales=data;
+                            // console.log(this.digitales);
                           });
   }
 
+  abreModal(nombre){
+    console.log(nombre);
+    $('#'+nombre).modal('show');
+  }
 }

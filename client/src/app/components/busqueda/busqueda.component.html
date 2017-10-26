@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container animated fadeIn fast">
   <div class="row">
     <div class="col-md-12">
 
@@ -55,7 +55,7 @@
           </form>
         </div>
 
-        <div class="card-footer" *ngIf="pacientes.length>0">
+        <div class="card-footer animated fadeIn fast" *ngIf="pacientes.length>0">
           <button class="btn btn-outline-danger badge-pill badge-accion btn-sm"
                   style="max-width: 100%"
                   (click)="borrarParametros()"
@@ -70,7 +70,7 @@
 
       <div class="espacio"></div>
 
-      <div class="card border-info mb-3 seleccion"
+      <div class="card border-info mb-3 seleccion animated fadeIn"
            *ngFor="let paciente of pacientes let i = index"
            (click)="pacienteSeleccionado(paciente)">
         <div class="card-body text-secondary">

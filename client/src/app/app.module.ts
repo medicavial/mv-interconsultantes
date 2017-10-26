@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { LOCALE_ID } from '@angular/core';
 
 //SERVICIOS
 import { BusquedasService } from "./services/busquedas.service";
@@ -34,6 +35,7 @@ import { PacienteComponent } from './components/paciente/paciente.component';
     APP_ROUTING
   ],
   providers: [
+    { provide: LOCALE_ID, useValue: "esMX" },
     BusquedasService,
     AuthService,
     DatosLocalesService

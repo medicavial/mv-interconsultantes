@@ -67,7 +67,7 @@ class BusquedasController extends Controller {
 														 'Exp_obs as observaciones', 'Expediente.Pro_clave as cveProducto', 'Cia_nombrecorto as nombreCompania',
 														 'Pro_nombre as nombreProducto', 'Expediente.RIE_clave as cveRiesgo', 'RIE_nombre as nombreRiesgo',
 														 'Usu_nombre as nombreUsuario', 'Uni_nombrecorto as nombreUnidad',
-														 'Fol_ZIMA', DB::raw('CONCAT("Médica Vial") as registro'))
+														 'Fol_ZIMA', DB::raw('CONCAT("Médica Vial") as registro'), DB::raw('CONCAT(1) as id_registro'))
 										->where('Exp_folio', $folio)
 										->orderBy('Exp_completo', 'asc')
 										->get();
@@ -89,7 +89,7 @@ class BusquedasController extends Controller {
 														 'Exp_obs as observaciones', 'Expediente.Pro_clave as cveProducto', 'Cia_nombrecorto as nombreCompania',
 														 'Pro_nombre as nombreProducto', 'Expediente.RIE_clave as cveRiesgo', 'RIE_nombre as nombreRiesgo',
 														 'Usu_nombre as nombreUsuario', 'Uni_nombrecorto as nombreUnidad',
-														 'Fol_ZIMA', DB::raw('CONCAT("Médica Vial") as registro'))
+														 'Fol_ZIMA', DB::raw('CONCAT("Médica Vial") as registro'), DB::raw('CONCAT(1) as id_registro'))
 										->Where('Exp_completo', 'like', '%' . $nombre . '%')
 										->orderBy('Exp_completo', 'asc')
 										->get();
@@ -111,7 +111,7 @@ class BusquedasController extends Controller {
 												'REG_observaciones as observaciones', 'PURegistro.ProdZima_Clave as cveProducto', 'ASE_nomCorto as nombreCompania',
 												'ProdZima_Desc as nombreProducto', 'PURegistro.RIE_clave as cveRiesgo', 'RIE_nombre as nombreRiesgo',
 												DB::raw('CONCAT(PUUsu_nombre," ",PUUsu_apaterno," ",PUUsu_amaterno) as nombreUsuario'), 'UNI_nomCorto as nombreUnidad',
-												'REG_folioMV', DB::raw('CONCAT("Zima") as registro'))
+												'REG_folioMV', DB::raw('CONCAT("Zima") as registro'), DB::raw('CONCAT(2) as id_registro'))
 							 ->Where('REG_folio',$folio)
 							 ->orderBy('REG_nombrecompleto', 'asc')
 							 ->get();
@@ -133,25 +133,44 @@ class BusquedasController extends Controller {
 												'REG_observaciones as observaciones', 'PURegistro.ProdZima_Clave as cveProducto', 'ASE_nomCorto as nombreCompania',
 												'ProdZima_Desc as nombreProducto', 'PURegistro.RIE_clave as cveRiesgo', 'RIE_nombre as nombreRiesgo',
 												DB::raw('CONCAT(PUUsu_nombre," ",PUUsu_apaterno," ",PUUsu_amaterno) as nombreUsuario'), 'UNI_nomCorto as nombreUnidad',
-												'REG_folioMV', DB::raw('CONCAT("Zima") as registro'))
+												'REG_folioMV', DB::raw('CONCAT("Zima") as registro'), DB::raw('CONCAT(2) as id_registro'))
 							 ->Where('REG_nombrecompleto', 'like', '%' . $nombre . '%')
 							 ->orderBy('REG_nombrecompleto', 'asc')
 							 ->get();
 		return $expediente;
 	}
 
-	public function buscaDigitalizados($folio)
+	public function buscaDigitalizados()
 	{
-		$urlTipos = 'http://medicavial.net/mvnuevo/api/api.php?funcion=listaTiposDigitales&usr=sistema';
-		$datosURL = file_get_contents($urlTipos);
-		$listaTipos = json_decode($datosURL, true);
+		$folio = Input::get('folio');
+		$idRegistro = Input::get('id_registro');
 
-		$urlDigitales = 'http://medicavial.net/mvnuevo/api/api.php?funcion=digitalizados&fol='.$folio.'&usr=sistema';
-		$datosURL = file_get_contents($urlDigitales);
-		$listaDigitales = json_decode($datosURL, true);
+		if ( $idRegistro == 1 ) {
+			$urlTipos = 'http://medicavial.net/mvnuevo/api/api.php?funcion=listaTiposDigitales&usr=sistema';
+			$datosURL = file_get_contents($urlTipos);
+			$listaTipos = json_decode($datosURL, true);
 
-		$respuesta = array('tiposDigitales' => $listaTipos,
-											 'listaDigitales' => $listaDigitales);
+			$urlDigitales = 'http://medicavial.net/mvnuevo/api/api.php?funcion=digitalizados&fol='.$folio.'&usr=sistema';
+			$datosURL = file_get_contents($urlDigitales);
+			$listaDigitales = json_decode($datosURL, true);
+
+			$respuesta = array('tiposDigitales' => $listaTipos,
+												 'listaDigitales' => $listaDigitales);
+		} elseif ( $idRegistro == 2 ) {
+			$listaDigitales = DB::connection('zima')
+													 ->table('PUArchivo')
+													 ->join('TipoArchivo', 'PUArchivo.Arc_tipo', '=', 'TipoArchivo.TipArc_tipo')
+													 ->join('PUUsuario', 'PUUsuario.PUUsu_login', '=', 'PUArchivo.USU_login')
+													 ->select('PUArchivo.Arc_cons', 'PUArchivo.Arc_clave', 'PUArchivo.REG_folio', 'PUArchivo.Arc_obs', 'PUArchivo.Arc_tipo',
+													 					'PUArchivo.Arc_desde', 'PUArchivo.USU_login', 'PUArchivo.Arc_fecreg','TipoArchivo.TipArc_nombre',
+																		DB::raw('SUBSTRING(Arc_archivo FROM 13) as Archivo_ruta'))
+													 ->Where('REG_folio', $folio)
+													 ->get();
+
+			 $respuesta = array('tiposDigitales' => [],
+	 											 'listaDigitales' => $listaDigitales);
+		}
+
 		return $respuesta;
 	}
 

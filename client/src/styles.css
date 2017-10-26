@@ -77,3 +77,21 @@ body{
 .seleccion{
   cursor: pointer;
 }
+
+.img-bg-tarjeta{
+  filter: blur(2px) grayscale(30%);
+  text-shadow: 2px 2px #ff0000;
+  max-height: 10em;
+}
+
+.con-sombra{
+  text-shadow: 1px 1px 8px #000000;
+}
+
+.card:hover .img-bg-tarjeta{
+  filter: blur(3px) grayscale(0%);
+}
+
+.card:hover .con-sombra{
+  text-shadow: 1px 1px 10px #000000;
+}
