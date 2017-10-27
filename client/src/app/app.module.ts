@@ -17,6 +17,7 @@ import { HomeComponent } from './components/home/home.component';
 import { BusquedaComponent } from './components/busqueda/busqueda.component';
 import { LoginComponent } from './components/login/login.component';
 import { PacienteComponent } from './components/paciente/paciente.component';
+import { NotaSoapComponent } from './components/notas-medicas/nota-soap.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { PacienteComponent } from './components/paciente/paciente.component';
     HomeComponent,
     BusquedaComponent,
     LoginComponent,
-    PacienteComponent
+    PacienteComponent,
+    NotaSoapComponent
   ],
   imports: [
     BrowserModule,

@@ -4,14 +4,12 @@ import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { BusquedaComponent } from './components/busqueda/busqueda.component';
 import { PacienteComponent } from './components/paciente/paciente.component';
+import { NotaSoapComponent } from './components/notas-medicas/nota-soap.component';
 
 import { AuthService } from "./services/auth.service";
 
 const APP_ROUTES: Routes = [
-  {
-    path: 'login',
-    component: LoginComponent
-  },
+  { path: 'login', component: LoginComponent },
   {
     path: 'home',
     component: HomeComponent,
@@ -25,6 +23,14 @@ const APP_ROUTES: Routes = [
   {
     path: 'paciente',
     component: PacienteComponent,
+    canActivate: [AuthService],
+    // children: [
+    //   { path: 'nota-soap', component: NotaSoapComponent },
+    // ]
+  },
+  {
+    path: 'nota-soap',
+    component: NotaSoapComponent,
     canActivate: [AuthService]
   },
   {

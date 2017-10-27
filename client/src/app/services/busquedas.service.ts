@@ -4,8 +4,8 @@ import 'rxjs/Rx';
 
 @Injectable()
 export class BusquedasService {
-  // api:string = "http://busqueda.medicavial.net/api";
-  api:string = "http://localhost/SBU/server/public";
+  api:string = "http://busqueda.medicavial.net/api";
+  // api:string = "http://localhost/SBU/server/public";
 
   constructor( private _http:Http ) {}
 

@@ -57,13 +57,26 @@
       </div>
 
       <div class="modal-body text-muted">
-        <h6><i class="mdi mdi-file-document"></i> Nota SOAP</h6>
-        <h6><i class="mdi mdi-file-document"></i> Nota Prequirurgica</h6>
-        <h6><i class="mdi mdi-file-document"></i> Nota Postquirurgica</h6>
-        <h6><i class="mdi mdi-file-document"></i> Receta abierta</h6>
-        <h6><i class="mdi mdi-file-document"></i> Receta MV</h6>
-        <h6><i class="mdi mdi-file-document"></i> Receta de Interconsulta</h6>
-
+        <div class="list-group">
+          <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
+            <i class="mdi mdi-file-document"></i> Nota SOAP
+          </a>
+          <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
+            <i class="mdi mdi-file-document"></i> Nota Prequirurgica
+          </a>
+          <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
+            <i class="mdi mdi-file-document"></i> Nota Postquirurgica
+          </a>
+          <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
+            <i class="mdi mdi-file-document"></i> Receta abierta
+          </a>
+          <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
+            <i class="mdi mdi-file-document"></i> Receta MV
+          </a>
+          <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
+            <i class="mdi mdi-file-document"></i> Receta de Interconsulta
+          </a>
+        </div>
       </div>
 
       <div class="modal-footer">
