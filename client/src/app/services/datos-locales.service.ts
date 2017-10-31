@@ -1,3 +1,6 @@
+/***** Servicio que administra los datos guardados en local *****/
+/***** Samuel Ramírez - Octubre 2017 *****/
+
 import { Injectable } from '@angular/core';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot, CanActivate, CanDeactivate } from "@angular/router";
 
@@ -9,6 +12,7 @@ export class DatosLocalesService {
   verificaRutaPaciente(){
     if ( this.router.url != 'paciente' && sessionStorage.getItem('paciente')) {
       sessionStorage.removeItem('paciente');
+      sessionStorage.removeItem('digitales');
     }
   }
 }

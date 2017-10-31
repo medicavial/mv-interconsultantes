@@ -5,9 +5,11 @@ import { HttpModule } from '@angular/http';
 import { LOCALE_ID } from '@angular/core';
 
 //SERVICIOS
+import { ApiConexionService } from './services/api-conexion.service';
 import { BusquedasService } from "./services/busquedas.service";
 import { AuthService } from "./services/auth.service";
 import { DatosLocalesService } from './services/datos-locales.service';
+import { RegistroDatosService } from './services/registro-datos.service';
 
 import { APP_ROUTING } from './app.routes';
 
@@ -38,9 +40,11 @@ import { NotaSoapComponent } from './components/notas-medicas/nota-soap.componen
   ],
   providers: [
     { provide: LOCALE_ID, useValue: "esMX" },
+    ApiConexionService,
     BusquedasService,
     AuthService,
-    DatosLocalesService
+    DatosLocalesService,
+    RegistroDatosService
   ],
   bootstrap: [AppComponent]
 })

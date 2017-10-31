@@ -1,10 +1,23 @@
+<!-- Vista de los datos de paciente -->
+<!-- Samuel Ramírez - Octubre 2017 -->
+
 <div class="container animated fadeIn fast">
   <div class="card border-warning mb-3">
     <!-- <div class="card-header text-white bg-warning">Detalle del paciente</div> -->
     <div class="card-body">
-      <h4 class="card-title">{{ paciente.nombre }}</h4>
-      <h6 class="card-subtitle mb-2 text-muted">{{ paciente.registro }}: {{ paciente.folio }}
-      </h6>
+      <div class="row">
+        <div class="col-md-9">
+          <h4 class="card-title">{{ paciente.nombre }}</h4>
+          <h6 class="card-subtitle mb-2 text-muted">{{ paciente.registro }}: {{ paciente.folio }}</h6>
+        </div>
+        <div class="col-md-3 text-secondary text-right">
+          <small>Ultima actualización: {{ digitales.horaConsulta }}</small>
+          <button type="button" class="btn btn-light btn-sm seleccion" (click)="getDigitales()">
+            <i class="mdi mdi-refresh"></i>
+            Actualizar datos
+          </button>
+        </div>
+      </div>
       <span class="text-info animated fadeIn fast" *ngIf="buscando===true">Obteniendo datos <i class="fa fa-cog fa-spin fa-fw"></i></span>
     </div>
   </div>
@@ -104,7 +117,7 @@
 
       <!-- Digitales MV -->
       <div class="modal-body" *ngIf="paciente.id_registro=='1'">
-        <table class="table table-bordered table-hover table-sm table-responsive">
+        <table class="table table-bordered table-hover table-sm table-responsive" >
           <thead>
             <tr>
               <th class="text-center">#</th>

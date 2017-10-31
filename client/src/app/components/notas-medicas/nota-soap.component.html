@@ -1,17 +1,164 @@
-<div class="container animated fadeIn">
+<!-- NOTA SOAP -->
+<!-- Samuel Ramírez - Octubre 2017 -->
 
+<div class="container animated fadeIn">
   <div class="card border-secundary mb-3">
-    <div class="card-header text-right">
+    <div class="card-header text-right bg-secundary">
       <a [routerLink]="['/paciente']" class="text-info">
         <i class="mdi mdi-arrow-left-thick"></i> Regresar al detalle del paciente
       </a>
     </div>
     <div class="card-body">
-      <h4 class="card-title">Nota SOAP</h4>
+      <h4 class="card-title"><i class="mdi mdi-file-document azul-mv"></i> Nota SOAP <span class="text-muted">  | {{ paciente.folio }}</span></h4>
       <p class="card-text text-muted">
         <i class="mdi mdi-lightbulb-on-outline"></i> Por favor llene todos los campos de este documento.
       </p>
 
+      <form [formGroup]="notaSoap" (ngSubmit)="guardaNota()">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="app">APP</label>
+              <textarea formControlName="app" class="form-control" id="app" rows="3" placeholder="* APP"
+                        [ngClass]="{'is-invalid': !notaSoap.controls.app.valid && !notaSoap.controls.app.pristine}">
+              </textarea>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="apx">APX</label>
+              <textarea formControlName="apx" class="form-control" id="apx" rows="3" placeholder="* APX"
+                        [ngClass]="{'is-invalid': !notaSoap.controls.apx.valid && !notaSoap.controls.apx.pristine}">
+              </textarea>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="subjetivos">SUBJETIVOS</label>
+              <textarea formControlName="subjetivos" class="form-control" id="subjetivos" rows="3" placeholder="* SUBJETIVOS"
+                        [ngClass]="{'is-invalid': !notaSoap.controls.subjetivos.valid && !notaSoap.controls.subjetivos.pristine}">
+              </textarea>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="objetivos">OBJETIVOS</label>
+              <textarea formControlName="objetivos" class="form-control" id="objetivos" rows="3" placeholder="* OBJETIVOS"
+                        [ngClass]="{'is-invalid': !notaSoap.controls.objetivos.valid && !notaSoap.controls.objetivos.pristine}">
+              </textarea>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="analisis">ANÁLISIS</label>
+              <textarea formControlName="analisis" class="form-control" id="analisis" rows="3" placeholder="* ANÁLISIS"
+                        [ngClass]="{'is-invalid': !notaSoap.controls.analisis.valid && !notaSoap.controls.analisis.pristine}">
+              </textarea>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="plan">PLAN</label>
+              <textarea formControlName="plan" class="form-control" id="plan" rows="3" placeholder="* PLAN"
+                        [ngClass]="{'is-invalid': !notaSoap.controls.plan.valid && !notaSoap.controls.plan.pristine}">
+              </textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 offset-md-4" style="margin: auto !important;">
+            <div class="espacio"></div>
+
+            <button type="submit" class="btn btn-success btn-block" [disabled]="!notaSoap.valid || trabajando">
+              <span *ngIf="!trabajando">Guardar <i class="mdi mdi-send"></i></span>
+              <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+            </button>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal Soap guardada-->
+<div class="modal fade" id="avisoCorrecto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-information text-info"></i> Aviso</h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <div>La nota se guardó correctamente</div>
+        <div>
+          <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw text-info"></i>
+        </div>
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-outline-info">OK</button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+<!-- Modal cantidad soap-->
+<div class="modal fade" id="soapGuardadas" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+          <i class="mdi mdi-information text-info"></i>
+          Este paciente tiene {{ notasGeneradas.length }} notas SOAP generadas
+        </h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-hover table-sm table-responsive">
+          <thead>
+            <tr>
+              <th class="text-center" scope="col">#</th>
+              <th class="text-center" scope="col">Fecha</th>
+              <th class="text-center" scope="col">Imprimir</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let nota of notasGeneradas; let i = index">
+              <td class="text-center text-muted">{{ i+1 }}</td>
+              <td class="text-center text-muted">
+                {{ nota.fecreg_notSOAP | slice:0:10 | date:'dd/MMM/yyyy' }} {{ nota.fecreg_notSOAP | slice:10 }}
+              </td>
+              <td class="text-center">
+                <a href="http://medicavial.net/mvnuevo/api/classes/formatoNotaSoap.php?fol={{ paciente.folio }}&cont={{ nota.id_notSOAP }}"
+                   target="_blank" class="text-info">
+                  Visualizar
+                  <i class="mdi mdi-open-in-new"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button> -->
+        <button type="button" class="btn btn-outline-info" data-dismiss="modal">Aceptar</button>
+      </div>
     </div>
   </div>
 </div>

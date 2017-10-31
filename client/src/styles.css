@@ -1,3 +1,5 @@
+/***** Estilos para el sistema de asignacion de pacientes-medicos *****/
+/***** Samuel Ramírez - Octubre 2017 *****/
 /*-----------------------------------------------------*/
 body{
   background-color: #f8f8f8;
@@ -5,6 +7,10 @@ body{
 
 .bg-mv {
   background-color: #0082cd !important;
+}
+
+.azul-mv{
+  color: #0082cd;
 }
 
 .titulo-card{
@@ -94,4 +100,8 @@ body{
 
 .card:hover .con-sombra{
   text-shadow: 1px 1px 10px #000000;
+}
+
+.mayusculas{
+  text-transform: uppercase;
 }

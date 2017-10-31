@@ -154,8 +154,16 @@ class BusquedasController extends Controller {
 			$datosURL = file_get_contents($urlDigitales);
 			$listaDigitales = json_decode($datosURL, true);
 
+			// if ($listaDigitales == null) {
+			// 	$listaDigitales[] = json_encode(array('respuesta' => 'vacio'));
+			// }
+
+			$listaNotaSoap = BusquedasController::notaSoapXpaciente($folio);
+
 			$respuesta = array('tiposDigitales' => $listaTipos,
-												 'listaDigitales' => $listaDigitales);
+												 'horaConsulta' 	=> date("Y-m-d H:i:s"),
+												 'listaDigitales' => $listaDigitales,
+											 	 'notaSoap' 			=> $listaNotaSoap);
 		} elseif ( $idRegistro == 2 ) {
 			$listaDigitales = DB::connection('zima')
 													 ->table('PUArchivo')
@@ -167,9 +175,19 @@ class BusquedasController extends Controller {
 													 ->Where('REG_folio', $folio)
 													 ->get();
 
-			 $respuesta = array('tiposDigitales' => [],
-	 											 'listaDigitales' => $listaDigitales);
+			 $respuesta = array('tiposDigitales' 	=> [],
+			 										'horaConsulta' 		=> date("Y-m-d H:i:s"),
+	 											  'listaDigitales' 	=> $listaDigitales);
 		}
+
+		return $respuesta;
+	}
+
+	public function notaSoapXpaciente($folio)
+	{
+		$apiURL = 'http://medicavial.net/mvnuevo/api/notaSoap.php?funcion=notasSOAP&fol='.$folio;
+		$datosURL = file_get_contents($apiURL);
+		$respuesta = json_decode($datosURL, true);
 
 		return $respuesta;
 	}

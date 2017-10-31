@@ -6,9 +6,6 @@ import 'rxjs/Rx';
 @Injectable()
 export class AuthService implements CanActivate {
 
-  api:string = "http://busqueda.medicavial.net/api";
-  // api:string = "http://localhost/SBU/server/public";
-
   constructor( private router:Router,
                private _http:Http) {}
 

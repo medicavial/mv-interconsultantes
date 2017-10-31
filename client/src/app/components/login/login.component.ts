@@ -1,7 +1,11 @@
+/***** Acceso al sistema *****/
+/***** Samuel Ramírez - Octubre 2017 *****/
+
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { AuthService } from "../../services/auth.service";
 import { BusquedasService } from "../../services/busquedas.service";
+import { DatosLocalesService } from '../../services/datos-locales.service';
 import { Router } from "@angular/router";
 
 
@@ -24,6 +28,7 @@ export class LoginComponent implements OnInit {
 
   constructor( private _authService:AuthService,
                private _busquedasService:BusquedasService,
+               private _datosLocalesService:DatosLocalesService,
                private router:Router ) {
                  this.login = new FormGroup({
                    'username': new FormControl( '', [
@@ -40,6 +45,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this._authService.auth();
+    this._datosLocalesService.verificaRutaPaciente();
   }
 
   enviaCredenciales(){

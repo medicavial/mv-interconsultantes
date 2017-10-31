@@ -1,7 +1,7 @@
 <html>
 	<head>
-		<title>Laravel</title>
-		
+		<title>API MV-Zima - Samuel Ramirez</title>
+
 		<link href='//fonts.googleapis.com/css?family=Lato:100' rel='stylesheet' type='text/css'>
 
 		<style>
@@ -40,8 +40,9 @@
 	<body>
 		<div class="container">
 			<div class="content">
-				<div class="title">Laravel 5</div>
-				<div class="quote">{{ Inspiring::quote() }}</div>
+				<div class="title">API Médica Vial - Zima</div>
+				<div class="quote">Samuel Ramírez | Octubre 2017</div>
+				<!-- <div class="quote">{{ Inspiring::quote() }}</div> -->
 			</div>
 		</div>
 	</body>

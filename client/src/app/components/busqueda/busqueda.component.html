@@ -13,14 +13,15 @@
               <div class="col-md-5">
                 <div class="form-group">
                   <div class="input-group">
-                    <div class="input-group-addon" style="min-width: 2.5em;">
+                    <div class="input-group-addon" style="min-width: 2.5em;"
+                         [ngClass]="{'badge-danger': !buscador.controls.folio.valid && !buscador.controls.folio.pristine}">
                       <i class="mdi mdi-barcode-scan"></i>
                     </div>
                     <input type="text"
-                           class="form-control"
+                           class="form-control mayusculas"
+                           [ngClass]="{'is-invalid': !buscador.controls.folio.valid && !buscador.controls.folio.pristine}"
                            placeholder="Por folio"
-                           formControlName="folio"
-                           style="text-transform:uppercase">
+                           formControlName="folio">
                            <!-- autofocus -->
                            <!-- [(ngModel)]="paciente.folio"> -->
                   </div>
@@ -30,14 +31,15 @@
               <div class="col-md-5">
                 <div class="form-group">
                   <div class="input-group">
-                    <div class="input-group-addon" style="min-width: 2.5em;">
+                    <div class="input-group-addon" style="min-width: 2.5em;"
+                         [ngClass]="{'badge-danger': !buscador.controls.nombre.valid && !buscador.controls.nombre.pristine}">
                       <i class="mdi mdi-account"></i>
                     </div>
                     <input type="text"
-                           class="form-control"
+                           class="form-control mayusculas"
+                           [ngClass]="{'is-invalid': !buscador.controls.nombre.valid && !buscador.controls.nombre.pristine}"
                            placeholder="Por nombre"
-                           formControlName="nombre"
-                           style="text-transform:uppercase">
+                           formControlName="nombre">
                            <!-- [(ngModel)]="paciente.nombre"> -->
                   </div>
                 </div>

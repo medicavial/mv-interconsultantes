@@ -1,3 +1,6 @@
+/***** Datos de paciente *****/
+/***** Samuel Ramírez - Octubre 2017 *****/
+
 import { Component, OnInit } from '@angular/core';
 import { BusquedasService } from '../../services/busquedas.service';
 import { AuthService } from '../../services/auth.service';
@@ -14,6 +17,7 @@ export class PacienteComponent implements OnInit {
   paciente:any = [];
   digitales:any = [];
   buscando:boolean = false;
+  fechaDatos = null;
 
   constructor( private _busquedasService:BusquedasService,
                private _authService:AuthService,
@@ -27,8 +31,15 @@ export class PacienteComponent implements OnInit {
                }
 
   ngOnInit() {
-    console.log(this.paciente);
-    this.getDigitales();
+    // console.log(this.paciente);
+    if (sessionStorage.getItem('digitales')) {
+        this.digitales =JSON.parse( sessionStorage.getItem('digitales') );
+        // console.log(this.digitales);
+        console.log('digitales almacenados');
+    } else {
+        this.getDigitales();
+        console.log('se ejecutó la consulta de digitales');
+    }
   }
 
   getDigitales(){
@@ -37,12 +48,14 @@ export class PacienteComponent implements OnInit {
                           .subscribe( data => {
                             this.buscando=false;
                             this.digitales=data;
-                            // console.log(this.digitales);
+                            sessionStorage.setItem('digitales', JSON.stringify(this.digitales));
+                            console.log(this.digitales);
                           });
+
   }
 
   abreModal(nombre){
-    console.log(nombre);
+    // console.log(nombre);
     $('#'+nombre).modal('show');
   }
 }

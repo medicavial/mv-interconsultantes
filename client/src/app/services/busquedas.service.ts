@@ -1,13 +1,19 @@
+/***** Servicio que conecta con el API para hacer busquedas de datos *****/
+/***** Samuel Ramírez - Octubre 2017 *****/
+
 import { Injectable } from '@angular/core';
+import { ApiConexionService } from './api-conexion.service';
 import { Http, Headers } from '@angular/http';
 import 'rxjs/Rx';
 
+
 @Injectable()
 export class BusquedasService {
-  api:string = "http://busqueda.medicavial.net/api";
-  // api:string = "http://localhost/SBU/server/public";
 
-  constructor( private _http:Http ) {}
+  constructor( private _http:Http,
+               private _api:ApiConexionService ) {}
+
+  api: string = this._api.apiUrl();
 
   prueba(){
     let url = `${ this.api }/inicio`;
@@ -49,6 +55,15 @@ export class BusquedasService {
     });
 
     return this._http.post( url, datos, {headers} )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  getListadoSoap( folio ){
+    let url = `${ this.api }/paciente/listadosoap-`+folio;
+
+    return this._http.get( url )
                .map( res => {
                  return res.json();
                });
