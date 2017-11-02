@@ -108,7 +108,7 @@
       <div class="modal-header bg-info text-white">
         <h5 class="modal-title" >
           <i class="mdi mdi-folder-open"></i>
-          Documentos digitales
+          Documentos digitales <i class="fa fa-refresh fa-spin fa-1x fa-fw" *ngIf="refresh"></i>
         </h5>
         <button type="button" class="close text-white seleccion" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -183,9 +183,40 @@
         </table>
       </div>
 
+      <div class="modal-body">
+        <h6>Carga de documentos digitales:</h6>
+        <form [formGroup]="formUpload" (ngSubmit)="upload()">
+          <div class="row">
+            <div class="col-md-3 espacio">
+              <div class="form-group">
+                <select class="form-control form-control-sm" formControlName="cveDocumento">
+                  <option value="{{ tipo.TID_claveint }}" *ngFor="let tipo of digitales.tiposDigitales">
+                    <span *ngIf="tipo.TID_docMV === 'digitales MV'">MV</span>
+                    <span *ngIf="tipo.TID_docMV === 'Zima'">Zima</span>
+                    {{ tipo.TID_nombre }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6 espacio">
+              <small>
+                <input type="file" (change)="archivoSeleccionado($event)" id="digital" #fileInput [disabled]="formUpload.value.cveDocumento == ''">
+              </small>
+            </div>
+            <div class="col-md-3 espacio">
+              <button type="submit" class="btn btn-outline-info btn-block btn-sm"
+                      [disabled]="!formUpload.valid || cargando">
+                <span *ngIf="!cargando"><i class="mdi mdi-cloud-upload"></i> Subir archivo</span>
+                <span *ngIf="cargando"><i class="fa fa-cog fa-spin fa-fw"></i> Cargando...</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-outline-info">Alguna acción</button>
+        <!-- <button type="button" class="btn btn-outline-info">Alguna acción</button> -->
       </div>
     </div>
   </div>

@@ -27,4 +27,42 @@ export class RegistroDatosService {
                });
   }
 
+  subetemporal( archivo ){
+    let url = 'http://medicavial.net/mvnuevo/api/api.php?funcion=archivo_temporal';
+    // let url = 'http://localhost/mvnuevo/api/api.php?funcion=archivo_temporal';
+    let datos = new FormData();
+    datos.append("file", archivo, archivo.name);
+
+    // NO FUNCIONA CUANDO MANDAMOS LOS HEADERS
+    // let headers = new Headers({
+    //   'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
+    // })
+    return this._http.post( url, datos, /*{ headers }*/)
+                      .map( res => {
+                        return res.json();
+                      });
+  }
+
+  subeDigitales( datos ){
+    console.log(datos);
+    let url = 'http://medicavial.net/mvnuevo/api/api.php?funcion=guardaDigital&fol='+datos.folio+'&tipo='+datos.cveDocumento+'&usr='+datos.usr;
+
+    let data = new FormData(datos);
+        data.append("archivo", datos.archivo);
+        data.append("temporal", datos.temporal);
+        data.append("tipo", datos.cveDocumento);
+        data.append("file", datos.file);
+
+    // NO FUNCIONA CUANDO MANDAMOS LOS HEADERS
+    // let headers = new Headers({
+    //   'Content-Type':'aplication/json'
+    //   'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
+    // });
+
+    return this._http.post( url, data, /*{ headers }*/ )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
 }
