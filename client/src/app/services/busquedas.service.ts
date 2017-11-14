@@ -69,4 +69,31 @@ export class BusquedasService {
                });
   }
 
+  getUnidades(){
+    let url = `${ this.api }/busquedas/listadoUnidades`;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  getListadoMedicos(){
+    let url = `${ this.api }/busquedas/listadoMedicos`;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  getUsuarios(){
+    let url = `${ this.api }/busquedas/listadoUsuarios`;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
 }

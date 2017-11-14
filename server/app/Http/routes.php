@@ -14,7 +14,16 @@ Route::group(['prefix' => 'paciente'], function()
     //     // Matches The "/paciente/prueba" URL
     //     return "funciona";
     // });
+    Route::post('guardaAsignacion', 'RegDatosController@guardaAsignacion');
     Route::post('digitales', 'BusquedasController@buscaDigitalizados');
     Route::post('nota-soap', 'RegDatosController@saveNotaSoap');
     Route::get('listadosoap-{folio}', 'BusquedasController@notaSoapXpaciente');
+});
+
+Route::group(['prefix' => 'busquedas'], function()
+{
+    Route::get('listadoUnidades', 'BusquedasController@buscaUnidades');
+    Route::get('listadoMedicos', 'BusquedasController@getMedicos');
+    Route::get('listadoUsuarios', 'BusquedasController@getUsuarios');
+    Route::get('credenciales-{cveMedico}', 'RegDatosController@generaCredenciales');
 });

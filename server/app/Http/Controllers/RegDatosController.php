@@ -1,4 +1,6 @@
 <?php namespace App\Http\Controllers;
+/***** Controlador para el registro de datos en las bases de datos *****/
+/***** Samuel Ramírez - Octubre 2017 *****/
 
 use DB;
 use Input;
@@ -47,5 +49,49 @@ class RegDatosController extends Controller {
 		return Response::json(array('respuesta' => 'Nota Creada Correctamente'));
 	}
 
+	public function guardaAsignacion()
+	{
+		$folio 					= Input::get('folio');
+		$username 			= Input::get('username');
+		$cveMedico 			= Input::get('cveMedico');
+		$username				= Input::get('username');
+		$fechaAtencion 	= Input::get('fechaAtencion');
+		$cveUnidad 			= Input::get('cveUnidad');
+
+		try {
+			$respuesta = DB::table('redQx_asignaciones')
+												->insert([
+															    'Exp_folio' 						=> $folio,
+																	'UNI_clave' 						=> $cveUnidad,
+																	'ASI_fechaCita' 				=> $fechaAtencion,
+																	'USU_idMedico' 					=> $cveMedico,
+																	'USU_loginRegistro' 		=> $username,
+																	'ASI_fechaRegistro' 		=> DB::raw('now()')
+																	]);
+		} catch (Exception $e) {
+			$respuesta = $e;
+		}
+
+		return Response::json(array('respuesta' => $respuesta));
+	}
+
+	public function generaCredenciales( $cveMedico )
+	{
+		$inicial = DB::table('Medico')
+									->select('Med_nombre')
+									->Where('Med_clave', $cveMedico)
+									// ->Where('Uni_clave', '<>', 8) //deberiamos quitar la unidad 8
+									->get();
+
+		return $inicial;
+
+		// try {
+    //
+		// } catch (Exception $e) {
+		// 	$respuesta = $e;
+		// }
+    //
+		// return Response::json(array('respuesta' => $respuesta));
+	}
 
 }

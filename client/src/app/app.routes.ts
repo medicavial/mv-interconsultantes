@@ -5,6 +5,7 @@ import { HomeComponent } from './components/home/home.component';
 import { BusquedaComponent } from './components/busqueda/busqueda.component';
 import { PacienteComponent } from './components/paciente/paciente.component';
 import { NotaSoapComponent } from './components/notas-medicas/nota-soap.component';
+import { AsignacionPacientesComponent } from './components/asignacion-pacientes/asignacion-pacientes.component';
 
 import { AuthService } from "./services/auth.service";
 
@@ -18,6 +19,11 @@ const APP_ROUTES: Routes = [
   {
     path: 'busqueda',
     component: BusquedaComponent,
+    canActivate: [AuthService]
+  },
+  {
+    path: 'asignacion',
+    component: AsignacionPacientesComponent,
     canActivate: [AuthService]
   },
   {

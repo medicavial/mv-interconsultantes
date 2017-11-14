@@ -51,6 +51,19 @@
         </div>
       </div>
     </div>
+
+    <div class="col-md-12 d-none d-lg-block">
+      &nbsp;
+    </div>
+
+    <div class="col-md-4" *ngIf="digitales.listaDigitales">
+      <div class="card bg-light text-white seleccion animated fadeIn" (click)="irAsignacion()">
+        <img class="card-img img-bg-tarjeta" src="assets/img/bg/doctor.jpg">
+        <div class="card-img-overlay row align-items-center">
+          <h4 class="col card-title text-center con-sombra">Asignar médico</h4>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

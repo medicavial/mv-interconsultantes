@@ -1,3 +1,6 @@
+/***** Servicio que conecta con el API para hacer solo busquedas de datos *****/
+/***** Samuel Ramírez - Octubre 2017 *****/
+
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';

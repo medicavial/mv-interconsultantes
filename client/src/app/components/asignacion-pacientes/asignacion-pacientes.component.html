@@ -1,0 +1,66 @@
+<!-- Modulo de asignación de pacientes -->
+<!-- Samuel Ramírez - Octubre 2017 -->
+
+<div class="container animated fadeIn fast">
+  <div class="card border-info mb-3">
+    <div class="card-body text-dark">
+      <h4 class="card-title text-info"><i class="mdi mdi-account-switch"></i> Asignacion de médico para el paciente {{ paciente.nombre }}</h4>
+      <p class="card-text text-secondary">
+        Por favor, complete los datos.
+      </p>
+
+      <div class="espacio"></div>
+
+      <!-- formulario para la busqueda de los pacientes -->
+      <form [formGroup]="asignacionForm" (ngSubmit)="guardaAsignacion()">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="listaMedicos">Médico que atenderá al paciente</label>
+              <select class="form-control" id="listaMedicos"
+                      formControlName="medico"
+                      [ngClass]="{'is-invalid': asignacionForm.controls.medico.touched && asignacionForm.controls.medico.value === 0}">
+                <option value="0" selected disabled>* Seleccione</option>
+                <option *ngFor="let medico of listadoMedicos" value="{{ medico.Med_clave }}">
+                  {{ medico.Uni_nombrecorto }} - {{ medico.nombreCompleto | uppercase}}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="listaMedicos">Unidad de atención</label>
+              <select class="form-control" id="listaUnidades"
+                      formControlName="unidad"
+                      [ngClass]="{'is-invalid': asignacionForm.controls.unidad.touched && asignacionForm.controls.unidad.value === 0}">
+                <option value="0" selected disabled>* Seleccione</option>
+                <option value="{{ unidad.Uni_clave }}" *ngFor="let unidad of listadoUnidades">{{ unidad.Uni_nombrecorto }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label for="fechaHora">Programado para el</label>
+                <input class="form-control" type="datetime-local" id="fechaHora" [(ngModel)]="asignacion.fechaAtencion" formControlName="fechaHora">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4" style="margin: auto">
+            <button type="success" class="btn btn-success btn-block" [disabled]="!asignacionForm.valid || trabajando">
+              <span *ngIf="!trabajando">
+                Confirmar <i class="mdi mdi-send"></i>
+              </span>
+
+              <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

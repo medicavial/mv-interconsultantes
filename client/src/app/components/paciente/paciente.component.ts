@@ -118,4 +118,8 @@ export class PacienteComponent implements OnInit {
                           this.formUpload.reset();
                         });
   }
+
+  irAsignacion(){
+    this.router.navigate(['asignacion']);
+  }
 }

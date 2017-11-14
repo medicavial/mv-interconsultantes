@@ -1,4 +1,7 @@
 <?php namespace App\Http\Controllers;
+/***** Controlador para busqueda de datos y conexion a otras APIS *****/
+/***** Samuel Ramírez - Octubre 2017 *****/
+
 
 use DB;
 use Input;
@@ -188,6 +191,41 @@ class BusquedasController extends Controller {
 		$apiURL = 'http://medicavial.net/mvnuevo/api/notaSoap.php?funcion=notasSOAP&fol='.$folio;
 		$datosURL = file_get_contents($apiURL);
 		$respuesta = json_decode($datosURL, true);
+
+		return $respuesta;
+	}
+
+	public function buscaUnidades()
+	{
+		$respuesta = DB::table('Unidad')
+										->Where('Uni_propia', 'S')
+										->Where('Uni_activa', 'S')
+										// ->Where('Uni_clave', '<>', 8) //deberiamos quitar la unidad 8
+										->orderBy('Uni_nombrecorto', 'asc')
+										->get();
+
+		return $respuesta;
+	}
+
+	public function getMedicos()
+	{
+		$respuesta = DB::table('Medico')
+										->select(DB::raw('CONCAT(Med_nombre," ",Med_paterno," ",Med_materno) as nombreCompleto'), 'Medico.*', 'Uni_nombrecorto')
+										->join('Unidad', 'Medico.Uni_clave', '=', 'Unidad.Uni_clave')
+										->Where('Med_activo', 'S')
+										// ->Where('Uni_clave', '<>', 8) //deberiamos quitar la unidad 8
+										->orderBy(DB::raw('Uni_nombrecorto, nombreCompleto'))
+										->get();
+
+		return $respuesta;
+	}
+
+	public function getUsuarios()
+	{
+		$respuesta = DB::table('redQx_usuarios')
+										->select('USU_id', 'USU_login', 'USU_nombreCompleto')
+										->Where('USU_activo', 1)
+										->get();
 
 		return $respuesta;
 	}

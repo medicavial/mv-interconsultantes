@@ -1,4 +1,6 @@
 <?php namespace App\Http\Controllers;
+/***** Controlador para logueo de usuarios *****/
+/***** Samuel Ramírez - Octubre 2017 *****/
 
 use DB;
 use Input;
@@ -15,13 +17,16 @@ class SesionController extends Controller {
 		$username 	= Input::get('username');
 		$password 	= md5(Input::get('password'));
 
-		$usuario = SesionController::sesionMV( $username, $password );
-		if ( sizeof($usuario) > 0 ) {
-			return $usuario;
-		} else{
-			$usuario = SesionController::sesionZima( $username, $password );
-			return $usuario;
-		}
+		$usuario = SesionController::sesionRedQx( $username, $password );
+		return $usuario;
+
+		// $usuario = SesionController::sesionMV( $username, $password );
+		// if ( sizeof($usuario) > 0 ) {
+		// 	return $usuario;
+		// } else{
+		// 	$usuario = SesionController::sesionZima( $username, $password );
+		// 	return $usuario;
+		// }
 	}
 
 	public function sesionMV( $username, $password )
@@ -48,6 +53,19 @@ class SesionController extends Controller {
 							 ->Where('PUUsu_cadenaentrada', $password)
 							 ->Where('PUUsu_activo', 'S')
 							 ->get();
+		return $busqueda;
+	}
+
+	public function sesionRedQx( $username, $password )
+	{
+		$busqueda = DB::table('redQx_usuarios')
+										->select('USU_login as username', 'USU_nombreCompleto as fullName', 'redQx_permisos.PER_clave',
+														'USU_fechaRegistro', DB::raw('CONCAT(0) as unidad'), DB::raw('redQx_permisos.*'))
+										->join('redQx_permisos', 'redQx_usuarios.PER_clave', '=', 'redQx_permisos.PER_clave')
+										->where('USU_login', $username)
+										->where('USU_password', $password)
+										->where('USU_activo', 1)
+										->get();
 		return $busqueda;
 	}
 

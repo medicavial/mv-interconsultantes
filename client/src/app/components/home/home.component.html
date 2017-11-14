@@ -1,3 +1,6 @@
+<!-- Pantalla Home -->
+<!-- Samuel Ramírez - Octubre 2017 -->
+
 <div class="container animated fadeIn fast">
   <div class="card">
     <div class="card-body">
@@ -9,4 +12,64 @@
     </div>
   </div>
   <!-- <h4 class="text-muted">¡Bienvenido <strong>{{ usuario.fullName }}!</strong></h4> -->
+</div>
+
+<div class="espacio"></div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card text-white bg-purple seleccion animated fadeIn" (click)="irAsignacion()">
+        <div class="card-body">
+          <h2 class=" text-center"><i class="mdi mdi-account-plus"></i></h2>
+          <h5 class="card-title text-center">Asignación de pacientes</h5>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+<!-- modal unidad -->
+<div class="modal fade" id="seleccionaUnidad" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-white">
+        <h5 class="modal-title" >
+          <i class="mdi mdi-alert"></i>
+          Esto es importante
+        </h5>
+      </div>
+
+      <form [formGroup]="seleccionUnidad" (ngSubmit)="confirmaUnidad()">
+
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="selectUnidad">Por favor confirme la unidad en la que se encuentra</label>
+            <select class="form-control is-invalid" id="selectUnidad"
+                    [ngClass]="{'is-invalid': !seleccionUnidad.valid && seleccionUnidad.touched}"
+                    formControlName="uniClave">
+              <option value="0" selected disabled>* seleccione</option>
+              <option value="{{ unidad.Uni_clave }}" *ngFor="let unidad of unidades">{{ unidad.Uni_nombrecorto }}</option>
+            </select>
+            <small class="form-text text-danger" *ngIf="!seleccionUnidad.valid && seleccionUnidad.touched">
+              <i class="mdi mdi-alert-decagram"></i>
+              Debe seleccionar una unidad
+            </small>
+          </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="success" class="btn btn-secondary" [disabled]="!seleccionUnidad.valid">
+          Confirmar
+          <i class="mdi mdi-send"></i>
+        </button>
+      </div>
+
+      </form>
+    </div>
+  </div>
 </div>
