@@ -5,32 +5,79 @@
   <div class="card">
     <div class="card-body">
       <h4 class="card-title text-info">¡Bienvenido, <strong>{{ usuario.fullName }}!</strong></h4>
-      <!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-      <a href="#" class="card-link">Card link</a>
-      <a href="#" class="card-link">Another link</a> -->
+      <small class="text-secondary" *ngIf="usuario.PER_clave === 3"><i class="mdi mdi-hospital-marker"></i> {{ usuario.uniNombre }}</small>
     </div>
   </div>
-  <!-- <h4 class="text-muted">¡Bienvenido <strong>{{ usuario.fullName }}!</strong></h4> -->
 </div>
 
 <div class="espacio"></div>
 
-<div class="container">
+<div class="container" *ngIf="usuario.PER_clave === 1 || usuario.PER_clave === 2">
   <div class="row">
     <div class="col-md-4">
       <div class="card text-white bg-purple seleccion animated fadeIn" (click)="irAsignacion()">
         <div class="card-body">
-          <h2 class=" text-center"><i class="mdi mdi-account-plus"></i></h2>
+          <h2 class=" text-center"><i class="mdi mdi-medical-bag"></i></h2>
           <h5 class="card-title text-center">Asignación de pacientes</h5>
         </div>
       </div>
     </div>
 
+    <div class="col-md-4 espacio-titulo-card d-block d-sm-none d-none d-sm-block d-md-none"></div>
+
+    <div class="col-md-4" *ngIf="usuario.PER_clave === 1">
+      <div class="card text-white bg-lime seleccion animated fadeIn" (click)="irUsuarios()">
+        <div class="card-body">
+          <h2 class=" text-center"><i class="mdi mdi-account-settings-variant"></i></h2>
+          <h5 class="card-title text-center">Administración de usuarios</h5>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
+<div class="container" *ngIf="usuario.PER_clave===1">
+  <hr class="animated fadeIn fast">
+</div>
 
+<div class="container animated fadeIn" *ngIf="usuario.PER_clave === 1 || usuario.PER_clave === 3">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title text-info">
+        Asignaciones pendientes
+        <span *ngIf="buscando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+      </h5>
+
+      <hr *ngIf="pacientesAsignados.length<1">
+      <p *ngIf="pacientesAsignados.length<1" class="text-center">
+        <i class="mdi mdi-lightbulb-on-outline icono-grande text-secondary"></i>
+        <br>
+        En este momento no tiene pacientes asignados
+      </p>
+
+      <table class="table table-hover table-sm table-responsive" *ngIf="pacientesAsignados.length>0">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Folio</th>
+            <th scope="col">Nombre Paciente</th>
+            <th scope="col">Fecha Asignado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let asignacion of pacientesAsignados; let i = index"
+              class="seleccion animated fadeIn fast"
+              (click)=seleccionPaciente(asignacion)>
+            <th scope="row">{{ i+1 }}</th>
+            <td>{{ asignacion.Exp_folio }}</td>
+            <td>{{ asignacion.Exp_completo }}</td>
+            <td>{{ asignacion.ASI_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }} {{ asignacion.ASI_fechaRegistro | slice:11:16 }} hrs.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 
 <!-- modal unidad -->

@@ -25,6 +25,16 @@
   <!-- <div class="espacio"></div> -->
 
   <div class="row">
+
+    <div class="col-md-4" *ngIf="usuario.PER_clave === 1 || usuario.PER_clave === 2">
+      <div class="card bg-light text-white seleccion animated fadeIn" (click)="irAsignacion()">
+        <img class="card-img img-bg-tarjeta" src="assets/img/bg/doctor.jpg">
+        <div class="card-img-overlay row align-items-center">
+          <h4 class="col card-title text-center con-sombra">Asignar médico</h4>
+        </div>
+      </div>
+    </div>
+
     <div class="col-md-4">
       <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('notasMedicas')">
         <img class="card-img img-bg-tarjeta" src="assets/img/bg/stethoscope.jpg">
@@ -43,27 +53,19 @@
       </div>
     </div>
 
-    <div class="col-md-4" *ngIf="digitales.listaDigitales">
+    <div class="col-md-12 d-none d-lg-block">
+      &nbsp;
+    </div>
+
+    <!-- <div class="col-md-4" *ngIf="digitales.listaDigitales">
       <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('facturas')">
         <img class="card-img img-bg-tarjeta" src="assets/img/bg/credit-card.jpg">
         <div class="card-img-overlay row align-items-center">
           <h4 class="col card-title text-center con-sombra">Facturas</h4>
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <div class="col-md-12 d-none d-lg-block">
-      &nbsp;
-    </div>
-
-    <div class="col-md-4" *ngIf="digitales.listaDigitales">
-      <div class="card bg-light text-white seleccion animated fadeIn" (click)="irAsignacion()">
-        <img class="card-img img-bg-tarjeta" src="assets/img/bg/doctor.jpg">
-        <div class="card-img-overlay row align-items-center">
-          <h4 class="col card-title text-center con-sombra">Asignar médico</h4>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -88,26 +90,26 @@
             <i class="mdi mdi-file-document"></i> Nota SOAP
           </a>
           <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
-            <i class="mdi mdi-file-document"></i> Nota Prequirurgica
+            <i class="mdi mdi-file-document"></i> Nota Prequirurgica <small class="text-info">* Próximamente</small>
           </a>
           <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
-            <i class="mdi mdi-file-document"></i> Nota Postquirurgica
+            <i class="mdi mdi-file-document"></i> Nota Postquirurgica <small class="text-info">* Próximamente</small>
           </a>
           <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
-            <i class="mdi mdi-file-document"></i> Receta abierta
+            <i class="mdi mdi-file-document"></i> Receta abierta <small class="text-info">* Próximamente</small>
           </a>
           <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
-            <i class="mdi mdi-file-document"></i> Receta MV
+            <i class="mdi mdi-file-document"></i> Receta MV <small class="text-info">* Próximamente</small>
           </a>
           <a [routerLink]="['/nota-soap']" class="list-group-item list-group-item-action list-group-item-light" data-dismiss="modal">
-            <i class="mdi mdi-file-document"></i> Receta de Interconsulta
+            <i class="mdi mdi-file-document"></i> Receta de Interconsulta <small class="text-info">* Próximamente</small>
           </a>
         </div>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-outline-primary">Alguna acción</button>
+        <!-- <button type="button" class="btn btn-outline-primary">Alguna acción</button> -->
       </div>
     </div>
   </div>
@@ -196,7 +198,7 @@
         </table>
       </div>
 
-      <div class="modal-body">
+      <div class="modal-body" *ngIf="usuario.PER_clave === 1 || usuario.PER_clave === 3">
         <h6>Carga de documentos digitales:</h6>
         <form [formGroup]="formUpload" (ngSubmit)="upload()">
           <div class="row">

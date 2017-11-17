@@ -9,7 +9,17 @@
       </a>
     </div>
     <div class="card-body">
-      <h4 class="card-title"><i class="mdi mdi-file-document azul-mv"></i> Nota SOAP <span class="text-muted">  | {{ paciente.folio }}</span></h4>
+      <div class="row">
+        <div class="col-md-9">
+          <h4 class="card-title"><i class="mdi mdi-file-document azul-mv"></i> Nota SOAP <span class="text-muted">  | {{ paciente.folio }}</span></h4>
+        </div>
+
+        <div class="col-md-3">
+          <button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#soapGuardadas">
+            Ver notas generadas
+          </button>
+        </div>
+      </div>
       <p class="card-text text-muted">
         <i class="mdi mdi-lightbulb-on-outline"></i> Por favor llene todos los campos de este documento.
       </p>
@@ -74,8 +84,9 @@
         <div class="row">
           <div class="col-md-4 offset-md-4" style="margin: auto !important;">
             <div class="espacio"></div>
-
-            <button type="submit" class="btn btn-success btn-block" [disabled]="!notaSoap.valid || trabajando">
+            
+            <button type="submit" class="btn btn-success btn-block"
+                    [disabled]="!notaSoap.valid || trabajando">
               <span *ngIf="!trabajando">Guardar <i class="mdi mdi-send"></i></span>
               <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
             </button>
@@ -156,8 +167,9 @@
         </table>
       </div>
       <div class="modal-footer">
-        <!-- <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button> -->
-        <button type="button" class="btn btn-outline-info" data-dismiss="modal">Aceptar</button>
+        <a [routerLink]="['/paciente']" class="btn btn-outline-secondary" role="button" data-dismiss="modal">Cancelar</a>
+        <!-- solo aparece si el usuario es medico o el creador del sistema-->
+        <button type="button" class="btn btn-outline-info seleccion" data-dismiss="modal" *ngIf="usuario.PER_clave===3 || usuario.PER_clave===1">Agregar Nota</button>
       </div>
     </div>
   </div>

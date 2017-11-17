@@ -48,7 +48,6 @@ export class BusquedasService {
   }
 
   getDigitales(datos){
-    // let url = `${ this.api }/paciente/digitales-`+datos.folio;
     let url = `${ this.api }/paciente/digitales`;
     let headers = new Headers({
       'Content-Type':'aplication/json'
@@ -90,6 +89,15 @@ export class BusquedasService {
   getUsuarios(){
     let url = `${ this.api }/busquedas/listadoUsuarios`;
 
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  getPacientesAsignados( datos ){
+    let url = `${ this.api }/busquedas/asignaciones-`+datos.username;
+    
     return this._http.get( url )
                .map( res => {
                  return res.json();

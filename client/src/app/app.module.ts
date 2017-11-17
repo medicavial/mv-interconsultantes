@@ -21,6 +21,7 @@ import { LoginComponent } from './components/login/login.component';
 import { PacienteComponent } from './components/paciente/paciente.component';
 import { NotaSoapComponent } from './components/notas-medicas/nota-soap.component';
 import { AsignacionPacientesComponent } from './components/asignacion-pacientes/asignacion-pacientes.component';
+import { AdminUsariosComponent } from './components/admin-usarios/admin-usarios.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { AsignacionPacientesComponent } from './components/asignacion-pacientes/
     LoginComponent,
     PacienteComponent,
     NotaSoapComponent,
-    AsignacionPacientesComponent
+    AsignacionPacientesComponent,
+    AdminUsariosComponent
   ],
   imports: [
     BrowserModule,

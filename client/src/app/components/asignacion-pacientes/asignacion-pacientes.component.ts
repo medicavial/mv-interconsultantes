@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { BusquedasService } from '../../services/busquedas.service';
 import { RegistroDatosService } from '../../services/registro-datos.service';
 import { AuthService } from '../../services/auth.service';
+declare var $: any;
 
 @Component({
   selector: 'app-asignacion-pacientes',
@@ -20,13 +21,16 @@ export class AsignacionPacientesComponent implements OnInit {
   listadoUsuarios:any;
   listadoUnidades:any;
   trabajando:boolean = false;
+  confirmacion:any;
 
   asignacion = {
     folio: null,
     cveMedico: null,
     username: JSON.parse(sessionStorage.getItem('session'))[0].username,
     fechaAtencion: null,
-    cveUnidad: null
+    cveUnidad: null,
+    medicoReg: false,
+    loginmedico: null
   }
 
   constructor( private _busquedasService:BusquedasService,
@@ -46,18 +50,18 @@ export class AsignacionPacientesComponent implements OnInit {
                                                   Validators.required,
                                                   Validators.min(1)
                                                 ]),
-                   'unidad': new FormControl( 0, [
-                                                 Validators.required,
-                                                 Validators.min(1)
-                                               ]),
-                   'fechaHora': new FormControl( 0, [
-                                                 Validators.required
-                                               ]),
+                   // 'unidad': new FormControl( 0, [
+                   //                               Validators.required,
+                   //                               Validators.min(1)
+                   //                             ]),
+                   // 'fechaHora': new FormControl( 0, [
+                   //                               Validators.required
+                   //                             ]),
                  });
                }
 
   ngOnInit() {
-    this.getMedicos();
+    // this.getMedicos();
     this.getUnidades();
     this.getUsuarios();
     console.log(this.asignacion);
@@ -88,24 +92,15 @@ export class AsignacionPacientesComponent implements OnInit {
   }
 
   buscaUsuarioMedico( cveMedico ){
-    let credenciales = false;
     console.log(cveMedico);
-    for (let i = 0; i < this.listadoMedicos.length; i++) {
+    for (let i = 0; i < this.listadoUsuarios.length; i++) {
 
-      if ( this.listadoMedicos[i].Med_clave === cveMedico ) {
-        console.log(this.listadoMedicos[i]);
-          let nombreMedico = this.listadoMedicos[i].nombreCompleto.toLowerCase();
-
-          for (let i = 0; i < this.listadoUsuarios.length; i++) {
-              if (this.listadoUsuarios[i].USU_nombreCompleto.toLowerCase() === nombreMedico) {
-                  console.log( this.listadoUsuarios[i] );
-                  credenciales = true;
-                  return credenciales;
-              }
-          }
+      if ( this.listadoUsuarios[i].USU_id === cveMedico ) {
+        console.log(this.listadoUsuarios[i]);
+          let username = this.listadoUsuarios[i].USU_login;
+          return username;
       }
     }
-    return credenciales;
   }
 
   guardaAsignacion(){
@@ -114,21 +109,33 @@ export class AsignacionPacientesComponent implements OnInit {
     this.asignacion.cveMedico = parseInt(this.asignacionForm.value.medico);
     this.asignacion.cveUnidad = this.asignacionForm.value.unidad;
     this.asignacion.fechaAtencion = this.asignacionForm.value.fechaHora;
+    this.asignacion.loginmedico = this.buscaUsuarioMedico( this.asignacion.cveMedico );
 
     //buscamos el medico por Clave de medico
-    if ( this.buscaUsuarioMedico( this.asignacion.cveMedico ) === false ) {
-        console.log('se genera usuario y contraseña');
-    } else{
-      console.log('ya hay credenciales');
-    };
+    // if ( this.buscaUsuarioMedico( this.asignacion.cveMedico ) === false ) {
+    //     console.log('se genera usuario y contraseña');
+    //     this.asignacion.medicoReg = false;
+    // } else{
+    //   console.log('ya hay credenciales');
+    //   this.asignacion.medicoReg = true;
+    // };
 
+    this._registroDatos.guardaAsignacion( this.asignacion )
+                          .subscribe( data => {
+                            this.trabajando = false;
+                            if (data.respuesta === true) {
+                              this.confirmacion = data;
+                              console.log(this.confirmacion);
+                              // this.getUsuarios();
+                              $('#avisoCorrecto').modal('show');
 
-
-    // this._registroDatos.guardaAsignacion( this.asignacion )
-    //                       .subscribe( data => {
-    //                         console.log( data );
-    //                         this.trabajando = false;
-    //                       });
+                              setTimeout(() => {
+                                this.asignacionForm.reset();
+                                $('#avisoCorrecto').modal('hide');
+                                this.router.navigate(['paciente']);
+                              }, 3000);
+                            }
+                          });
   }
 
 

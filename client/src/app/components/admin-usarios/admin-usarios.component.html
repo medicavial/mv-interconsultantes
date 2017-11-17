@@ -1,0 +1,152 @@
+<!-- Administración de usuarios -->
+<!-- Samuel Ramírez - Noviembre 2017 -->
+
+<div class="container animated fadeIn fast">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title text-info">Administración de usuarios</h4>
+    </div>
+
+    <div class="card-footer">
+      <div class="row">
+        <div class="col-md-4">
+          <button type="button" class="btn btn-sm btn-info btn-block">
+            <i class="mdi mdi-account-plus"></i>
+            Nuevo usuario
+          </button>
+        </div>
+
+        <div class="col-md-4 espacio-titulo-card d-block d-md-none"></div>
+
+        <div class="col-md-4">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-sm btn-outline-purple">
+              <input type="checkbox" autocomplete="off"><i class="mdi mdi-eye"></i> Inactivos
+            </label>
+            <label class="btn btn-sm btn-outline-purple">
+              <input type="checkbox" autocomplete="off"><i class="mdi mdi-eye"></i> Administradores
+            </label>
+          </div>
+        </div >
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="espacio"></div>
+
+<div class="container animated fadeIn">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title text-secondary">
+        Usuarios Activos
+      </h5>
+
+      <hr *ngIf="buscando">
+
+      <p *ngIf="buscando" class="text-center">
+        <span *ngIf="buscando"><i class="fa fa-cog fa-spin fa-fw fa-4x text-secondary"></i></span>
+        <br>
+        Recuperando datos
+      </p>
+
+      <table class="table table-hover table-sm table-responsive" *ngIf="listadoUsuarios.length>0">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Usuario</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Fecha Registro</th>
+            <th scope="col">Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let usuario of listadoUsuarios; let i = index"
+              class="seleccion animated fadeIn fast">
+            <th scope="row">{{ i+1 }}</th>
+            <td>{{ usuario.USU_login }}</td>
+            <td>{{ usuario.USU_nombreCompleto }}</td>
+            <td>{{ usuario.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
+            <td *ngIf="usuario.PER_clave===2">Administrador</td>
+            <td *ngIf="usuario.PER_clave===3">Médico</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal para crear un usuario -->
+<div class="modal fade" id="crearUsuario" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" >
+          <i class="mdi mdi-account-card-details"></i>
+          Alta de usuario
+        </h5>
+        <small>Por favor complete los datos</small>
+      </div>
+
+      <form [formGroup]="nuevoUsuario" (ngSubmit)="guardarUsuario()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="nombre" class="d-none d-md-block">Nombre:</label>
+                <div class="input-group">
+                  <div class="input-group-addon"><i class="mdi mdi-account"></i></div>
+                  <input type="text" class="form-control" id="nombre" placeholder="* Nombre(s)" formControlName="nombre">
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="aPaterno" class="d-none d-md-block">Apellido Paterno:</label>
+                <div class="input-group">
+                  <div class="input-group-addon"><i class="mdi mdi-account"></i></div>
+                  <input type="text" class="form-control" id="aPaterno" placeholder="* Apellido Paterno" formControlName="aPaterno">
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="aMaterno" class="d-none d-md-block">Apellido Materno:</label>
+                <div class="input-group">
+                  <div class="input-group-addon"><i class="mdi mdi-account"></i></div>
+                  <input type="text" class="form-control" id="aMaterno" placeholder="* Apellido Materno" formControlName="aMaterno">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="d-none d-md-block">
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="email" class="d-none d-md-block">Correo electrónico:</label>
+                <div class="input-group">
+                  <div class="input-group-addon"><i class="mdi mdi-mail-ru"></i></div>
+                  <input type="email" class="form-control" id="email" placeholder="* Correo Electrónico" formControlName="correo">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="success" class="btn btn-info">
+            Crear usuario
+            <i class="mdi mdi-send"></i>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

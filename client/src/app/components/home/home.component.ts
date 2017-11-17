@@ -19,6 +19,8 @@ export class HomeComponent implements OnInit {
   usuario = JSON.parse(sessionStorage.getItem('session'))[0];
   unidades:any = [];
   seleccionUnidad:FormGroup;
+  pacientesAsignados:any =[];
+  buscando:boolean = false;
 
   constructor( private _busquedasService:BusquedasService,
                private _authService:AuthService,
@@ -34,10 +36,15 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this._datosLocalesService.verificaRutaPaciente();
-    if ( this.usuario.PER_clave === 3 && this.usuario.unidad === '0') {
-        this.modalUnidad();
+
+    //si se trata de un medico
+    if ( this.usuario.PER_clave === 3 ) {
+        if (this.usuario.unidad === '0') {
+          this.consultaUnidades();
+          this.modalUnidad();
+        }
+        this.getAsignaciones();
     }
-    this.consultaUnidades();
     // console.log(this.usuario);
   }
 
@@ -57,17 +64,33 @@ export class HomeComponent implements OnInit {
                           });
   }
 
+  getAsignaciones(){
+    this.buscando = true;
+    this._busquedasService.getPacientesAsignados( this.usuario )
+                          .subscribe( data => {
+                            this.pacientesAsignados = data;
+                            console.log(this.pacientesAsignados);
+                            this.buscando = false;
+                          });
+  }
+
   confirmaUnidad(){
-    console.log( this.usuario );
+    // console.log( this.usuario );
     this.usuario.unidad = parseInt(this.seleccionUnidad.value.uniClave);
 
+    for (let i = 0; i < this.unidades.length; i++) {
+        if ( this.usuario.unidad === this.unidades[i].Uni_clave ) {
+            this.usuario.uniNombre = this.unidades[i].Uni_nombrecorto;
+        }
+    }
+    // console.log(this.usuario);
     sessionStorage.setItem('session', JSON.stringify([this.usuario]));
     if ( localStorage.getItem('session') ) {
         localStorage.setItem('session', JSON.stringify([this.usuario]))
     };
 
     this.usuario = JSON.parse(sessionStorage.getItem('session'))[0];
-    console.log( this.usuario );
+    // console.log( this.usuario );
 
     $('#seleccionaUnidad').modal('hide');
   }
@@ -76,5 +99,26 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['asignacion']);
   }
 
+  irUsuarios(){
+    this.router.navigate(['usuarios']);
+  }
+
+  seleccionPaciente( asignacion ){
+    console.log( asignacion );
+    let busca = {
+      folio: asignacion.Exp_folio,
+      nombre: null
+    }
+
+    let paciente:any;
+
+    this._busquedasService.buscaPaciente( busca )
+                          .subscribe( data => {
+                            paciente = data[0];
+                            console.log(paciente);
+                            sessionStorage.setItem('paciente', JSON.stringify( paciente ));
+                            this.router.navigate(['paciente']);
+                          });
+  }
 
 }

@@ -31,7 +31,7 @@ export class BusquedaComponent implements OnInit {
 
     this.buscador = new FormGroup({
       'folio':new FormControl( '', [
-                                    Validators.pattern("([a-zA-Z]{4}[0-9]{4,6}[a-zA-Z0-9]{1,2})$")
+                                    Validators.pattern("([a-zA-Z]{4}[0-9]{5,6}[a-zA-Z0-9]{1,2})$")
                                   ]),
       'nombre':new FormControl( '', [
                                     Validators.minLength(3),

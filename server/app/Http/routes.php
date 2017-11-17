@@ -6,6 +6,8 @@ Route::get('/', 'WelcomeController@index');
 Route::get('/inicio', 'BusquedasController@index');
 Route::post('/login', 'SesionController@buscaUsuario');
 Route::post('/busca', 'BusquedasController@buscaPaciente');
+Route::get('/correo', 'BusquedasController@pruebaCorreos');
+
 
 Route::group(['prefix' => 'paciente'], function()
 {
@@ -25,5 +27,10 @@ Route::group(['prefix' => 'busquedas'], function()
     Route::get('listadoUnidades', 'BusquedasController@buscaUnidades');
     Route::get('listadoMedicos', 'BusquedasController@getMedicos');
     Route::get('listadoUsuarios', 'BusquedasController@getUsuarios');
-    Route::get('credenciales-{cveMedico}', 'RegDatosController@generaCredenciales');
+    Route::get('asignaciones-{usrLogin}', 'BusquedasController@getAsignaciones');
+});
+
+Route::group(['prefix' => 'administracion'], function()
+{
+    Route::post('nuevoUsuario', 'RegDatosController@nuevoUsuario');
 });

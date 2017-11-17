@@ -69,13 +69,28 @@ export class NotaSoapComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.usuario)
     if (sessionStorage.getItem('paciente')) {
       this.paciente = JSON.parse(sessionStorage.getItem('paciente'));
     } else{
       this.router.navigate(['busqueda']);
     }
 
+    if ( this.usuario.PER_clave === 2 ) {
+        this.notaSoap.controls['app'].disable();
+        this.notaSoap.controls['apx'].disable();
+        this.notaSoap.controls['subjetivos'].disable();
+        this.notaSoap.controls['objetivos'].disable();
+        this.notaSoap.controls['analisis'].disable();
+        this.notaSoap.controls['plan'].disable();
+    }
+
     this.trabajando=true;
+    // console.log(this.paciente);
+    this.getNotasGeneradas();
+  }
+
+  getNotasGeneradas(){
     this._busquedasService.getListadoSoap(this.paciente.folio)
                           .subscribe(data =>{
                             this.notasGeneradas = data;
@@ -85,7 +100,6 @@ export class NotaSoapComponent implements OnInit {
                               $('#soapGuardadas').modal('show');
                             }
                           });
-    // console.log(this.paciente);
   }
 
   guardaNota(){
@@ -105,6 +119,7 @@ export class NotaSoapComponent implements OnInit {
                           .subscribe( data =>{
                             console.log(data);
                             this.trabajando = false;
+                            this.getNotasGeneradas();
                             if (data.respuesta === "Nota Creada Correctamente" ) {
                               $('#avisoCorrecto').modal({
                                 backdrop: 'static',
@@ -115,7 +130,8 @@ export class NotaSoapComponent implements OnInit {
                               setTimeout(() => {
                                 this.notaSoap.reset();
                                 $('#avisoCorrecto').modal('hide');
-                                this.router.navigate(['paciente']);
+                                $('#soapGuardadas').modal('show');
+                                // this.router.navigate(['paciente']);
                               }, 1500);
 
                             }

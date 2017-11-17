@@ -2,9 +2,10 @@
 /***** Controlador para busqueda de datos y conexion a otras APIS *****/
 /***** Samuel Ramírez - Octubre 2017 *****/
 
-
 use DB;
 use Input;
+use Response;
+use Mail;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -72,7 +73,9 @@ class BusquedasController extends Controller {
 														 'Usu_nombre as nombreUsuario', 'Uni_nombrecorto as nombreUnidad',
 														 'Fol_ZIMA', DB::raw('CONCAT("Médica Vial") as registro'), DB::raw('CONCAT(1) as id_registro'))
 										->where('Exp_folio', $folio)
-										->orderBy('Exp_completo', 'asc')
+										->where('Exp_cancelado', '<>', 1)
+										// ->where('Exp_fecreg', '>', DB::raw('DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH))'))
+										->orderBy(DB::raw('Exp_completo, Exp_fecreg'))
 										->get();
 		return $expediente;
 	}
@@ -94,7 +97,9 @@ class BusquedasController extends Controller {
 														 'Usu_nombre as nombreUsuario', 'Uni_nombrecorto as nombreUnidad',
 														 'Fol_ZIMA', DB::raw('CONCAT("Médica Vial") as registro'), DB::raw('CONCAT(1) as id_registro'))
 										->Where('Exp_completo', 'like', '%' . $nombre . '%')
-										->orderBy('Exp_completo', 'asc')
+										->where('Exp_cancelado', '<>', 1)
+										->where('Exp_fecreg', '>', DB::raw('DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH))'))
+										->orderBy(DB::raw('Exp_completo, Exp_fecreg'))
 										->get();
 		return $expediente;
 	}
@@ -116,7 +121,9 @@ class BusquedasController extends Controller {
 												DB::raw('CONCAT(PUUsu_nombre," ",PUUsu_apaterno," ",PUUsu_amaterno) as nombreUsuario'), 'UNI_nomCorto as nombreUnidad',
 												'REG_folioMV', DB::raw('CONCAT("Zima") as registro'), DB::raw('CONCAT(2) as id_registro'))
 							 ->Where('REG_folio',$folio)
-							 ->orderBy('REG_nombrecompleto', 'asc')
+							 ->where('REG_cancelado', '<>', 'S')
+							 // ->where('REG_fechahora', '>', DB::raw('DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH))'))
+							 ->orderBy(DB::raw('REG_nombrecompleto, REG_fechahora'))
 							 ->get();
 		return $expediente;
 	}
@@ -138,7 +145,9 @@ class BusquedasController extends Controller {
 												DB::raw('CONCAT(PUUsu_nombre," ",PUUsu_apaterno," ",PUUsu_amaterno) as nombreUsuario'), 'UNI_nomCorto as nombreUnidad',
 												'REG_folioMV', DB::raw('CONCAT("Zima") as registro'), DB::raw('CONCAT(2) as id_registro'))
 							 ->Where('REG_nombrecompleto', 'like', '%' . $nombre . '%')
-							 ->orderBy('REG_nombrecompleto', 'asc')
+							 ->where('REG_cancelado', '<>', 'S')
+							 ->where('REG_fechahora', '>', DB::raw('DATE(DATE_SUB(NOW(), INTERVAL 6 MONTH))'))
+							 ->orderBy(DB::raw('REG_nombrecompleto, REG_fechahora'))
 							 ->get();
 		return $expediente;
 	}
@@ -204,6 +213,14 @@ class BusquedasController extends Controller {
 										->orderBy('Uni_nombrecorto', 'asc')
 										->get();
 
+		$medici = array('Uni_clave'				=> 1000,
+										'Uni_nombrecorto' => 'Medici');
+
+		$particular = array(	'Uni_clave'				=> 2000,
+													'Uni_nombrecorto' => 'Consultorio Propio');
+
+		array_push($respuesta, $particular, $medici );
+
 		return $respuesta;
 	}
 
@@ -223,9 +240,38 @@ class BusquedasController extends Controller {
 	public function getUsuarios()
 	{
 		$respuesta = DB::table('redQx_usuarios')
-										->select('USU_id', 'USU_login', 'USU_nombreCompleto')
-										->Where('USU_activo', 1)
+										->select('USU_id', 'USU_login', 'USU_nombreCompleto','USU_email','PER_clave','USU_fechaRegistro')
+										->where('USU_activo', 1)
+										->whereNotIn('PER_clave', [1,2])
+										->orderBy('USU_nombreCompleto')
 										->get();
+
+		return $respuesta;
+	}
+
+	public function getAsignaciones( $usrLogin )
+	{
+		$respuesta = DB::table('redQx_asignaciones')
+										->select('redQx_asignaciones.*', 'Exp_completo')
+										->join('Expediente', 'redQx_asignaciones.Exp_folio', '=', 'Expediente.Exp_folio' )
+										->where('ASI_terminada', 0)
+										->where('ASI_cancelada', 0)
+										->where('USU_loginMedico', $usrLogin)
+										->orderBy('ASI_fechaCita')
+										->get();
+
+		return $respuesta;
+	}
+
+	public function pruebaCorreos(  )
+	{
+		Mail::send('emails.pruebaCorreo', ['key' => 'value'], function($message)
+		{
+			$message->to('samuel11rr@gmail.com', 'Samus')->subject('Welcome!');
+		  $message->from('sramirez@medicavial.com.mx', 'Laravel');
+		});
+
+		$respuesta = 'funciona';
 
 		return $respuesta;
 	}

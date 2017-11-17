@@ -6,29 +6,32 @@
     <div class="card-body text-dark">
       <h4 class="card-title text-info"><i class="mdi mdi-account-switch"></i> Asignacion de médico para el paciente {{ paciente.nombre }}</h4>
       <p class="card-text text-secondary">
-        Por favor, complete los datos.
+        Por favor, seleccione en la lista al médico que atenderá a éste paciente.
       </p>
 
       <div class="espacio"></div>
 
-      <!-- formulario para la busqueda de los pacientes -->
+      <!-- formulario para la asignacion de médicos -->
       <form [formGroup]="asignacionForm" (ngSubmit)="guardaAsignacion()">
         <div class="row">
           <div class="col-md-4">
             <div class="form-group">
-              <label for="listaMedicos">Médico que atenderá al paciente</label>
+              <!-- <label for="listaMedicos">Médico que atenderá al paciente</label> -->
               <select class="form-control" id="listaMedicos"
                       formControlName="medico"
                       [ngClass]="{'is-invalid': asignacionForm.controls.medico.touched && asignacionForm.controls.medico.value === 0}">
-                <option value="0" selected disabled>* Seleccione</option>
-                <option *ngFor="let medico of listadoMedicos" value="{{ medico.Med_clave }}">
+                <option value="0" selected disabled>* Seleccione al médico</option>
+                <!-- <option *ngFor="let medico of listadoMedicos" value="{{ medico.Med_clave }}">
                   {{ medico.Uni_nombrecorto }} - {{ medico.nombreCompleto | uppercase}}
+                </option> -->
+                <option *ngFor="let medico of listadoUsuarios" value="{{ medico.USU_id }}">
+                  {{ medico.USU_nombreCompleto | uppercase}}
                 </option>
               </select>
             </div>
           </div>
 
-          <div class="col-md-4">
+          <!-- <div class="col-md-4">
             <div class="form-group">
               <label for="listaMedicos">Unidad de atención</label>
               <select class="form-control" id="listaUnidades"
@@ -45,11 +48,11 @@
               <label for="fechaHora">Programado para el</label>
                 <input class="form-control" type="datetime-local" id="fechaHora" [(ngModel)]="asignacion.fechaAtencion" formControlName="fechaHora">
             </div>
-          </div>
-        </div>
+          </div> -->
+        <!-- </div>
 
-        <div class="row">
-          <div class="col-md-4" style="margin: auto">
+        <div class="row"> -->
+          <div class="col-md-2">
             <button type="success" class="btn btn-success btn-block" [disabled]="!asignacionForm.valid || trabajando">
               <span *ngIf="!trabajando">
                 Confirmar <i class="mdi mdi-send"></i>
@@ -63,4 +66,36 @@
     </div>
   </div>
 
+</div>
+
+
+
+
+<!-- modal confirmacion -->
+<div class="modal fade" id="avisoCorrecto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="mdi mdi-information text-info"></i> Aviso</h5>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        <p>
+          <i class="mdi mdi-lightbulb-on-outline icono-grande text-secondary"></i>
+          <br>
+          La asignación se guardó correctamente
+        </p>
+        <div>
+          <i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw text-info"></i>
+        </div>
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-outline-info">OK</button>
+      </div> -->
+    </div>
+  </div>
 </div>
