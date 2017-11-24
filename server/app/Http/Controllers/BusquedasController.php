@@ -276,4 +276,46 @@ class BusquedasController extends Controller {
 		return $respuesta;
 	}
 
+	public function getItemsBotiquin( $unidad )
+	{
+		//medicamentos
+		$apiURL = 'http://api.medicavial.mx/api/busquedas/existencias/unidad/'.$unidad.'/1';
+		$datosURL = file_get_contents($apiURL);
+		$medicamentos = json_decode($datosURL, true);
+
+		//ortesis
+		$apiURL = 'http://api.medicavial.mx/api/busquedas/existencias/unidad/'.$unidad.'/2';
+		$datosURL = file_get_contents($apiURL);
+		$ortesis = json_decode($datosURL, true);
+
+		$combinados = array_merge($medicamentos, $ortesis);
+
+		//filtramos los items con stock 0
+		$respuesta = array();
+		foreach ($combinados as $dato) {
+			if ( $dato['Stock'] > 0 ) {
+				$respuesta[] = $dato;
+			}
+		}
+
+		return $respuesta;
+	}
+
+	public function getRecetaAbierta( $folio )
+	{
+		$idReceta = DB::table('RecetaMedica')
+								->where('Exp_folio', '=', $folio)
+								->where('RM_terminada', '<>', 1)
+								->where('tipo_receta', '=', 6)
+								->max('id_receta');
+
+		$items = DB::table('NotaSuministros')
+								->where('id_receta', '=', $idReceta)
+								->where('NS_surtida', '=', 0)
+								->where('NS_cancelado', '=', 0)
+								->orderBy(DB::raw('NS_tipoItem, NS_descripcion'))
+								->get();
+		return $items;
+	}
+
 }

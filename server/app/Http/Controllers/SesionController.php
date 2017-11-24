@@ -60,7 +60,7 @@ class SesionController extends Controller {
 	{
 		$busqueda = DB::table('redQx_usuarios')
 										->select('USU_login as username', 'USU_nombreCompleto as fullName', 'redQx_permisos.PER_clave',
-														'USU_fechaRegistro', DB::raw('CONCAT(0) as unidad'), DB::raw('redQx_permisos.*'))
+														'USU_fechaRegistro', DB::raw('CONCAT(0) as unidad'), DB::raw('redQx_permisos.*'), 'USU_email')
 										->join('redQx_permisos', 'redQx_usuarios.PER_clave', '=', 'redQx_permisos.PER_clave')
 										->where('USU_login', $username)
 										->where('USU_password', $password)

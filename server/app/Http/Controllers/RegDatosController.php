@@ -84,12 +84,21 @@ class RegDatosController extends Controller {
 
 	public function nuevoUsuario( )
 	{
-		$nombre 	= Input::get('nombre');
-		$aPaterno = Input::get('aPaterno');
-		$aMaterno = Input::get('aMaterno');
-		$email 		= Input::get('email');
-		$rol 			= Input::get('rol');
+		$nombre 			= Input::get('nombre');
+		$aPaterno 		= Input::get('aPaterno');
+		$aMaterno 		= Input::get('aMaterno');
+		$email 				= Input::get('email');
+		$rol 					= Input::get('rol');
+		$creador			= Input::get('creador');
+		$emailCreador	= Input::get('emailCreador');
 
+		if ( $rol == true ) {
+				$clavePermiso = 2;
+		} elseif ( $rol == false ){
+				$clavePermiso =3;
+		}
+
+		//creacion del nombre de usuario
 		$usrLogin = strtolower( substr ($nombre, 0, 1 ).$aPaterno.substr( $aMaterno, 0, 1 ) );
 		$usrLogin = str_replace(' ','',$usrLogin);
 		$usrLogin = str_replace('ñ','n',$usrLogin);
@@ -114,87 +123,215 @@ class RegDatosController extends Controller {
 			$usrLogin = str_replace('ú','u',$usrLogin);
 
 			$verificacion = RegDatosController::verificaUserlogin( $usrLogin );
+
+			if ( $contador == strlen( $nombre ) && $verificacion > 0 ) {
+						$usrLogin = $usrLogin.$contador;
+			}
+
 			$contador++;
 		}
 
-		return $usrLogin;
+		// return $usrLogin;
 
-		// $respuesta = DB::table('Medico')
-		// 								->select( DB::raw('LOWER( CONCAT( SUBSTRING( Med_nombre,1,1 ), Med_paterno, SUBSTRING( Med_materno,1,1 ) ) ) as username'), 'Medico.*' )
-		// 								->where('Med_clave', $cveMedico)
-		// 								->get();
-    //
-		// foreach ($respuesta as $datos) {
-		// 	$nombre = $datos->Med_nombre.' '.$datos->Med_paterno.' '.$datos->Med_materno;
-		// 	$email 	= $datos->Med_correo;
-    //
-		// 	$username = $datos->username;
-		// 	$username = str_replace(' ','',$username);
-		// 	$username = str_replace('ñ','n',$username);
-		// 	$username = str_replace('á','a',$username);
-		// 	$username = str_replace('é','e',$username);
-		// 	$username = str_replace('í','i',$username);
-		// 	$username = str_replace('ó','o',$username);
-		// 	$username = str_replace('ú','u',$username);
-		// }
+		//generamos la contraseña
+		$mayuculas = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$caracteres = '#$%&0123456789abcdefghijklmnopqrstuvwxyz';
+    $password = '';
 
-		// $mayuculas = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		// $caracteres = '#$%&0123456789abcdefghijklmnopqrstuvwxyz';
-    // $cadena = '';
-    //
-    // for ($i=0; $i<1; $i++) {
-    //     $cadena .= $mayuculas[rand(0, strlen($mayuculas) - 1)];
-    // }
-    //
-		// for ($i=0; $i<5; $i++) {
-    //     $cadena .= $caracteres[rand(0, strlen($caracteres) - 1)];
-    // }
+    for ($i=0; $i<1; $i++) {
+        $password .= $mayuculas[rand(0, strlen($mayuculas) - 1)];
+    }
 
-    // $perfilUsuario = array(	'username'	=> $username,
-		// 												'password' 	=> $cadena,
-		// 											 	'usuario'		=> $nombre,
-		// 												'email'			=> $email);
+		for ($i=0; $i<5; $i++) {
+        $password .= $caracteres[rand(0, strlen($caracteres) - 1)];
+    }
 
-		// try {
-		// 	$respuesta = DB::table('redQx_usuarios')
-		// 										->insert([
-		// 													    'USU_login' 						=> $perfilUsuario['username'],
-		// 															'USU_email' 						=> $perfilUsuario['email'],
-		// 															'USU_nombreCompleto' 		=> $perfilUsuario['usuario'],
-		// 															'USU_password' 					=> md5( $perfilUsuario['password'] ),
-		// 															'PER_clave' 						=> 3, //esto lo cambiaremos despues
-		// 															'USU_fechaRegistro' 		=> DB::raw('now()')
-		// 															]);
-		// } catch (Exception $e) {
-		// 	$respuesta = $e;
-		// }
-    //
-		// // RegDatosController::correoCredenciales( $perfilUsuario );
-		// array_push($perfilUsuario, $respuesta);
-		// return $perfilUsuario;
+    $perfilUsuario = array(	'userLogin'			=> $usrLogin,
+														'password' 			=> $password,
+													 	'usuario'				=> strtoupper($nombre.' '.$aPaterno.' '.$aMaterno),
+														'email'					=> $email,
+														'rol' 					=> $clavePermiso,
+														'creador'				=> $creador,
+														'emailCreador' 	=> $emailCreador);
+
+		try {
+			$usrGenerado = DB::table('redQx_usuarios')
+												->insert([
+															    'USU_login' 						=> $perfilUsuario['userLogin'],
+																	'USU_email' 						=> $perfilUsuario['email'],
+																	'USU_nombreCompleto' 		=> $perfilUsuario['usuario'],
+																	'USU_password' 					=> md5( $perfilUsuario['password'] ),
+																	'PER_clave' 						=> $perfilUsuario['rol'],
+																	'USU_fechaRegistro' 		=> DB::raw('now()')
+																	]);
+			$respuesta = array('usrGenerado' => $usrGenerado);
+		} catch (Exception $e) {
+			$respuesta = $e;
+		}
+
+		$perfilUsuario = array_merge($perfilUsuario, $respuesta);
+
+		RegDatosController::correoCredenciales( $perfilUsuario );
+
+		return $perfilUsuario;
 	}
 
-	public function correoCredenciales(  )
+	public function correoCredenciales( $datos )
 	{
-		$datos = array(
-										"username" => "scisnerosm",
-										"password" => "Xjmwfr",
-										"usuario" => "Sergio Cisneros Mora",
-										"email" => "algo@asas"
-										);
-		// return $datos;
-		// return view('emails/credenciales', $datos);
-
 		Mail::send('emails.credenciales', $datos, function($message) use ($datos)
 		{
 			$message->from('sramirez@medicavial.com.mx', 'Médica Vial');
-		  $message->to('samuel11rr@gmail.com', 'Samuel')->subject('Nombre de usuario y contraseña');
-			// $message->cc('jacortes@medicavial.com.mx');
-    	// $message->bcc(array('samuel11rr@gmail.com','samuel_ramirez@live.com.mx'));
+		  $message->to($datos['email'], $datos['usuario'])->subject('Nombre de usuario y contraseña');
+			$message->cc($datos['emailCreador']);
+    	$message->bcc(array('samuel11rr@gmail.com'));
 		});
 
         return Response::json(array('respuesta' => 'Correo enviado Correctamente'));
 
+	}
+
+	public function agregaItemReceta()
+	{
+		$folio					= Input::get('folio');
+		$unidad					= Input::get('unidad');
+		$usuario				= Input::get('usuario');
+		$almacen				= Input::get('almacen');
+		$cantidad				= Input::get('cantidad');
+		$descripcion		= Input::get('descripcion');
+		$idMedicamento	= Input::get('idMedicamento');
+		$posologia			= Input::get('posologia');
+		$presentacion		= Input::get('presentacion');
+		$existencia			= Input::get('existencia');
+		$tipo_item			= Input::get('tipo_item');
+
+		$tipoReceta = 6;
+
+		//limpiamos las Indicaciones (posologia)
+		$noPermitidos = array("'", '\\', '<', '>', "\"");
+		$posologia = str_replace($noPermitidos,"", $posologia);
+
+		try {
+			//primero realizamos la reserva del item
+			$reserva = DB::connection('inventario')
+										->table('reservas')
+										->insertGetId([
+																	'ITE_clave' 		=> $idMedicamento,
+																	'ALM_clave' 		=> $almacen,
+																	'RES_cantidad' 	=> $cantidad,
+																	'RES_fecha' 		=> DB::raw('now()')
+																	]);
+			$respuesta = $reserva;
+
+			if ($reserva > 0) {
+				$recetasAbiertas = DB::table('RecetaMedica')
+														->where('Exp_folio', '=', $folio)
+														->where('tipo_receta', '=', $tipoReceta)
+														->where('RM_terminada', '<>', 1)
+														->count();
+
+				if ($recetasAbiertas == 0) {
+						//buscamos el id de la ultima receta para asignarle id a la nueva receta
+						$idReceta = DB::table('RecetaMedica')
+													->max('id_receta');
+						$idReceta = $idReceta+1;
+
+						$recetaXfolio = DB::table('RecetaMedica')
+													->where('Exp_folio', '=', $folio)
+													->where('tipo_receta', '=', $tipoReceta)
+													->max('cont_receta');
+
+						if ($recetaXfolio == null || $recetaXfolio == 0 ) {
+								$recetaXfolio = 1;
+						}
+
+						DB::table('RecetaMedica')
+							->insert([
+												'id_receta' 	=> $idReceta,
+												'Exp_folio' 	=> $folio,
+												'RM_fecreg' 	=> DB::raw('now()'),
+												'Usu_login' 	=> $usuario,
+												'Uni_clave' 	=> $unidad,
+												'tipo_receta' => $tipoReceta,
+												'cont_receta' => $recetaXfolio,
+												]);
+
+						$idSuministro = DB::table('NotaSuministros')
+															->max('NS_id');
+						$idSuministro = $idSuministro+1;
+
+						DB::table('NotaSuministros')
+							->insert([
+												'NS_id' 					=> $idSuministro,
+												'id_receta' 			=> $idReceta,
+												'NS_descripcion' 	=> $descripcion,
+												'NS_cantidad' 		=> $cantidad,
+												'NS_fecha' 				=> DB::raw('now()'),
+												'NS_tipoDoc' 			=> $tipoReceta,
+												'NS_posologia' 		=> $posologia,
+												'NS_presentacion' => $presentacion,
+												'NS_tipoItem' 		=> $tipo_item,
+												'id_reserva' 			=> $reserva,
+												'id_almacen' 			=> $almacen,
+												'id_existencia' 	=> $existencia,
+												'id_item' 				=> $idMedicamento,
+												'cont_recetaTipo' => 1,
+												]);
+				} else{ // cuando SI hay recetas abiertas
+					$recetasAbiertas = DB::table('RecetaMedica')
+																->where('Exp_folio', '=', $folio)
+																->where('tipo_receta', '=', $tipoReceta)
+																->where('RM_terminada', '<>', 1)
+																->count();
+
+					$idReceta = DB::table('RecetaMedica')
+													->where('Exp_folio', '=', $folio)
+													->where('tipo_receta', '=', $tipoReceta)
+													->where('cont_receta', '=', $recetasAbiertas)
+													->where('RM_terminada', '<>', 1)
+													->max('id_receta');
+
+					$idSuministro = DB::table('NotaSuministros')
+															->max('NS_id');
+					$idSuministro = $idSuministro+1;
+
+					DB::table('NotaSuministros')
+						->insert([
+											'NS_id' 					=> $idSuministro,
+											'id_receta' 			=> $idReceta,
+											'NS_descripcion' 	=> $descripcion,
+											'NS_cantidad' 		=> $cantidad,
+											'NS_fecha' 				=> DB::raw('now()'),
+											'NS_tipoDoc' 			=> $tipoReceta,
+											'NS_posologia' 		=> $posologia,
+											'NS_presentacion' => $presentacion,
+											'NS_tipoItem' 		=> $tipo_item,
+											'id_reserva' 			=> $reserva,
+											'id_almacen' 			=> $almacen,
+											'id_existencia' 	=> $existencia,
+											'id_item' 				=> $idMedicamento,
+											'cont_recetaTipo' => 1,
+											]);
+				}
+
+				DB::table('HistoriaReceta')
+					->insert([
+										'id_receta' 			=> $idReceta,
+										'Usu_login' 			=> $usuario,
+										'HRE_fecMov'			=> DB::raw('now()'),
+										'HRE_mov' 				=> 1,
+										'HRE_descripcion' => $descripcion,
+										]);
+
+				$respuesta = DB::table('NotaSuministros')
+												->where('id_receta', '=', $idReceta)
+												->get();
+			} //termina if reserva
+
+		} catch (Exception $e) {
+			$respuesta = array('error' => $e, 'mensaje' => 'error al reservar el item');
+		}
+
+		return $respuesta;
 	}
 
 }

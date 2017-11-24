@@ -7,6 +7,7 @@ import { PacienteComponent } from './components/paciente/paciente.component';
 import { NotaSoapComponent } from './components/notas-medicas/nota-soap.component';
 import { AsignacionPacientesComponent } from './components/asignacion-pacientes/asignacion-pacientes.component';
 import { AdminUsariosComponent } from './components/admin-usarios/admin-usarios.component';
+import { RecetaInternaComponent } from './components/notas-medicas/receta-interna.component';
 
 import { AuthService } from "./services/auth.service";
 
@@ -46,6 +47,11 @@ const APP_ROUTES: Routes = [
   {
     path: 'nota-soap',
     component: NotaSoapComponent,
+    canActivate: [AuthService]
+  },
+  {
+    path: 'receta-interna',
+    component: RecetaInternaComponent,
     canActivate: [AuthService]
   },
   {

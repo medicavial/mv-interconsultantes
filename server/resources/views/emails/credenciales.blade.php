@@ -10,6 +10,12 @@
 	} elseif ($hora>=20) {
 	  $saludo="¡Muy buenas noches!";
 	};
+
+	if ( $rol == 2 ) {
+		$nombreRol = 'Administrador';
+	}elseif ( $rol == 3 ) {
+		$nombreRol = 'Médico';
+	}
  ?>
 
  <html lang="es-MX">
@@ -37,7 +43,7 @@
 
  	</head>
  	<body>
-         <table align="center" style="font-family: arial" width="90%">
+    <table align="center" style="font-family: arial" width="90%">
  			<tr style="background-color: #0082ca; color: white;">
  				<th style="background-color: white;" width="150">
  					&nbsp;&nbsp;
@@ -47,7 +53,7 @@
  				<th colspan="4">
  					<h2>&nbsp;&nbsp;Acceso Generado&nbsp;&nbsp;</h2>
  				</th>
- 				<th>&nbsp;&nbsp;<a href="http://busqueda.medicavial.net" class="link-white" target="_blank">Sistema de Red Qx</a>&nbsp;&nbsp;</th>
+ 				<th>&nbsp;&nbsp;<a href="http://qx.medicavial.net" class="link-white" target="_blank">Sistema de Red Qx</a>&nbsp;&nbsp;</th>
  			</tr>
 
            <tr style="background-color: #DFF4F7;">
@@ -56,19 +62,22 @@
                	<h2>{{ $saludo }}</h2>
                	<br><br>
                	Se ha generado nombre de usuario y contraseña para el usuario <b>{{ $usuario }}</b>
-                que le dan acceso al <b><a href="http://busqueda.medicavial.net" class="link" target="_blank">Sistema de Red Quirurgica</a></b>
+                que le dan acceso al <b><a href="http://qx.medicavial.net" class="link" target="_blank">Sistema de Red Quirurgica</a></b>
                 debido a que ha usted ha sido asignado para la atención de paciente(s).
 
                 <p>
                   Los datos son:
                 </p>
                	<ul>
-                  <li>Usuario: <b>{{ $username }}</b></li>
+									<li>Usuario: {{ $usuario }}</li>
+									<li>Correo: {{ $email }}</li>
+									<li>Tipo: {{ $nombreRol }} </li>
+                  <li>Usuario: <b>{{ $userLogin }}</b></li>
                	  <li>Contraseña: <b>{{ $password }}</b></li>
                	</ul>
 
                 <p>Para acceder al sistema ingrese en su navegador a
-                  <b><a href="http://busqueda.medicavial.net" class="link" target="_blank">http://busqueda.medicavial.net</a></b>
+                  <b><a href="http://qx.medicavial.net" class="link" target="_blank">http://qx.medicavial.net</a></b>
                 </p>
 
                	<br><br><br>

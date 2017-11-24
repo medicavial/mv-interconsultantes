@@ -64,6 +64,18 @@ return [
 			'strict'    => false,
 		],
 
+		'inventario' => [
+			'driver'    => 'mysql',
+			'host'      => 'www.medicavial.mx',
+			'database'  => 'medica2_inventario',
+			'username'  => 'medica2_webusr',
+			'password'  => 'tosnav50',
+			'charset'   => 'utf8',
+			'collation' => 'utf8_unicode_ci',
+			'prefix'    => '',
+			'strict'    => false,
+		],
+
 		'zima' => [
 			'driver'    => 'mysql',
 			'host'      => 'www.pmzima.net',

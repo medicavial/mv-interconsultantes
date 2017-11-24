@@ -97,11 +97,30 @@ export class BusquedasService {
 
   getPacientesAsignados( datos ){
     let url = `${ this.api }/busquedas/asignaciones-`+datos.username;
-    
+
     return this._http.get( url )
                .map( res => {
                  return res.json();
                });
   }
+
+  getExistenciasBotiquin( datos ){
+    let url = `${ this.api }/busquedas/botiquin-`+datos.unidad;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  getRecetaAbierta( folio ){
+    let url = `${ this.api }/paciente/receta-`+folio;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
 
 }

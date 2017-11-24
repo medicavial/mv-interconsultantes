@@ -25,7 +25,9 @@ export class AdminUsariosComponent implements OnInit {
     aPaterno: null,
     aMaterno: null,
     email: null,
-    rol: null
+    rol: null,
+    creador: JSON.parse(sessionStorage.getItem('session'))[0].username,
+    emailCreador: JSON.parse(sessionStorage.getItem('session'))[0].USU_email
   };
 
   constructor( private _busquedasService:BusquedasService,
@@ -62,7 +64,7 @@ export class AdminUsariosComponent implements OnInit {
   }
 
   ngOnInit() {
-    $('#crearUsuario').modal('show');
+    // $('#crearUsuario').modal('show');
     console.log(this.usuario);
     this.getUsuarios();
   }
@@ -91,7 +93,12 @@ export class AdminUsariosComponent implements OnInit {
     this._registroDatos.nuevoUsuario( this.usrNuevo )
                           .subscribe( data => {
                             // this.trabajando = false;
-                              console.log( data );
+                            console.log( data );
+                            if ( data.usrGenerado === true ) {
+                                console.log('usuario Generado correctamente');
+                                this.getUsuarios();
+                                $('#crearUsuario').modal('hide');
+                            }
                           });
   }
 

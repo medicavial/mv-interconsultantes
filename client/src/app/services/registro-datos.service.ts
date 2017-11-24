@@ -79,7 +79,6 @@ export class RegistroDatosService {
   }
 
   nuevoUsuario( datos ){
-    // let url = `${ this.api }/paciente/digitales-`+datos.folio;
     let url = `${ this.api }/administracion/nuevoUsuario`;
     let headers = new Headers({
       'Content-Type':'aplication/json'
@@ -87,6 +86,45 @@ export class RegistroDatosService {
 
     return this._http.post( url, datos, { headers } )
                .map( res => {
+                 return res.json();
+               });
+  }
+
+  agregaItemReceta( datos ){
+    let url = `${ this.api }/paciente/agrega-item-receta`;
+    let headers = new Headers({
+      'Content-Type':'aplication/json'
+    });
+
+    let data={
+      folio: JSON.parse(sessionStorage.getItem('paciente')).folio,
+      unidad: JSON.parse(sessionStorage.getItem('session'))[0].unidad,
+      usuario: JSON.parse(sessionStorage.getItem('session'))[0].username,
+      almacen: datos.almacen,
+      cantidad: datos.cantidad,
+      descripcion: datos.descripcion,
+      idMedicamento: datos.claveItem,
+      posologia: datos.indicaciones,
+      presentacion: datos.presentacion,
+      existencia: datos.idExistencia,
+      tipo_item: datos.tipoItem
+    };
+
+    return this._http.post( url, data, { headers } )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  eliminaItem( datos ){
+    let url = 'http://api.medicavial.mx/api/operacion/reserva/'+datos.id_reserva;
+    let headers = new Headers({
+      'Content-Type':'aplication/json'
+    });
+
+    return this._http.delete( url, { headers } )
+               .map( res => {
+                 console.log(res);
                  return res.json();
                });
   }
