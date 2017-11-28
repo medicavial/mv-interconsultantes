@@ -318,4 +318,21 @@ class BusquedasController extends Controller {
 		return $items;
 	}
 
+	public function getIndicacionesReceta( $folio )
+	{
+		$tipoReceta = 6;
+
+		$idReceta = DB::table('RecetaMedica')
+									->where('Exp_folio', $folio)
+									->where('RM_terminada', '<>', 1)
+									->where('tipo_receta', '=', $tipoReceta)
+									->max('id_receta');
+
+		$indicaciones = DB::table('NotaIndAlternativa')
+												->where('id_receta', '=', $idReceta)
+												->get();
+												
+		return $indicaciones;
+	}
+
 }

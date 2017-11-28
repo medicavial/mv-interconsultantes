@@ -334,4 +334,30 @@ class RegDatosController extends Controller {
 		return $respuesta;
 	}
 
+	public function guardaIndicacion()
+	{
+		$folio			= Input::get('folio');
+		$indicacion	= Input::get('obs');
+		$tipoReceta	= Input::get('tipoReceta');
+
+		$idReceta = DB::table('RecetaMedica')
+									->where('Exp_folio', $folio)
+									->where('RM_terminada', '<>', 1)
+									->where('tipo_receta', '=', $tipoReceta)
+									->max('id_receta');
+
+		try {
+			$respuesta = DB::table('NotaIndAlternativa')
+											->insertGetId([
+													'Exp_folio' => $folio,
+													'Nind_obs' 	=> $indicacion,
+													'id_receta' => $idReceta
+											]);
+		} catch (Exception $e) {
+			$respuesta = array('error' => $e, 'mensaje' => 'error al registrar');
+		}
+
+		return $respuesta;
+	}
+
 }

@@ -14,6 +14,9 @@ declare var $: any;
 })
 export class RecetaInternaComponent implements OnInit {
   recetaInterna:FormGroup;
+  recetaAbierta:FormGroup;
+  indicacionesReceta:FormGroup;
+
   paciente:any = JSON.parse(sessionStorage.getItem('paciente'));
   datosReceta:any = {
   };
@@ -32,6 +35,11 @@ export class RecetaInternaComponent implements OnInit {
   datosInvalidos:boolean = false;
   buscando:boolean = false;
   itemsReceta:any = [];
+  listadoRecetaExterna: any = [];
+  catalogoIndicaciones: any = [];
+  indicaciones: any = [];
+
+  instruccionesAdicionales: string = '';
 
   constructor( private _busquedasService:BusquedasService,
                private _registroService:RegistroDatosService,
@@ -69,6 +77,43 @@ export class RecetaInternaComponent implements OnInit {
                  this.datosInvalidos = true;
              }
            })
+
+      //Receta Abierta
+       this.recetaAbierta = new FormGroup({
+         'itemRecetaAbierta': new FormControl( null, [
+            Validators.required,
+            Validators.minLength(5),
+         ]),
+         'indicacionesRecetaAbierta': new FormControl( null, [
+           Validators.required,
+           Validators.minLength(5),
+         ]),
+       });
+
+       //Indicaciones adicionales
+        this.indicacionesReceta = new FormGroup({
+          'idIndicacion': new FormControl( 0, [
+          ]),
+          'complementoIndicacion': new FormControl( '', [
+            Validators.required,
+            Validators.minLength(5),
+          ]),
+        });
+
+        this.indicacionesReceta.controls['idIndicacion'].valueChanges
+             .subscribe( data => {
+               for (let i = 0; i < this.catalogoIndicaciones.length; i++) {
+                   if (this.indicacionesReceta.controls['idIndicacion'].value === this.catalogoIndicaciones[i].Ind_clave) {
+                        if ( this.instruccionesAdicionales === '') {
+                            this.instruccionesAdicionales = this.catalogoIndicaciones[i].Ind_nombre;
+                            this.indicacionesReceta.controls['complementoIndicacion'].setValue(this.instruccionesAdicionales);
+                        }else{
+                          this.instruccionesAdicionales = this.instruccionesAdicionales+' '+ this.catalogoIndicaciones[i].Ind_nombre;
+                          this.indicacionesReceta.controls['complementoIndicacion'].setValue( this.instruccionesAdicionales );
+                        }
+                   }
+               }
+             })
   }
 
   ngOnInit() {
@@ -80,9 +125,17 @@ export class RecetaInternaComponent implements OnInit {
       this.router.navigate(['busqueda']);
     }
 
-    this.buscando = true;
-
     this.traeItemsReceta();
+    this.getRecetaExterna();
+    this.getIndicacionesReceta();
+    this.getBotiquin();
+    this.getCatalogoIndicaciones();
+
+
+  }
+
+  getBotiquin(){
+    this.buscando = true;
 
     this._busquedasService.getExistenciasBotiquin( this.usuario )
                           .subscribe(data =>{
@@ -96,7 +149,7 @@ export class RecetaInternaComponent implements OnInit {
     this._busquedasService.getRecetaAbierta( this.paciente.folio )
                           .subscribe(data =>{
                             this.itemsReceta = data;
-                            console.log( this.itemsReceta );
+                            // console.log( this.itemsReceta );
                           });
   }
 
@@ -127,21 +180,103 @@ export class RecetaInternaComponent implements OnInit {
     this._registroService.agregaItemReceta( this.datosItem )
         .subscribe(data =>{
           console.log(data);
-          this.itemsReceta = data;
+
+          if ( data.length > 0 && data[0].id_receta) {
+              this.itemsReceta = data;
+              this.recetaInterna.reset();
+              this.datosItem.stock = 0;
+          }
         });
 
     this.trabajando = false;
   }
 
   eliminaItem( item ){
-    console.log('reserva: ' + item.id_reserva);
-
-    this._registroService.eliminaItem( item )
+    this._registroService.eliminaReserva( item )
         .subscribe(data =>{
           console.log(data);
+          this._registroService.eliminaSuministrosReceta( item )
+              .subscribe( data => {
+                  console.log(data);
+              })
           this.traeItemsReceta();
         });
+  }
 
+  getRecetaExterna(){
+    this._busquedasService.getRecetaExterna( this.paciente.folio )
+                          .subscribe(data =>{
+                            this.listadoRecetaExterna = data;
+                            console.log( this.listadoRecetaExterna );
+                          });
+  }
+
+  itemRecetaExterna(){
+    let datosItem = {
+      idReceta: null,
+      item: this.recetaAbierta.controls.itemRecetaAbierta.value,
+      indicacion: this.recetaAbierta.controls.indicacionesRecetaAbierta.value
+    }
+
+    console.log( datosItem );
+
+    this._registroService.guardaItemExterno( datosItem )
+        .subscribe( data => {
+            console.log(data);
+            this.recetaAbierta.reset();
+
+            this.getRecetaExterna();
+        })
+  }
+
+  eliminaItemExterno( item ){
+    this._registroService.eliminaItemExterno( item )
+        .subscribe( data => {
+            console.log(data);
+            this.recetaAbierta.reset();
+
+            this.getRecetaExterna();
+        })
+  }
+
+  getCatalogoIndicaciones(){
+    this._busquedasService.getCatalogoIndicaciones()
+        .subscribe( data => {
+            console.log(data);
+            this.catalogoIndicaciones = data;
+        })
+  }
+
+  guardaIndicacion(){
+    let datos = {
+      obs: this.indicacionesReceta.controls.complementoIndicacion.value,
+      tipoReceta: 6,
+      folio: JSON.parse(sessionStorage.getItem('paciente')).folio,
+    }
+
+    console.log(datos);
+
+    this._registroService.guardaIndicacion( datos )
+        .subscribe( data => {
+            console.log(data);
+            this.getIndicacionesReceta();
+        })
+  }
+
+  getIndicacionesReceta(){
+    this._busquedasService.getIndicacionesReceta()
+        .subscribe( data => {
+            console.log(data);
+            this.indicaciones = data;
+        })
+  }
+
+  eliminaIndicacion(indicacion){
+    this._registroService.eliminaIndicacionReceta( indicacion )
+        .subscribe( data => {
+            console.log(data);
+            this.getIndicacionesReceta();
+        })
   }
 
 }

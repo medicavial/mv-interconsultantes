@@ -22,6 +22,7 @@ Route::group(['prefix' => 'paciente'], function()
     Route::get('listadosoap-{folio}', 'BusquedasController@notaSoapXpaciente');
     Route::post('agrega-item-receta', 'RegDatosController@agregaItemReceta');
     Route::get('receta-{folio}', 'BusquedasController@getRecetaAbierta');
+    Route::post('guardaIndicacion', 'RegDatosController@guardaIndicacion');
 });
 
 Route::group(['prefix' => 'busquedas'], function()
@@ -31,6 +32,7 @@ Route::group(['prefix' => 'busquedas'], function()
     Route::get('listadoUsuarios', 'BusquedasController@getUsuarios');
     Route::get('asignaciones-{usrLogin}', 'BusquedasController@getAsignaciones');
     Route::get('botiquin-{unidad}', 'BusquedasController@getItemsBotiquin');
+    Route::get('indicaciones-{folio}', 'BusquedasController@getIndicacionesReceta');
 });
 
 Route::group(['prefix' => 'administracion'], function()

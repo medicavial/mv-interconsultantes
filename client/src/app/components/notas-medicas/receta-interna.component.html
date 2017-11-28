@@ -26,13 +26,13 @@
 
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item">
-          <a class="nav-link" id="home-tab" data-toggle="tab" href="#recetaCompleta" role="tab" aria-controls="recetaCompleta" aria-selected="true">
+          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#recetaCompleta" role="tab" aria-controls="recetaCompleta" aria-selected="true">
             <i class="mdi mdi-note-multiple-outline"></i>
             Receta completa
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#recetaInterna" role="tab" aria-controls="recetaInterna" aria-selected="false">
+        <li class="nav-item" *ngIf="usuario.unidad < 1000">
+          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#recetaInterna" role="tab" aria-controls="recetaInterna" aria-selected="false">
             <i class="mdi mdi-note-text"></i>
             Receta Interna
           </a>
@@ -52,16 +52,16 @@
       </ul>
 
       <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade" id="recetaCompleta" role="tabpanel" aria-labelledby="home-tab">
+        <div class="tab-pane fade  show active" id="recetaCompleta" role="tabpanel" aria-labelledby="home-tab">
 
           <div class="espacio"></div>
 
-          <div class="alert alert-warning" role="alert" *ngIf="itemsReceta.length === 0">
+          <div class="alert alert-warning" role="alert" *ngIf="itemsReceta.length === 0 && listadoRecetaExterna.length === 0 && indicaciones.length === 0">
             <i class="mdi mdi-alert"></i>
             Aún no se han agregado elementos a la receta.
           </div>
 
-          <table class="table table-hover table-striped" *ngIf="itemsReceta.length > 0">
+          <table class="table table-hover table-striped" *ngIf="(usuario.unidad < 1000 && itemsReceta.length > 0) || listadoRecetaExterna.length > 0 || indicaciones.length > 0">
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -72,8 +72,8 @@
                 <th scope="col">Eliminar</th>
               </tr>
             </thead>
-            <tbody>
-              <tr *ngFor="let item of itemsReceta; let i = index">
+            <tbody *ngIf="itemsReceta.length > 0 && usuario.unidad < 1000">
+              <tr *ngFor="let item of itemsReceta; let i = index" class="table-info">
                 <th scope="row">{{ i+1 }}</th>
                 <td>{{ item.NS_descripcion }}</td>
                 <td>{{ item.NS_posologia }}</td>
@@ -83,8 +83,35 @@
                   <span *ngIf="item.NS_tipoItem==2">Ortesis</span>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-outline-danger btn-block btn-sm"
+                  <button type="button" class="btn btn-danger btn-block btn-sm seleccion"
                           (click)="eliminaItem(item)">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+
+            <tbody *ngIf="listadoRecetaExterna.length > 0">
+              <tr *ngFor="let item of listadoRecetaExterna; let i = index" class="table-success">
+                <th scope="row">{{ itemsReceta.length + 1 }}</th>
+                <td>{{ item.REI_nombreItem }}</td>
+                <td colspan="3">{{ item.REI_indicaciones }}</td>
+                <td>
+                  <button type="button" class="btn btn-danger btn-block btn-sm seleccion"
+                          (click)="eliminaItemExterno(item)">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+
+            <tbody *ngIf="indicaciones.length > 0">
+              <tr *ngFor="let indicacion of indicaciones; let i = index" class="table-warning">
+                <th scope="row">{{ itemsReceta.length + listadoRecetaExterna.length + 1 }}</th>
+                <td colspan="4">{{ indicacion.Nind_obs }}</td>
+                <td>
+                  <button type="button" class="btn btn-danger btn-block btn-sm seleccion"
+                          (click)="eliminaIndicacion(indicacion)">
                     Eliminar
                   </button>
                 </td>
@@ -93,7 +120,7 @@
           </table>
         </div>
 
-        <div class="tab-pane fade show active" id="recetaInterna" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="tab-pane fade" id="recetaInterna" role="tabpanel" aria-labelledby="profile-tab" *ngIf="usuario.unidad < 1000">
           <div class="espacio"></div>
           <p *ngIf="buscando" class="text-center">
             <span *ngIf="buscando"><i class="fa fa-cog fa-spin fa-fw fa-4x text-secondary"></i></span>
@@ -104,11 +131,11 @@
             <div class="row">
               <div class="col-md-4">
                 <div class="form-group">
-                  <label class="sr-only" for="items">Insumos</label>
+                  <label class="sr-only" for="items">Item</label>
                   <div class="input-group">
                     <div class="input-group-addon"
                          [ngClass]="{'badge-danger': !recetaInterna.controls.item.valid && recetaInterna.controls.item.touched}">
-                         Insumos
+                         Item
                     </div>
                     <select class="form-control is-invalid" id="selectUnidad"
                             [ngClass]="{'is-invalid': !recetaInterna.controls.item.valid && recetaInterna.controls.item.touched}"
@@ -160,12 +187,12 @@
                   <label class="sr-only" for="cantidad">Indicaciones</label>
                   <div class="input-group">
                     <div class="input-group-addon"
-                          [ngClass]="{'badge-danger': !recetaInterna.controls.indicaciones.valid && recetaInterna.controls.item.valid}">
+                          [ngClass]="{'badge-danger': !recetaInterna.controls.indicaciones.valid && recetaInterna.controls.item.valid && recetaInterna.controls.indicaciones.touched}">
                       Indicaciones
                     </div>
                     <textarea class="form-control" id="indicaciones" formControlName="indicaciones"
                               [(ngModel)]="datosItem.indicaciones" rows="3"
-                              [ngClass]="{'is-invalid': !recetaInterna.controls.indicaciones.valid && recetaInterna.controls.item.valid}">
+                              [ngClass]="{'is-invalid': !recetaInterna.controls.indicaciones.valid && recetaInterna.controls.item.valid && recetaInterna.controls.indicaciones.touched}">
                     </textarea>
                   </div>
                 </div>
@@ -185,8 +212,109 @@
           </form>
         </div>
 
-        <div class="tab-pane fade" id="recetaAbierta" role="tabpanel" aria-labelledby="contact-tab">sfdsfsdf</div>
-        <div class="tab-pane fade" id="instrucciones" role="tabpanel" aria-labelledby="contact-tab">sfdsfsdf</div>
+        <div class="tab-pane fade" id="recetaAbierta" role="tabpanel" aria-labelledby="contact-tab">
+          <div class="espacio"></div>
+
+          <form [formGroup]="recetaAbierta" (ngSubmit)="itemRecetaExterna()">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label class="sr-only" for="cantidad">Item</label>
+                  <div class="input-group">
+                    <div class="input-group-addon"
+                         [ngClass]="{'badge-danger': !recetaAbierta.controls.itemRecetaAbierta.valid && recetaAbierta.controls.itemRecetaAbierta.touched}">
+                      Item
+                    </div>
+                    <input type="text" class="form-control" id="item"
+                           formControlName="itemRecetaAbierta"
+                           [ngClass]="{'is-invalid': !recetaAbierta.controls.itemRecetaAbierta.valid && recetaAbierta.controls.itemRecetaAbierta.touched}">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label class="sr-only" for="cantidad">Indicaciones</label>
+                  <div class="input-group">
+                    <div class="input-group-addon"
+                          [ngClass]="{'badge-danger': !recetaAbierta.controls.indicacionesRecetaAbierta.valid && recetaAbierta.controls.indicacionesRecetaAbierta.touched}">
+                      Indicaciones
+                    </div>
+                    <textarea class="form-control" id="indicaciones" rows="4"
+                              formControlName="indicacionesRecetaAbierta"
+                              [ngClass]="{'is-invalid': !recetaAbierta.controls.indicacionesRecetaAbierta.valid && recetaAbierta.controls.indicacionesRecetaAbierta.touched}">
+                    </textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-3" style="margin: auto !important">
+                <div class="espacio"></div>
+                <button type="submit" class="btn btn-success btn-block"
+                        [disabled]="!recetaAbierta.valid || trabajando">
+                  <span *ngIf="!trabajando"><i class="mdi mdi-plus-circle"></i> Agregar</span>
+                  <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="tab-pane fade" id="instrucciones" role="tabpanel" aria-labelledby="contact-tab">
+          <div class="espacio"></div>
+
+          <form [formGroup]="indicacionesReceta" (ngSubmit)="guardaIndicacion()">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label class="sr-only" for="selectIndicacion">Indicacion</label>
+                  <div class="input-group">
+                    <div class="input-group-addon">
+                         Indicacion
+                    </div>
+                    <select class="form-control" id="selectIndicacion"
+                            formControlName="idIndicacion">
+                      <option value="0" selected disabled>* Seleccione...</option>
+                      <option *ngFor="let indicacion of catalogoIndicaciones"
+                              value="{{ indicacion.Ind_clave }}">
+                              {{ indicacion.Ind_nombre }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label class="sr-only" for="cantidad">Indicaciones</label>
+                  <div class="input-group">
+                    <div class="input-group-addon"
+                          [ngClass]="{'badge-danger': !indicacionesReceta.controls.complementoIndicacion.valid && indicacionesReceta.controls.complementoIndicacion.touched}">
+                      Indicaciones
+                    </div>
+                    <textarea class="form-control" id="indicaciones" rows="4"
+                              formControlName="complementoIndicacion"
+                              [ngClass]="{'is-invalid': !indicacionesReceta.controls.complementoIndicacion.valid && indicacionesReceta.controls.complementoIndicacion.touched}">
+                    </textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-3" style="margin: auto !important">
+                <div class="espacio"></div>
+                <button type="submit" class="btn btn-success btn-block"
+                        [disabled]="!indicacionesReceta.valid || trabajando">
+                  <span *ngIf="!trabajando"><i class="mdi mdi-plus-circle"></i> Agregar</span>
+                  <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>

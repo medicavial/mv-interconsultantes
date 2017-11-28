@@ -122,5 +122,33 @@ export class BusquedasService {
                });
   }
 
+  getRecetaExterna( folio ){
+    let url = 'http://medicavial.net/mvnuevo/api/notaMedica.php?funcion=getItemsRecetaExterna&fol='+folio;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  getCatalogoIndicaciones(){
+    let url = 'http://medicavial.net/mvnuevo/api/api.php?funcion=getListIndicaciones';
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  getIndicacionesReceta(){
+    let folio = JSON.parse(sessionStorage.getItem('paciente')).folio;
+    
+    let url = `${ this.api }/busquedas/indicaciones-`+folio;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
 
 }

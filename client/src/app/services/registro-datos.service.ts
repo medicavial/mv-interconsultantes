@@ -116,7 +116,7 @@ export class RegistroDatosService {
                });
   }
 
-  eliminaItem( datos ){
+  eliminaReserva( datos ){
     let url = 'http://api.medicavial.mx/api/operacion/reserva/'+datos.id_reserva;
     let headers = new Headers({
       'Content-Type':'aplication/json'
@@ -128,5 +128,69 @@ export class RegistroDatosService {
                  return res.json();
                });
   }
+
+  eliminaSuministrosReceta( datos ){
+    let usuario = JSON.parse(sessionStorage.getItem('session'))[0].username;
+    let url = 'http://medicavial.net/mvnuevo/api/notaMedica.php?funcion=eliminarMedicamentosNota&cveItemReceta='+datos.NS_id+'&usr='+usuario;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  guardaItemExterno( datos ){
+    let folio   = JSON.parse(sessionStorage.getItem('paciente')).folio;
+    let unidad  = JSON.parse(sessionStorage.getItem('session'))[0].unidad;
+    let usuario = JSON.parse(sessionStorage.getItem('session'))[0].username;
+
+    let url = 'http://medicavial.net/mvnuevo/api/notaMedica.php?funcion=saveItemRE&fol='+folio+'&usr='+usuario+'&uni='+unidad;
+
+    let headers = new Headers({
+      // 'Content-Type':'aplication/json',
+      'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8'
+    });
+
+    return this._http.post( url, datos, { headers } )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  eliminaItemExterno( item ){
+    let folio   = JSON.parse(sessionStorage.getItem('paciente')).folio;
+
+    let url = 'http://medicavial.net/mvnuevo/api/notaMedica.php?funcion=eliminaItemRE&fol='+folio+'&idItemExt='+item.REI_id;
+
+    return this._http.get( url )
+               .map( res => {
+                 // return res.json();
+                 return res;
+               });
+  }
+
+  guardaIndicacion( datos ){
+    let url = `${ this.api }/paciente/guardaIndicacion`;
+    let headers = new Headers({
+      'Content-Type':'aplication/json'
+    });
+
+    return this._http.post( url, datos, { headers } )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  eliminaIndicacionReceta( datos ){
+    let url = 'http://medicavial.net/mvnuevo/api/notaMedica.php?funcion=deleteIndicacionCE&fol='+datos.Exp_folio+'&idIndicacion='+datos.Nind_clave;
+
+    return this._http.get( url )
+               .map( res => {
+                 // return res.json();
+                 return res;
+               });
+  }
+
+
 
 }
