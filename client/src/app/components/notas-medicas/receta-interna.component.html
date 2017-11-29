@@ -11,7 +11,7 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-9">
-          <h4 class="card-title"><i class="mdi mdi-file-document azul-mv"></i> Receta Interna <span class="text-muted"> | {{ paciente.folio }}</span></h4>
+          <h4 class="card-title"><i class="mdi mdi-file-document azul-mv"></i> Receta Interna <span class="text-muted"> | {{ paciente.nombre }}</span></h4>
         </div>
 
         <div class="col-md-3">
@@ -19,303 +19,343 @@
             Ver recetas generadas
           </button>
         </div>
-      </div>
-      <p class="card-text text-muted">
-        <i class="mdi mdi-lightbulb-on-outline"></i> Por favor llene todos los campos de este documento.
-      </p>
 
-      <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item">
-          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#recetaCompleta" role="tab" aria-controls="recetaCompleta" aria-selected="true">
-            <i class="mdi mdi-note-multiple-outline"></i>
-            Receta completa
-          </a>
-        </li>
-        <li class="nav-item" *ngIf="usuario.unidad < 1000">
-          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#recetaInterna" role="tab" aria-controls="recetaInterna" aria-selected="false">
-            <i class="mdi mdi-note-text"></i>
-            Receta Interna
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#recetaAbierta" role="tab" aria-controls="recetaAbierta" aria-selected="false">
-            <i class="mdi mdi-note-plus-outline"></i>
-            Receta Abierta
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#instrucciones" role="tab" aria-controls="instrucciones" aria-selected="false">
-            <i class="mdi mdi-lightbulb-on-outline"></i>
-            Instrucciones Adicionales
-          </a>
-        </li>
-      </ul>
-
-      <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade  show active" id="recetaCompleta" role="tabpanel" aria-labelledby="home-tab">
-
-          <div class="espacio"></div>
-
-          <div class="alert alert-warning" role="alert" *ngIf="itemsReceta.length === 0 && listadoRecetaExterna.length === 0 && indicaciones.length === 0">
-            <i class="mdi mdi-alert"></i>
-            Aún no se han agregado elementos a la receta.
-          </div>
-
-          <table class="table table-hover table-striped" *ngIf="(usuario.unidad < 1000 && itemsReceta.length > 0) || listadoRecetaExterna.length > 0 || indicaciones.length > 0">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Item</th>
-                <th scope="col">Indicaciones</th>
-                <th scope="col">Cantidad</th>
-                <th scope="col">Tipo</th>
-                <th scope="col">Eliminar</th>
-              </tr>
-            </thead>
-            <tbody *ngIf="itemsReceta.length > 0 && usuario.unidad < 1000">
-              <tr *ngFor="let item of itemsReceta; let i = index" class="table-info">
-                <th scope="row">{{ i+1 }}</th>
-                <td>{{ item.NS_descripcion }}</td>
-                <td>{{ item.NS_posologia }}</td>
-                <td>{{ item.NS_cantidad }}</td>
-                <td>
-                  <span *ngIf="item.NS_tipoItem==1">Medicamento</span>
-                  <span *ngIf="item.NS_tipoItem==2">Ortesis</span>
-                </td>
-                <td>
-                  <button type="button" class="btn btn-danger btn-block btn-sm seleccion"
-                          (click)="eliminaItem(item)">
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-
-            <tbody *ngIf="listadoRecetaExterna.length > 0">
-              <tr *ngFor="let item of listadoRecetaExterna; let i = index" class="table-success">
-                <th scope="row">{{ itemsReceta.length + 1 }}</th>
-                <td>{{ item.REI_nombreItem }}</td>
-                <td colspan="3">{{ item.REI_indicaciones }}</td>
-                <td>
-                  <button type="button" class="btn btn-danger btn-block btn-sm seleccion"
-                          (click)="eliminaItemExterno(item)">
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-
-            <tbody *ngIf="indicaciones.length > 0">
-              <tr *ngFor="let indicacion of indicaciones; let i = index" class="table-warning">
-                <th scope="row">{{ itemsReceta.length + listadoRecetaExterna.length + 1 }}</th>
-                <td colspan="4">{{ indicacion.Nind_obs }}</td>
-                <td>
-                  <button type="button" class="btn btn-danger btn-block btn-sm seleccion"
-                          (click)="eliminaIndicacion(indicacion)">
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="tab-pane fade" id="recetaInterna" role="tabpanel" aria-labelledby="profile-tab" *ngIf="usuario.unidad < 1000">
-          <div class="espacio"></div>
-          <p *ngIf="buscando" class="text-center">
-            <span *ngIf="buscando"><i class="fa fa-cog fa-spin fa-fw fa-4x text-secondary"></i></span>
-            <br>
-            Buscando en el botiquín...
+        <div class="col-md-12">
+          <p class="card-text text-muted">
+            <i class="mdi mdi-lightbulb-on-outline"></i> Por favor llene todos los campos de este documento.
           </p>
-          <form [formGroup]="recetaInterna" (ngSubmit)="guardaItem()" *ngIf="botiquin.length > 0">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label class="sr-only" for="items">Item</label>
-                  <div class="input-group">
-                    <div class="input-group-addon"
-                         [ngClass]="{'badge-danger': !recetaInterna.controls.item.valid && recetaInterna.controls.item.touched}">
-                         Item
-                    </div>
-                    <select class="form-control is-invalid" id="selectUnidad"
-                            [ngClass]="{'is-invalid': !recetaInterna.controls.item.valid && recetaInterna.controls.item.touched}"
-                            formControlName="item">
-                      <option value="0" selected disabled>* Seleccione...</option>
-                      <option *ngFor="let item of botiquin"
-                              value="{{ item.Clave_producto }}">
-                              {{ item.Descripcion }}
-                      </option>
-                    </select>
-                  </div>
-                  <small class="form-text text-danger" *ngIf="!recetaInterna.controls.item.valid && recetaInterna.controls.item.touched">
-                    <i class="mdi mdi-alert-decagram"></i>
-                    Debe seleccionar un item
-                  </small>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label class="sr-only" for="cantidad">Cantidad</label>
-                  <div class="input-group">
-                    <div class="input-group-addon"
-                          [ngClass]="{'badge-danger': !recetaInterna.controls.cantidad.valid && recetaInterna.controls.cantidad.touched}">
-                      Cantidad
-                    </div>
-                    <input type="number" class="form-control" id="cantidad" placeholder="Disponible: {{ datosItem.stock }}"
-                            formControlName="cantidad"
-                            [ngClass]="{'is-invalid': !recetaInterna.controls.cantidad.valid && recetaInterna.controls.cantidad.touched}"
-                            max="{{ datosItem.stock }}" min="1">
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label class="sr-only" for="cantidad">Presentacion</label>
-                  <div class="input-group">
-                    <div class="input-group-addon">
-                      Presentación
-                    </div>
-                    <input type="text" class="form-control" id="presentacion" formControlName="presentacion" [(ngModel)]="datosItem.presentacion">
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label class="sr-only" for="cantidad">Indicaciones</label>
-                  <div class="input-group">
-                    <div class="input-group-addon"
-                          [ngClass]="{'badge-danger': !recetaInterna.controls.indicaciones.valid && recetaInterna.controls.item.valid && recetaInterna.controls.indicaciones.touched}">
-                      Indicaciones
-                    </div>
-                    <textarea class="form-control" id="indicaciones" formControlName="indicaciones"
-                              [(ngModel)]="datosItem.indicaciones" rows="3"
-                              [ngClass]="{'is-invalid': !recetaInterna.controls.indicaciones.valid && recetaInterna.controls.item.valid && recetaInterna.controls.indicaciones.touched}">
-                    </textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-3" style="margin: auto !important">
-                <div class="espacio"></div>
-                <button type="submit" class="btn btn-success btn-block"
-                        [disabled]="!recetaInterna.valid || trabajando || datosInvalidos">
-                  <span *ngIf="!trabajando"><i class="mdi mdi-plus-circle"></i> Agregar</span>
-                  <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <div class="tab-pane fade" id="recetaAbierta" role="tabpanel" aria-labelledby="contact-tab">
-          <div class="espacio"></div>
-
-          <form [formGroup]="recetaAbierta" (ngSubmit)="itemRecetaExterna()">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label class="sr-only" for="cantidad">Item</label>
-                  <div class="input-group">
-                    <div class="input-group-addon"
-                         [ngClass]="{'badge-danger': !recetaAbierta.controls.itemRecetaAbierta.valid && recetaAbierta.controls.itemRecetaAbierta.touched}">
-                      Item
-                    </div>
-                    <input type="text" class="form-control" id="item"
-                           formControlName="itemRecetaAbierta"
-                           [ngClass]="{'is-invalid': !recetaAbierta.controls.itemRecetaAbierta.valid && recetaAbierta.controls.itemRecetaAbierta.touched}">
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label class="sr-only" for="cantidad">Indicaciones</label>
-                  <div class="input-group">
-                    <div class="input-group-addon"
-                          [ngClass]="{'badge-danger': !recetaAbierta.controls.indicacionesRecetaAbierta.valid && recetaAbierta.controls.indicacionesRecetaAbierta.touched}">
-                      Indicaciones
-                    </div>
-                    <textarea class="form-control" id="indicaciones" rows="4"
-                              formControlName="indicacionesRecetaAbierta"
-                              [ngClass]="{'is-invalid': !recetaAbierta.controls.indicacionesRecetaAbierta.valid && recetaAbierta.controls.indicacionesRecetaAbierta.touched}">
-                    </textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-3" style="margin: auto !important">
-                <div class="espacio"></div>
-                <button type="submit" class="btn btn-success btn-block"
-                        [disabled]="!recetaAbierta.valid || trabajando">
-                  <span *ngIf="!trabajando"><i class="mdi mdi-plus-circle"></i> Agregar</span>
-                  <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <div class="tab-pane fade" id="instrucciones" role="tabpanel" aria-labelledby="contact-tab">
-          <div class="espacio"></div>
-
-          <form [formGroup]="indicacionesReceta" (ngSubmit)="guardaIndicacion()">
-            <div class="row">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label class="sr-only" for="selectIndicacion">Indicacion</label>
-                  <div class="input-group">
-                    <div class="input-group-addon">
-                         Indicacion
-                    </div>
-                    <select class="form-control" id="selectIndicacion"
-                            formControlName="idIndicacion">
-                      <option value="0" selected disabled>* Seleccione...</option>
-                      <option *ngFor="let indicacion of catalogoIndicaciones"
-                              value="{{ indicacion.Ind_clave }}">
-                              {{ indicacion.Ind_nombre }}
-                      </option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label class="sr-only" for="cantidad">Indicaciones</label>
-                  <div class="input-group">
-                    <div class="input-group-addon"
-                          [ngClass]="{'badge-danger': !indicacionesReceta.controls.complementoIndicacion.valid && indicacionesReceta.controls.complementoIndicacion.touched}">
-                      Indicaciones
-                    </div>
-                    <textarea class="form-control" id="indicaciones" rows="4"
-                              formControlName="complementoIndicacion"
-                              [ngClass]="{'is-invalid': !indicacionesReceta.controls.complementoIndicacion.valid && indicacionesReceta.controls.complementoIndicacion.touched}">
-                    </textarea>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-3" style="margin: auto !important">
-                <div class="espacio"></div>
-                <button type="submit" class="btn btn-success btn-block"
-                        [disabled]="!indicacionesReceta.valid || trabajando">
-                  <span *ngIf="!trabajando"><i class="mdi mdi-plus-circle"></i> Agregar</span>
-                  <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
-                </button>
-              </div>
-            </div>
-          </form>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+
+      <div class="espacio-titulo-card"></div>
+
+      <!-- ROW PARA LAS PESTAÑAS -->
+      <div class="row">
+        <div class="col-md-12">
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="completa-tab" data-toggle="tab" href="#recetaCompleta" role="tab" aria-controls="recetaCompleta" aria-selected="true">
+                <i class="mdi mdi-note-multiple-outline"></i>
+                Receta completa
+              </a>
+            </li>
+            <li class="nav-item" *ngIf="usuario.unidad < 1000">
+              <a class="nav-link" id="interna-tab" data-toggle="tab" href="#recetaInterna" role="tab" aria-controls="recetaInterna" aria-selected="false">
+                <i class="mdi mdi-note-text"></i>
+                Receta Interna
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="externa-tab" data-toggle="tab" href="#recetaAbierta" role="tab" aria-controls="recetaAbierta" aria-selected="false">
+                <i class="mdi mdi-note-plus-outline"></i>
+                Receta Abierta
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="instrucciones-tab" data-toggle="tab" href="#instrucciones" role="tab" aria-controls="instrucciones" aria-selected="false">
+                <i class="mdi mdi-lightbulb-on-outline"></i>
+                Instrucciones Adicionales
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div> <!-- ROW PARA LAS PESTAÑAS -->
+
+      <!-- ROW PARA EL CONTENIDO -->
+      <div class="row">
+        <div class="col-md-12">
+          <div class="tab-content" id="myTabContent">
+
+            <!-- COMIENZA RESUMEN DE RECETAS -->
+            <div class="tab-pane fade show active" id="recetaCompleta" role="tabpanel" aria-labelledby="completa-tab">
+              <div class="espacio-titulo-card"></div>
+
+              <div class="alert alert-warning animated fadeIn fast" role="alert" *ngIf="itemsReceta.length === 0 && listadoRecetaExterna.length === 0 && indicaciones.length === 0">
+                <i class="mdi mdi-alert"></i>
+                Aún no se han agregado elementos a la receta.
+              </div>
+
+              <p *ngIf="busca.interna || busca.externa || busca.indicaciones" class="text-center">
+                <span><i class="fa fa-cog fa-spin fa-fw fa-4x text-secondary"></i></span>
+                <br>
+                Buscando receta...
+              </p>
+
+              <div class="row animated fadeIn" *ngIf="(usuario.unidad < 1000 && itemsReceta.length > 0) || listadoRecetaExterna.length > 0 || indicaciones.length > 0">
+                <div class="col-md-12">
+                  <span class="badge table-primary text-dark" *ngIf="usuario.unidad < 1000 && itemsReceta.length > 0">Receta MV</span>
+                  <span class="badge table-success text-dark" *ngIf="listadoRecetaExterna.length > 0">Receta Externa</span>
+                  <span class="badge table-warning text-dark" *ngIf="indicaciones.length > 0">Indicaciones adicionales</span>
+                </div>
+              </div>
+
+              <div class="espacio-titulo-card"></div>
+
+              <table class="table table-hover table-striped table-responsive animated fadeIn fast" *ngIf="(usuario.unidad < 1000 && itemsReceta.length > 0) || listadoRecetaExterna.length > 0 || indicaciones.length > 0">
+               <thead>
+                 <tr>
+                   <th scope="col">#</th>
+                   <th scope="col">Item</th>
+                   <th scope="col">Indicaciones</th>
+                   <th scope="col">Cantidad</th>
+                   <th scope="col">Tipo</th>
+                   <th scope="col">Eliminar</th>
+                 </tr>
+               </thead>
+
+               <tbody>
+                 <ng-container *ngIf="itemsReceta.length > 0 && usuario.unidad < 1000">
+                   <tr *ngFor="let item of itemsReceta; let i = index" class="table-info animated fadeIn">
+                     <th scope="row">{{ i+1 }}</th>
+                     <td>{{ item.NS_descripcion }}</td>
+                     <td>{{ item.NS_posologia }}</td>
+                     <td>{{ item.NS_cantidad }}</td>
+                     <td>
+                       <span *ngIf="item.NS_tipoItem==1">Medicamento</span>
+                       <span *ngIf="item.NS_tipoItem==2">Ortesis</span>
+                     </td>
+                     <td>
+                       <button type="button" class="btn btn-danger btn-block btn-sm seleccion" (click)="eliminaItem(item)" [disabled]="trabajando">
+                         Eliminar
+                       </button>
+                     </td>
+                   </tr>
+                 </ng-container>
+
+                 <ng-container *ngIf="listadoRecetaExterna.length > 0">
+                   <tr *ngFor="let item of listadoRecetaExterna; let i = index" class="table-success animated fadeIn">
+                     <th scope="row">{{ itemsReceta.length + 1 }}</th>
+                     <td>{{ item.REI_nombreItem }}</td>
+                     <td colspan="3">{{ item.REI_indicaciones }}</td>
+                     <td>
+                       <button type="button" class="btn btn-danger btn-block btn-sm seleccion" (click)="eliminaItemExterno(item)" [disabled]="trabajando">
+                         Eliminar
+                       </button>
+                     </td>
+                   </tr>
+                 </ng-container>
+
+                 <ng-container *ngIf="indicaciones.length > 0">
+                   <tr *ngFor="let indicacion of indicaciones; let i = index" class="table-warning animated fadeIn">
+                     <th scope="row">{{ itemsReceta.length + listadoRecetaExterna.length + 1 }}</th>
+                     <td colspan="4">{{ indicacion.Nind_obs }}</td>
+                     <td>
+                       <button type="button" class="btn btn-danger btn-block btn-sm seleccion" (click)="eliminaIndicacion(indicacion)" [disabled]="trabajando">
+                         Eliminar
+                       </button>
+                     </td>
+                   </tr>
+                 </ng-container>
+               </tbody>
+              </table>
+
+              <!-- BOTON IMPRIMIR -->
+              <div class="row animated fadeIn fast">
+                <div class="col-md-4" style="margin: auto !important;">
+                  <div class="espacio"></div>
+
+                  <button type="button" class="btn btn-success btn-block" (click)="imprimir()" *ngIf="itemsReceta.length > 0 || listadoRecetaExterna.length > 0 || indicaciones.length > 0" [disabled]="guarda.completa">
+                    <span *ngIf="!guarda.completa">
+                      <i class="mdi mdi-printer"></i>
+                      Terminar e imprimir receta(s)
+                    </span>
+                    <span *ngIf="guarda.completa"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+                  </button>
+                </div>
+              </div> <!-- BOTON IMPRIMIR -->
+            </div><!-- TERMINA RESUMEN DE RECETAS -->
+
+            <!-- COMIENZA RECETA INTERNA -->
+            <div class="tab-pane fade" id="recetaInterna" role="tabpanel" aria-labelledby="interna-tab" *ngIf="usuario.unidad < 1000">
+              <div class="espacio"></div>
+
+              <p *ngIf="busca.botiquin" class="text-center">
+                <span><i class="fa fa-cog fa-spin fa-fw fa-4x text-secondary"></i></span>
+                <br>
+                Buscando en el botiquín...
+              </p>
+
+              <form [formGroup]="recetaInterna" (ngSubmit)="guardaItem()" *ngIf="botiquin.length > 0">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="sr-only" for="items">Item</label>
+                      <div class="input-group">
+                        <div class="input-group-addon" [ngClass]="{'badge-danger': !recetaInterna.controls.item.valid && recetaInterna.controls.item.touched}">
+                             Item
+                        </div>
+                        <select class="form-control is-invalid" id="selectUnidad" [ngClass]="{'is-invalid': !recetaInterna.controls.item.valid && recetaInterna.controls.item.touched}" formControlName="item">
+                          <option value="0" selected disabled>* Seleccione...</option>
+                          <option *ngFor="let item of botiquin" value="{{ item.Clave_producto }}">
+                                  {{ item.Descripcion }}
+                          </option>
+                        </select>
+                      </div>
+                      <small class="form-text text-danger" *ngIf="!recetaInterna.controls.item.valid && recetaInterna.controls.item.touched">
+                        <i class="mdi mdi-alert-decagram"></i>
+                        Debe seleccionar un item
+                      </small>
+                    </div> <!-- form-group -->
+                  </div> <!-- col-md-4 -->
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="sr-only" for="cantidad">Cantidad</label>
+                      <div class="input-group">
+                        <div class="input-group-addon" [ngClass]="{'badge-danger': !recetaInterna.controls.cantidad.valid && recetaInterna.controls.cantidad.touched}">
+                          Cantidad
+                        </div>
+                        <input type="number" class="form-control" id="cantidad" placeholder="Disponible: {{ datosItem.stock }}" formControlName="cantidad" [ngClass]="{'is-invalid': !recetaInterna.controls.cantidad.valid && recetaInterna.controls.cantidad.touched}" max="{{ datosItem.stock }}" min="1">
+                      </div>
+                    </div> <!-- form-group -->
+                  </div> <!-- col-md-4 -->
+
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="sr-only" for="cantidad">Presentacion</label>
+                      <div class="input-group">
+                        <div class="input-group-addon">
+                          Presentación
+                        </div>
+                        <input type="text" class="form-control" id="presentacion" formControlName="presentacion" [(ngModel)]="datosItem.presentacion">
+                      </div>
+                    </div> <!-- form-group -->
+                  </div> <!-- col-md-4 -->
+
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="sr-only" for="cantidad">Indicaciones</label>
+                      <div class="input-group">
+                        <div class="input-group-addon" [ngClass]="{'badge-danger': !recetaInterna.controls.indicaciones.valid && recetaInterna.controls.item.valid && recetaInterna.controls.indicaciones.touched}">
+                          Indicaciones
+                        </div>
+                        <textarea class="form-control" id="indicaciones" formControlName="indicaciones" [(ngModel)]="datosItem.indicaciones" rows="3" [ngClass]="{'is-invalid': !recetaInterna.controls.indicaciones.valid && recetaInterna.controls.item.valid && recetaInterna.controls.indicaciones.touched}">
+                        </textarea>
+                      </div>
+                    </div> <!-- form-group -->
+                  </div> <!-- col-md-12 -->
+                </div> <!-- row -->
+
+                <div class="row">
+                  <div class="col-md-3" style="margin: auto !important">
+                    <div class="espacio"></div>
+
+                    <button type="submit" class="btn btn-success btn-block" [disabled]="!recetaInterna.valid || guarda.itemInterno || datosInvalidos">
+                      <span *ngIf="!guarda.itemInterno"><i class="mdi mdi-plus-circle"></i> Agregar</span>
+                      <span *ngIf="guarda.itemInterno"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+                    </button>
+                  </div> <!-- col-md-3 -->
+                </div> <!-- row -->
+              </form>
+            </div> <!-- TERMINA RECETA INTERNA -->
+
+            <!-- COMIENZA RECETA EXTERNA -->
+            <div class="tab-pane fade" id="recetaAbierta" role="tabpanel" aria-labelledby="externa-tab">
+              <div class="espacio"></div>
+
+              <form [formGroup]="recetaAbierta" (ngSubmit)="itemRecetaExterna()">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="sr-only" for="cantidad">Item</label>
+                      <div class="input-group">
+                        <div class="input-group-addon" [ngClass]="{'badge-danger': !recetaAbierta.controls.itemRecetaAbierta.valid && ( recetaAbierta.controls.itemRecetaAbierta.touched || !recetaAbierta.controls.itemRecetaAbierta.pristine )}">
+                          Item
+                        </div>
+                        <input type="text" class="form-control" id="item" formControlName="itemRecetaAbierta" [ngClass]="{'is-invalid': !recetaAbierta.controls.itemRecetaAbierta.valid && ( recetaAbierta.controls.itemRecetaAbierta.touched || !recetaAbierta.controls.itemRecetaAbierta.pristine ) }">
+                      </div>
+                    </div> <!-- form-group -->
+                  </div> <!-- col-md-12 -->
+
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="sr-only" for="cantidad">Indicaciones</label>
+                      <div class="input-group">
+                        <div class="input-group-addon" [ngClass]="{'badge-danger': !recetaAbierta.controls.indicacionesRecetaAbierta.valid && (recetaAbierta.controls.indicacionesRecetaAbierta.touched || !recetaAbierta.controls.indicacionesRecetaAbierta.pristine )}">
+                          Indicaciones
+                        </div>
+                        <textarea class="form-control" id="indicaciones" rows="4" formControlName="indicacionesRecetaAbierta" [ngClass]="{'is-invalid': !recetaAbierta.controls.indicacionesRecetaAbierta.valid && (recetaAbierta.controls.indicacionesRecetaAbierta.touched || !recetaAbierta.controls.indicacionesRecetaAbierta.pristine )}">
+                        </textarea>
+                      </div>
+                    </div> <!-- form-group -->
+                  </div> <!-- col-md-12 -->
+                </div> <!-- row -->
+
+                <div class="row">
+                  <div class="col-md-3" style="margin: auto !important">
+                    <div class="espacio"></div>
+
+                    <button type="submit" class="btn btn-success btn-block" [disabled]="!recetaAbierta.valid || guarda.itemExterno">
+                      <span *ngIf="!guarda.itemExterno"><i class="mdi mdi-plus-circle"></i> Agregar</span>
+                      <span *ngIf="guarda.itemExterno"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+                    </button>
+                  </div> <!-- col-md-3 -->
+                </div> <!-- row -->
+              </form>
+            </div> <!-- TERMINA RECETA EXTERNA -->
+
+            <!-- COMIENZA SECCION DE INSTRUCCIONES -->
+            <div class="tab-pane fade" id="instrucciones" role="tabpanel" aria-labelledby="instrucciones-tab">
+              <div class="espacio"></div>
+
+              <p *ngIf="busca.catIndicaciones" class="text-center">
+                <span><i class="fa fa-cog fa-spin fa-fw fa-4x text-secondary"></i></span>
+                <br>
+                Buscando...
+              </p>
+
+              <form [formGroup]="indicacionesReceta" (ngSubmit)="guardaIndicacion()">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="sr-only" for="selectIndicacion">Indicacion</label>
+                      <div class="input-group">
+                        <div class="input-group-addon">
+                             Indicacion
+                        </div>
+                        <select class="form-control" id="selectIndicacion" formControlName="idIndicacion">
+                          <option value="0" selected disabled>* Seleccione...</option>
+                          <option *ngFor="let indicacion of catalogoIndicaciones" value="{{ indicacion.Ind_clave }}">
+                                  {{ indicacion.Ind_nombre }}
+                          </option>
+                        </select>
+                      </div> <!-- input-group -->
+                    </div> <!-- form-group -->
+                  </div> <!-- col-md-6 -->
+
+                  <div class="col-md-12">
+                    <div class="form-group">
+                      <label class="sr-only" for="cantidad">Indicaciones</label>
+                      <div class="input-group">
+                        <div class="input-group-addon" [ngClass]="{'badge-danger': !indicacionesReceta.controls.complementoIndicacion.valid && indicacionesReceta.controls.complementoIndicacion.touched}">
+                          Indicaciones
+                        </div>
+                        <textarea class="form-control" id="indicaciones" rows="4" formControlName="complementoIndicacion" [ngClass]="{'is-invalid': !indicacionesReceta.controls.complementoIndicacion.valid && indicacionesReceta.controls.complementoIndicacion.touched}">
+                        </textarea>
+                      </div> <!-- input-group -->
+                    </div> <!-- form-group -->
+                  </div> <!-- col-md-12 -->
+                </div> <!-- row -->
+
+                <div class="row">
+                  <div class="col-md-3" style="margin: auto !important">
+                    <div class="espacio"></div>
+
+                    <button type="submit" class="btn btn-success btn-block" [disabled]="!indicacionesReceta.valid || guarda.indicacion">
+                      <span *ngIf="!guarda.indicacion"><i class="mdi mdi-plus-circle"></i> Agregar</span>
+                      <span *ngIf="guarda.indicacion"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+                    </button>
+                  </div> <!-- col-md-3 -->
+                </div> <!-- row -->
+              </form>
+            </div> <!-- TERMINA SECCION DE INSTRUCCIONES -->
+
+          </div> <!-- tab-content -->
+        </div> <!-- col-md-12 -->
+      </div> <!-- ROW PARA EL CONTENIDO -->
+
+
+
+    </div> <!-- CARD BODY -->
+  </div> <!-- CARD BORDER -->
+</div> <!-- CONTAINER -->

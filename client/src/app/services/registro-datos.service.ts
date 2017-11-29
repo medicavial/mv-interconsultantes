@@ -191,6 +191,18 @@ export class RegistroDatosService {
                });
   }
 
+  terminaEimprime(){
+    let folio   = JSON.parse(sessionStorage.getItem('paciente')).folio;
+    let unidad  = JSON.parse(sessionStorage.getItem('session'))[0].unidad;
+    let usuario = JSON.parse(sessionStorage.getItem('session'))[0].username;
 
+    let url = 'http://medicavial.net/mvnuevo/api/classes/formatoRecetaRedQx.php?fol='+folio+'&usr='+usuario+'&uni='+unidad;
+
+    return this._http.get( url )
+               .map( res => {
+                 // return res.json();
+                 return res;
+               });
+  }
 
 }

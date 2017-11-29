@@ -9,8 +9,7 @@ declare var $: any;
 
 @Component({
   selector: 'app-receta-interna',
-  templateUrl: './receta-interna.component.html',
-  styles: []
+  templateUrl: './receta-interna.component.html'
 })
 export class RecetaInternaComponent implements OnInit {
   recetaInterna:FormGroup;
@@ -18,10 +17,8 @@ export class RecetaInternaComponent implements OnInit {
   indicacionesReceta:FormGroup;
 
   paciente:any = JSON.parse(sessionStorage.getItem('paciente'));
-  datosReceta:any = {
-  };
+  datosReceta:any = {};
   usuario:any = JSON.parse(sessionStorage.getItem('session'))[0];
-  trabajando:boolean = false;
   botiquin:any = {};
   datosItem:any = {
     claveItem:0,
@@ -38,8 +35,24 @@ export class RecetaInternaComponent implements OnInit {
   listadoRecetaExterna: any = [];
   catalogoIndicaciones: any = [];
   indicaciones: any = [];
-
   instruccionesAdicionales: string = '';
+
+  trabajando:boolean = false;
+
+  busca:any = {
+    botiquin: false,
+    catIndicaciones: false,
+    interna: false,
+    externa: false,
+    indicaciones:false,
+  }
+
+  guarda:any = {
+    itemInterno: false,
+    itemExterno: false,
+    indicacion: false,
+    recetaCompleta: false,
+  }
 
   constructor( private _busquedasService:BusquedasService,
                private _registroService:RegistroDatosService,
@@ -117,10 +130,10 @@ export class RecetaInternaComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.usuario)
+    // console.log(this.usuario)
     if (sessionStorage.getItem('paciente')) {
       this.paciente = JSON.parse(sessionStorage.getItem('paciente'));
-      console.log(this.paciente);
+      // console.log(this.paciente);
     } else{
       this.router.navigate(['busqueda']);
     }
@@ -130,26 +143,27 @@ export class RecetaInternaComponent implements OnInit {
     this.getIndicacionesReceta();
     this.getBotiquin();
     this.getCatalogoIndicaciones();
-
-
   }
 
   getBotiquin(){
-    this.buscando = true;
+    this.busca.botiquin = true;
 
     this._busquedasService.getExistenciasBotiquin( this.usuario )
                           .subscribe(data =>{
                             this.botiquin = data;
                             console.log( this.botiquin );
-                            this.buscando = false;
+                            this.busca.botiquin = false;
                           });
   }
 
   traeItemsReceta(){
+    this.busca.interna = true;
+
     this._busquedasService.getRecetaAbierta( this.paciente.folio )
                           .subscribe(data =>{
                             this.itemsReceta = data;
                             // console.log( this.itemsReceta );
+                            this.busca.interna = false;
                           });
   }
 
@@ -173,8 +187,7 @@ export class RecetaInternaComponent implements OnInit {
   }
 
   guardaItem(){
-    let reserva;
-    this.trabajando = true;
+    this.guarda.itemInterno = true;
     this.datosItem.cantidad = this.recetaInterna.controls.cantidad.value;
 
     this._registroService.agregaItemReceta( this.datosItem )
@@ -182,101 +195,150 @@ export class RecetaInternaComponent implements OnInit {
           console.log(data);
 
           if ( data.length > 0 && data[0].id_receta) {
+              //actualizamos la cantidad del item despues de haberlo apartado
+              for ( let i = 0; i < this.botiquin.length; i++ ) {
+                  if ( parseInt( this.botiquin[i].Clave_producto ) === parseInt( this.datosItem.claveItem ) ) {
+                      console.log(this.botiquin[i]);
+                      this.botiquin[i].Stock = parseInt( this.botiquin[i].Stock ) - this.datosItem.cantidad;
+                      this.datosItem.cantidad = this.botiquin[i].Stock;
+                  }
+              }
+
+              //reseteamos el formulario y cargamos la receta
               this.itemsReceta = data;
               this.recetaInterna.reset();
               this.datosItem.stock = 0;
           }
+          this.guarda.itemInterno = false;
         });
-
-    this.trabajando = false;
   }
 
   eliminaItem( item ){
+    this.trabajando = true;
     this._registroService.eliminaReserva( item )
         .subscribe(data =>{
           console.log(data);
           this._registroService.eliminaSuministrosReceta( item )
               .subscribe( data => {
                   console.log(data);
+                  this.trabajando = false;
               })
           this.traeItemsReceta();
         });
+
   }
 
   getRecetaExterna(){
+    this.busca.externa = true;
     this._busquedasService.getRecetaExterna( this.paciente.folio )
                           .subscribe(data =>{
-                            this.listadoRecetaExterna = data;
-                            console.log( this.listadoRecetaExterna );
+                            this.busca.externa = false;
+
+                            if (data === 'no existe') {
+                                this.listadoRecetaExterna = [];
+                            }else{
+                              this.listadoRecetaExterna = data;
+                              console.log( this.listadoRecetaExterna );
+                            }
                           });
   }
 
   itemRecetaExterna(){
+    this.guarda.itemExterno = true;
+
     let datosItem = {
       idReceta: null,
       item: this.recetaAbierta.controls.itemRecetaAbierta.value,
       indicacion: this.recetaAbierta.controls.indicacionesRecetaAbierta.value
     }
-
     console.log( datosItem );
 
     this._registroService.guardaItemExterno( datosItem )
         .subscribe( data => {
             console.log(data);
             this.recetaAbierta.reset();
+            this.guarda.itemExterno = false;
 
             this.getRecetaExterna();
         })
   }
 
   eliminaItemExterno( item ){
+    this.trabajando = true;
+
     this._registroService.eliminaItemExterno( item )
         .subscribe( data => {
             console.log(data);
             this.recetaAbierta.reset();
+            this.trabajando = false;
 
             this.getRecetaExterna();
         })
   }
 
   getCatalogoIndicaciones(){
+    this.busca.catIndicaciones = true
     this._busquedasService.getCatalogoIndicaciones()
         .subscribe( data => {
             console.log(data);
             this.catalogoIndicaciones = data;
+            this.busca.catIndicaciones = false;
         })
   }
 
   guardaIndicacion(){
+    this.guarda.indicacion = true;
+
     let datos = {
       obs: this.indicacionesReceta.controls.complementoIndicacion.value,
       tipoReceta: 6,
       folio: JSON.parse(sessionStorage.getItem('paciente')).folio,
     }
-
     console.log(datos);
 
     this._registroService.guardaIndicacion( datos )
         .subscribe( data => {
             console.log(data);
+            this.guarda.indicacion = false;
             this.getIndicacionesReceta();
+            this.indicacionesReceta.reset();
         })
   }
 
   getIndicacionesReceta(){
+    this.busca.indicaciones = true;
     this._busquedasService.getIndicacionesReceta()
         .subscribe( data => {
             console.log(data);
             this.indicaciones = data;
+            this.busca.indicaciones = false;
         })
   }
 
   eliminaIndicacion(indicacion){
+    this.trabajando = true;
     this._registroService.eliminaIndicacionReceta( indicacion )
         .subscribe( data => {
             console.log(data);
+            this.trabajando = false;
             this.getIndicacionesReceta();
         })
+  }
+
+  imprimir(){
+    this.guarda.completa = true;
+
+    this._registroService.terminaEimprime()
+        .subscribe( data => {
+            console.log(data);
+            this.guarda.completa = false;
+        })
+
+    this.traeItemsReceta();
+    this.getRecetaExterna();
+    this.getIndicacionesReceta();
+    this.getBotiquin();
+    this.getCatalogoIndicaciones();
   }
 
 }

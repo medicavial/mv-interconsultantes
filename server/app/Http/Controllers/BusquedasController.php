@@ -331,7 +331,7 @@ class BusquedasController extends Controller {
 		$indicaciones = DB::table('NotaIndAlternativa')
 												->where('id_receta', '=', $idReceta)
 												->get();
-												
+
 		return $indicaciones;
 	}
 

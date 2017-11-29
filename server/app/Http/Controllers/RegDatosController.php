@@ -346,12 +346,18 @@ class RegDatosController extends Controller {
 									->where('tipo_receta', '=', $tipoReceta)
 									->max('id_receta');
 
+		$idRecetaExt = DB::table('recetaExterna')
+											->where('Exp_folio', $folio)
+											->where('RE_terminada', '<>', 1)
+											->max('RE_idReceta');
+
 		try {
 			$respuesta = DB::table('NotaIndAlternativa')
 											->insertGetId([
-													'Exp_folio' => $folio,
-													'Nind_obs' 	=> $indicacion,
-													'id_receta' => $idReceta
+													'Exp_folio' 	=> $folio,
+													'Nind_obs' 		=> $indicacion,
+													'id_receta' 	=> $idReceta,
+													'RE_idReceta'	=> $idRecetaExt
 											]);
 		} catch (Exception $e) {
 			$respuesta = array('error' => $e, 'mensaje' => 'error al registrar');
