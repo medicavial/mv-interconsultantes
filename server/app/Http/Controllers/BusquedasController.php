@@ -335,4 +335,29 @@ class BusquedasController extends Controller {
 		return $indicaciones;
 	}
 
+	public function getRecetasXfolio( $folio )
+	{
+		$tipoReceta = 6;
+
+		$recetasInternas = DB::table('RecetaMedica')
+													->select('*', DB::raw('CONCAT(1) as Interna'))
+													->where('Exp_folio', $folio)
+													->where('RM_terminada', '=', 1)
+													->where('tipo_receta', '=', $tipoReceta)
+													->get();
+
+		$recetasExternas = DB::table('recetaExterna')
+													->select('*', DB::raw('CONCAT(0) as Interna'))
+													->where('Exp_folio', $folio)
+													->where('RE_terminada', '=', 1)
+													->where('RE_fecreg', '>=', DB::raw('DATE(DATE_SUB(NOW(), INTERVAL 2 WEEK))'))
+													->get();
+
+		$respuesta = array_merge($recetasInternas, $recetasExternas);
+		// $respuesta[] = array ('internas' => $recetasInternas,
+		// 										'externas' => $recetasExternas);
+
+		return $respuesta;
+	}
+
 }

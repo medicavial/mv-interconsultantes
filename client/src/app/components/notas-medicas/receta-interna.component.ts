@@ -35,6 +35,8 @@ export class RecetaInternaComponent implements OnInit {
   listadoRecetaExterna: any = [];
   catalogoIndicaciones: any = [];
   indicaciones: any = [];
+  listadoRecetas: any =[];
+
   instruccionesAdicionales: string = '';
 
   trabajando:boolean = false;
@@ -45,6 +47,7 @@ export class RecetaInternaComponent implements OnInit {
     interna: false,
     externa: false,
     indicaciones:false,
+    recetasTotales: false
   }
 
   guarda:any = {
@@ -143,6 +146,18 @@ export class RecetaInternaComponent implements OnInit {
     this.getIndicacionesReceta();
     this.getBotiquin();
     this.getCatalogoIndicaciones();
+    this.getRecetasXfolio();
+  }
+
+  getRecetasXfolio(){
+    this.busca.recetasTotales = true;
+
+    this._busquedasService.getRecetasXfolio( this.paciente.folio )
+                          .subscribe(data =>{
+                            this.listadoRecetas = data;
+                            console.log( this.listadoRecetas );
+                            this.busca.recetasTotales = false;
+                          });
   }
 
   getBotiquin(){
@@ -332,8 +347,10 @@ export class RecetaInternaComponent implements OnInit {
         .subscribe( data => {
             console.log(data);
             this.guarda.completa = false;
+            $('#recetas').modal('show');
         })
 
+    this.getRecetasXfolio();
     this.traeItemsReceta();
     this.getRecetaExterna();
     this.getIndicacionesReceta();

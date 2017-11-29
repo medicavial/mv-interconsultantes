@@ -23,6 +23,7 @@ Route::group(['prefix' => 'paciente'], function()
     Route::post('agrega-item-receta', 'RegDatosController@agregaItemReceta');
     Route::get('receta-{folio}', 'BusquedasController@getRecetaAbierta');
     Route::post('guardaIndicacion', 'RegDatosController@guardaIndicacion');
+    Route::get('recetas-{folio}', 'BusquedasController@getRecetasXfolio');
 });
 
 Route::group(['prefix' => 'busquedas'], function()

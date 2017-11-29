@@ -15,7 +15,7 @@
         </div>
 
         <div class="col-md-3">
-          <button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#soapGuardadas">
+          <button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#recetas">
             Ver recetas generadas
           </button>
         </div>
@@ -354,8 +354,85 @@
         </div> <!-- col-md-12 -->
       </div> <!-- ROW PARA EL CONTENIDO -->
 
-
-
     </div> <!-- CARD BODY -->
   </div> <!-- CARD BORDER -->
 </div> <!-- CONTAINER -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="recetas" tabindex="-1" role="dialog" aria-labelledby="modalRecetas" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalRecetas">Listado de recetas</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p *ngIf="busca.recetasTotales" class="text-center">
+          <span><i class="fa fa-cog fa-spin fa-fw fa-4x text-secondary"></i></span>
+          <br>
+          Actualizando datos...
+        </p>
+
+        <table class="table table-hover table-striped table-responsive animated fadeIn fast" *ngIf="(usuario.unidad < 1000 && listadoRecetas.length > 0)">
+         <thead>
+           <tr>
+             <th scope="col">#</th>
+             <th scope="col">Motivo</th>
+             <th scope="col">Usuario</th>
+             <th scope="col">Fecha</th>
+             <th scope="col">Tipo</th>
+             <th scope="col">Visualizar</th>
+           </tr>
+         </thead>
+
+         <tbody>
+           <ng-container *ngIf="listadoRecetas.length > 0">
+             <tr *ngFor="let receta of listadoRecetas; let i = index" class="animated fadeIn">
+                 <th scope="row">{{ i+1 }}</th>
+                 <td>
+                   <span *ngIf="receta.Interna === '1'">{{ receta.RM_motivo }}</span>
+                   <span *ngIf="receta.Interna === '0'">Receta Externa</span>
+                 </td>
+                 <td>
+                   <span *ngIf="receta.Interna === '1'">{{ receta.Usu_login }}</span>
+                   <span *ngIf="receta.Interna === '0'">{{ receta.Usr_login }}</span>
+                 </td>
+                 <td>
+                   <span *ngIf="receta.Interna === '1'">{{ receta.RM_fecreg | slice:0:10 | date:'dd/MMM/yyyy' }} {{ receta.RM_fecreg | slice:10 }}</span>
+                   <span *ngIf="receta.Interna === '0'">{{ receta.RE_fecreg | slice:0:10 | date:'dd/MMM/yyyy' }} {{ receta.RE_fecreg | slice:10 }}</span>
+                 </td>
+                 <td>
+                   <span *ngIf="receta.Interna === '1'" class="text-primary">Interna</span>
+                   <span *ngIf="receta.Interna === '0'" class="text-success">Abierta</span>
+                 </td>
+                 <td class="text-center">
+                   <span *ngIf="receta.Interna === '1'">
+                     <a href="http://medicavial.net/mvnuevo/api/classes/formatoRecetaRedQxListado.php?fol={{ paciente.folio }}&usr={{ usuario.username }}&uni={{ usuario.unidad }}&tipo=interna&idReceta={{ receta.id_receta }}"
+                        target="_blank" class="text-info">
+                       Visualizar
+                       <i class="mdi mdi-open-in-new"></i>
+                     </a>
+                   </span>
+                   <span *ngIf="receta.Interna === '0'">
+                     <a href="http://medicavial.net/mvnuevo/api/classes/formatoRecetaRedQxListado.php?fol={{ paciente.folio }}&usr={{ usuario.username }}&uni={{ usuario.unidad }}&tipo=externa&idReceta={{ receta.RE_idReceta }}"
+                        target="_blank" class="text-info">
+                       Visualizar
+                       <i class="mdi mdi-open-in-new"></i>
+                     </a>
+                   </span>
+                 </td>
+             </tr>
+           </ng-container>
+         </tbody>
+        </table>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -142,8 +142,17 @@ export class BusquedasService {
 
   getIndicacionesReceta(){
     let folio = JSON.parse(sessionStorage.getItem('paciente')).folio;
-    
+
     let url = `${ this.api }/busquedas/indicaciones-`+folio;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  getRecetasXfolio( folio ){
+    let url = `${ this.api }/paciente/recetas-`+folio;
 
     return this._http.get( url )
                .map( res => {

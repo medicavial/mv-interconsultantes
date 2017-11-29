@@ -50,7 +50,7 @@ const APP_ROUTES: Routes = [
     canActivate: [AuthService]
   },
   {
-    path: 'receta-interna',
+    path: 'recetas',
     component: RecetaInternaComponent,
     canActivate: [AuthService]
   },
