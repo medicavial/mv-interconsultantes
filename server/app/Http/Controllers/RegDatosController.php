@@ -88,15 +88,15 @@ class RegDatosController extends Controller {
 		$aPaterno 		= Input::get('aPaterno');
 		$aMaterno 		= Input::get('aMaterno');
 		$email 				= Input::get('email');
-		$rol 					= Input::get('rol');
+		$clavePermiso	= Input::get('rol');
 		$creador			= Input::get('creador');
 		$emailCreador	= Input::get('emailCreador');
 
-		if ( $rol == true ) {
-				$clavePermiso = 2;
-		} elseif ( $rol == false ){
-				$clavePermiso =3;
-		}
+		// if ( $rol == true ) {
+		// 		$clavePermiso = 2;
+		// } elseif ( $rol == false ){
+		// 		$clavePermiso =3;
+		// }
 
 		//creacion del nombre de usuario
 		$usrLogin = strtolower( substr ($nombre, 0, 1 ).$aPaterno.substr( $aMaterno, 0, 1 ) );

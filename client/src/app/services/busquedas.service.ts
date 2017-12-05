@@ -160,4 +160,13 @@ export class BusquedasService {
                });
   }
 
+  getTiposPermisos(){
+    let url = `${ this.api }/busquedas/listadoPermisos`;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
 }

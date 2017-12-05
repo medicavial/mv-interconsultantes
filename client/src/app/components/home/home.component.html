@@ -25,7 +25,7 @@
 
     <div class="col-md-4 espacio-titulo-card d-block d-sm-none d-none d-sm-block d-md-none"></div>
 
-    <div class="col-md-4" *ngIf="usuario.PER_clave === 1">
+    <div class="col-md-4" *ngIf="usuario.PER_clave === 1 || usuario.PER_clave === 2">
       <div class="card text-white bg-lime seleccion animated fadeIn" (click)="irUsuarios()">
         <div class="card-body">
           <h2 class=" text-center"><i class="mdi mdi-account-settings-variant"></i></h2>
@@ -61,6 +61,7 @@
             <th scope="col">#</th>
             <th scope="col">Folio</th>
             <th scope="col">Nombre Paciente</th>
+            <th scope="col">Motivo</th>
             <th scope="col">Fecha Asignado</th>
           </tr>
         </thead>
@@ -71,6 +72,7 @@
             <th scope="row">{{ i+1 }}</th>
             <td>{{ asignacion.Exp_folio }}</td>
             <td>{{ asignacion.Exp_completo }}</td>
+            <td>{{ asignacion.ASI_motivo | uppercase }}</td>
             <td>{{ asignacion.ASI_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }} {{ asignacion.ASI_fechaRegistro | slice:11:16 }} hrs.</td>
           </tr>
         </tbody>

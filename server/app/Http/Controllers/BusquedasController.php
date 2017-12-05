@@ -257,7 +257,7 @@ class BusquedasController extends Controller {
 										->where('ASI_terminada', 0)
 										->where('ASI_cancelada', 0)
 										->where('USU_loginMedico', $usrLogin)
-										->orderBy('ASI_fechaCita')
+										->orderBy('ASI_fechaRegistro')
 										->get();
 
 		return $respuesta;
@@ -357,6 +357,15 @@ class BusquedasController extends Controller {
 		// $respuesta[] = array ('internas' => $recetasInternas,
 		// 										'externas' => $recetasExternas);
 
+		return $respuesta;
+	}
+
+	public function getPermisos()
+	{
+		$respuesta = DB::table('redQx_permisos')
+													->select('PER_clave', 'PER_nombre')
+													->where('PER_clave', '>', 1)
+													->get();
 		return $respuesta;
 	}
 

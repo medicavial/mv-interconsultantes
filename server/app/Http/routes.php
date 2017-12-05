@@ -31,6 +31,7 @@ Route::group(['prefix' => 'busquedas'], function()
     Route::get('listadoUnidades', 'BusquedasController@buscaUnidades');
     Route::get('listadoMedicos', 'BusquedasController@getMedicos');
     Route::get('listadoUsuarios', 'BusquedasController@getUsuarios');
+    Route::get('listadoPermisos', 'BusquedasController@getPermisos');
     Route::get('asignaciones-{usrLogin}', 'BusquedasController@getAsignaciones');
     Route::get('botiquin-{unidad}', 'BusquedasController@getItemsBotiquin');
     Route::get('indicaciones-{folio}', 'BusquedasController@getIndicacionesReceta');

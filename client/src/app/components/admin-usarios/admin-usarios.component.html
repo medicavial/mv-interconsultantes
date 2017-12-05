@@ -10,7 +10,7 @@
     <div class="card-footer">
       <div class="row">
         <div class="col-md-4">
-          <button type="button" class="btn btn-sm btn-info btn-block">
+          <button type="button" class="btn btn-sm btn-info btn-block"  data-toggle="modal" data-target="#crearUsuario">
             <i class="mdi mdi-account-plus"></i>
             Nuevo usuario
           </button>
@@ -84,7 +84,7 @@
     <div class="modal-content">
       <div class="modal-header bg-info text-white">
         <h5 class="modal-title" >
-          <i class="mdi mdi-account-card-details"></i>
+          <i class="mdi mdi-clipboard-account"></i>
           Alta de usuario
         </h5>
         <small>Por favor complete los datos</small>
@@ -93,12 +93,33 @@
       <form [formGroup]="nuevoUsuario" (ngSubmit)="guardarUsuario()">
         <div class="modal-body">
           <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="tipoUsuario">Tipo de usuario</label>
+                <div class="input-group">
+                  <div class="input-group-addon" [ngClass]="{'badge-danger': !nuevoUsuario.controls.tipoUsuario.valid && nuevoUsuario.controls.tipoUsuario.touched}">
+                    <i class="mdi mdi-account-convert"></i>
+                  </div>
+                  <select class="form-control" id="tipoUsuario" formControlName="tipoUsuario" [ngClass]="{'is-invalid': !nuevoUsuario.controls.tipoUsuario.valid && nuevoUsuario.controls.tipoUsuario.touched}">
+                    <option disabled value="">* Seleccione una opción</option>
+                    <option *ngFor="let permiso of tiposPermisos" value="{{ permiso.PER_clave }}">{{ permiso.PER_nombre }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="d-none d-md-block">
+
+          <div class="row">
             <div class="col-md-4">
               <div class="form-group">
                 <label for="nombre" class="d-none d-md-block">Nombre:</label>
                 <div class="input-group">
-                  <div class="input-group-addon"><i class="mdi mdi-account"></i></div>
-                  <input type="text" class="form-control" id="nombre" placeholder="* Nombre(s)" formControlName="nombre">
+                  <div class="input-group-addon" [ngClass]="{'badge-danger': !nuevoUsuario.controls.nombre.valid && nuevoUsuario.controls.nombre.touched}">
+                    <i class="mdi mdi-account"></i>
+                  </div>
+                  <input type="text" class="form-control mayusculas" id="nombre" placeholder="* Nombre(s)" formControlName="nombre" [ngClass]="{'is-invalid': !nuevoUsuario.controls.nombre.valid && nuevoUsuario.controls.nombre.touched}">
                 </div>
               </div>
             </div>
@@ -107,8 +128,10 @@
               <div class="form-group">
                 <label for="aPaterno" class="d-none d-md-block">Apellido Paterno:</label>
                 <div class="input-group">
-                  <div class="input-group-addon"><i class="mdi mdi-account"></i></div>
-                  <input type="text" class="form-control" id="aPaterno" placeholder="* Apellido Paterno" formControlName="aPaterno">
+                  <div class="input-group-addon" [ngClass]="{'badge-danger': !nuevoUsuario.controls.aPaterno.valid && nuevoUsuario.controls.aPaterno.touched}">
+                    <i class="mdi mdi-account"></i>
+                  </div>
+                  <input type="text" class="form-control mayusculas" id="aPaterno" placeholder="* Apellido Paterno" formControlName="aPaterno" [ngClass]="{'is-invalid': !nuevoUsuario.controls.aPaterno.valid && nuevoUsuario.controls.aPaterno.touched}">
                 </div>
               </div>
             </div>
@@ -117,8 +140,10 @@
               <div class="form-group">
                 <label for="aMaterno" class="d-none d-md-block">Apellido Materno:</label>
                 <div class="input-group">
-                  <div class="input-group-addon"><i class="mdi mdi-account"></i></div>
-                  <input type="text" class="form-control" id="aMaterno" placeholder="* Apellido Materno" formControlName="aMaterno">
+                  <div class="input-group-addon" [ngClass]="{'badge-danger': !nuevoUsuario.controls.aMaterno.valid && nuevoUsuario.controls.aMaterno.touched}">
+                    <i class="mdi mdi-account"></i>
+                  </div>
+                  <input type="text" class="form-control mayusculas" id="aMaterno" placeholder="* Apellido Materno" formControlName="aMaterno" [ngClass]="{'is-invalid': !nuevoUsuario.controls.aMaterno.valid && nuevoUsuario.controls.aMaterno.touched}">
                 </div>
               </div>
             </div>
@@ -131,8 +156,10 @@
               <div class="form-group">
                 <label for="email" class="d-none d-md-block">Correo electrónico:</label>
                 <div class="input-group">
-                  <div class="input-group-addon"><i class="mdi mdi-mail-ru"></i></div>
-                  <input type="email" class="form-control" id="email" placeholder="* Correo Electrónico" formControlName="correo">
+                  <div class="input-group-addon" [ngClass]="{'badge-danger': !nuevoUsuario.controls.correo.valid && nuevoUsuario.controls.correo.touched}">
+                    <i class="mdi mdi-mail-ru"></i>
+                  </div>
+                  <input type="email" class="form-control" id="email" placeholder="* Correo Electrónico" formControlName="correo" [ngClass]="{'is-invalid': !nuevoUsuario.controls.correo.valid && nuevoUsuario.controls.correo.touched}">
                 </div>
               </div>
             </div>
@@ -140,9 +167,9 @@
         </div>
 
         <div class="modal-footer">
-          <button type="success" class="btn btn-info">
-            Crear usuario
-            <i class="mdi mdi-send"></i>
+          <button type="success" class="btn btn-info" [disabled]="!nuevoUsuario.valid || trabajando">
+            <span *ngIf="!trabajando">Crear usuario <i class="mdi mdi-send"></i></span>
+            <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
           </button>
         </div>
 

@@ -24,8 +24,10 @@
       <div class="d-block d-sm-none d-none d-sm-block d-md-none d-md-block d-lg-none">
         <li class="nav-item">
           <a class="nav-link disabled">
-            <i class="mdi mdi-account-settings-variant"></i>
-            {{ usuario.fullName }}
+            <i class="mdi mdi-account-settings-variant"></i> {{ usuario.fullName }}
+            <span *ngIf="usuario.unidad > 0">
+              | <i class="mdi mdi-hospital-marker"></i> {{ usuario.uniNombre }}
+            </span>
             <span class="sr-only">(current)</span>
           </a>
         </li>
@@ -43,6 +45,7 @@
       </a>
 
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="cursor:pointer">
+        <small class="dropdown-item disabled" *ngIf="usuario.unidad > 0"><i class="mdi mdi-hospital-marker"></i> {{ usuario.uniNombre }}</small>
         <small class="dropdown-item" (click)="logout()"><i class="mdi mdi-logout"></i> Cerrar Sesión</small>
       </div>
     </div>

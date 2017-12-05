@@ -5,8 +5,8 @@
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">Búsqueda de pacientes</h4>
-          <h6 class="card-subtitle mb-2 text-muted">Médica Vial | Zima</h6>
-          <p class="card-text">Introduzca en nombre o el folio del paciente</p>
+          <h6 class="card-subtitle mb-2 text-muted">Médica Vial | Por insumos</h6>
+          <p class="card-text">Introduzca el nombre o el folio del paciente</p>
 
           <form [formGroup]="buscador" (ngSubmit)="busquedaFolio()">
             <div class="row">
@@ -58,6 +58,10 @@
 
           <p *ngIf="buscando" class="text-right">
             <i class="mdi mdi-lightbulb-on text-warning"></i> La búsqueda puede demorar un poco.
+          </p>
+
+          <p *ngIf="buscador.controls.nombre.valid && !buscador.controls.nombre.pristine && !buscando" class="text-right">
+            <i class="mdi mdi-alert-circle text-info"></i> Se buscan pacientes registrados en los últimos 6 meses.
           </p>
         </div>
 

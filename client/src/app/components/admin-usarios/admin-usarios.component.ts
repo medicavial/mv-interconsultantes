@@ -18,7 +18,9 @@ export class AdminUsariosComponent implements OnInit {
 
   usuario:any = JSON.parse(sessionStorage.getItem('session'))[0];
   listadoUsuarios:any = [];
+  tiposPermisos:any = [];
   buscando:boolean = false;
+  trabajando:boolean = false;
   nuevoUsuario:FormGroup;
   usrNuevo:any = {
     nombre: null,
@@ -41,10 +43,14 @@ export class AdminUsariosComponent implements OnInit {
 
      // formulario para usuario nuevo
      this.nuevoUsuario = new FormGroup({
+      'tipoUsuario':new FormControl( '', [
+                                     Validators.min(2),
+                                     Validators.required,
+                                   ]),
        'nombre':new FormControl( null, [
                                        Validators.minLength(2),
                                        Validators.pattern("^[a-zA-Z ]*$"),
-                                       Validators.required
+                                       Validators.required,
                                      ]),
        'aPaterno':new FormControl( null, [
                                          Validators.minLength(4),
@@ -59,7 +65,7 @@ export class AdminUsariosComponent implements OnInit {
                                      Validators.minLength(5),
                                      Validators.required
                                     ]),
-       'rol':new FormControl( false, []),
+       // 'rol':new FormControl( false, []),
      });
   }
 
@@ -67,6 +73,7 @@ export class AdminUsariosComponent implements OnInit {
     // $('#crearUsuario').modal('show');
     console.log(this.usuario);
     this.getUsuarios();
+    this.getPermisos();
   }
 
   getUsuarios(){
@@ -79,14 +86,25 @@ export class AdminUsariosComponent implements OnInit {
                           });
   }
 
+  getPermisos(){
+    this.buscando = true;
+    this._busquedasService.getTiposPermisos()
+                          .subscribe( data => {
+                            this.tiposPermisos = data;
+                            console.log(this.tiposPermisos);
+                            this.buscando = false;
+                          });
+  }
+
   guardarUsuario(){
+    this.trabajando = true;
     console.log(this.nuevoUsuario.controls);
 
     this.usrNuevo.nombre    = this.nuevoUsuario.controls.nombre.value;
     this.usrNuevo.aPaterno  = this.nuevoUsuario.controls.aPaterno.value;
     this.usrNuevo.aMaterno  = this.nuevoUsuario.controls.aMaterno.value;
     this.usrNuevo.email     = this.nuevoUsuario.controls.correo.value;
-    this.usrNuevo.rol       = this.nuevoUsuario.controls.rol.value;
+    this.usrNuevo.rol       = this.nuevoUsuario.controls.tipoUsuario.value;
 
     console.log(this.usrNuevo);
 
@@ -95,6 +113,7 @@ export class AdminUsariosComponent implements OnInit {
                             // this.trabajando = false;
                             console.log( data );
                             if ( data.usrGenerado === true ) {
+                              this.trabajando = false;
                                 console.log('usuario Generado correctamente');
                                 this.getUsuarios();
                                 $('#crearUsuario').modal('hide');

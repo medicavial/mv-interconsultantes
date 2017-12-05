@@ -128,7 +128,14 @@
 
       <!-- Digitales MV -->
       <div class="modal-body" *ngIf="paciente.id_registro=='1'">
-        <table class="table table-bordered table-hover table-sm table-responsive" >
+        <div *ngIf="digitales.listaDigitales.length < 1" class="text-center">
+          <i class="mdi mdi-lightbulb-on-outline icono-grande text-secondary"></i>
+          <div>
+            No hay documentos digitalizados para este paciente
+          </div>
+        </div>
+
+        <table class="table table-bordered table-hover table-sm table-responsive" *ngIf="digitales.listaDigitales.length > 0">
           <thead>
             <tr>
               <th class="text-center">#</th>
