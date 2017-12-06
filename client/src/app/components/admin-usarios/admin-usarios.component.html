@@ -20,11 +20,11 @@
 
         <div class="col-md-4">
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-sm btn-outline-purple">
-              <input type="checkbox" autocomplete="off"><i class="mdi mdi-eye"></i> Inactivos
+            <label class="btn btn-sm btn-outline-purple" (click)="inactivos()">
+              <input type="checkbox" [(ngModel)]="ver.inactivos" ><i class="mdi mdi-eye"></i> Inactivos
             </label>
-            <label class="btn btn-sm btn-outline-purple">
-              <input type="checkbox" autocomplete="off"><i class="mdi mdi-eye"></i> Administradores
+            <label class="btn btn-sm btn-outline-purple" (click)="administradores()">
+              <input type="checkbox" [(ngModel)]="ver.admin"><i class="mdi mdi-eye"></i> Administradores
             </label>
           </div>
         </div >
@@ -53,23 +53,43 @@
       <table class="table table-hover table-sm table-responsive" *ngIf="listadoUsuarios.length>0">
         <thead>
           <tr>
-            <th scope="col">#</th>
+            <!-- <th scope="col">#</th> -->
             <th scope="col">Usuario</th>
             <th scope="col">Nombre</th>
             <th scope="col">Fecha Registro</th>
-            <th scope="col">Rol</th>
+            <th scope="col">Tipo</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let usuario of listadoUsuarios; let i = index"
-              class="seleccion animated fadeIn fast">
-            <th scope="row">{{ i+1 }}</th>
-            <td>{{ usuario.USU_login }}</td>
-            <td>{{ usuario.USU_nombreCompleto }}</td>
-            <td>{{ usuario.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
-            <td *ngIf="usuario.PER_clave===2">Administrador</td>
-            <td *ngIf="usuario.PER_clave===3">Médico</td>
-          </tr>
+          <ng-container *ngFor="let usuario of listadoUsuarios; let i = index">
+            <tr class="seleccion animated fadeIn fast text-primary"
+                *ngIf="usuario.PER_clave === 2 && ver.admin" (click)="editaUsuario(usuario)">
+              <!-- <th scope="row">{{ usuario.USU_id }}</th> -->
+              <!-- <th scope="row">{{ i+1 }}</th> -->
+              <td>{{ usuario.USU_login }}</td>
+              <td>{{ usuario.USU_nombreCompleto }}</td>
+              <td>{{ usuario.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
+              <td>{{ usuario.PER_nombre }}</td>
+            </tr>
+
+            <tr class="seleccion animated fadeIn fast"
+                *ngIf="usuario.PER_clave >= 3 && usuario.USU_activo === 1" (click)="editaUsuario(usuario)">
+              <!-- <th scope="row">{{ i+1 }}</th> -->
+              <td>{{ usuario.USU_login }}</td>
+              <td>{{ usuario.USU_nombreCompleto }}</td>
+              <td>{{ usuario.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
+              <td>{{ usuario.PER_nombre }}</td>
+            </tr>
+
+            <tr class="seleccion animated fadeIn fast text-muted"
+                *ngIf="usuario.USU_activo === 0 && ver.inactivos === true" (click)="editaUsuario(usuario)">
+              <!-- <th scope="row">{{ i+1 }}</th> -->
+              <td>{{ usuario.USU_login }}</td>
+              <td>{{ usuario.USU_nombreCompleto }}</td>
+              <td>{{ usuario.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
+              <td>{{ usuario.PER_nombre }}</td>
+            </tr>
+          </ng-container>
         </tbody>
       </table>
     </div>
@@ -129,7 +149,7 @@
                 <label for="aPaterno" class="d-none d-md-block">Apellido Paterno:</label>
                 <div class="input-group">
                   <div class="input-group-addon" [ngClass]="{'badge-danger': !nuevoUsuario.controls.aPaterno.valid && nuevoUsuario.controls.aPaterno.touched}">
-                    <i class="mdi mdi-account"></i>
+                    <i class="mdi mdi-account-outline"></i>
                   </div>
                   <input type="text" class="form-control mayusculas" id="aPaterno" placeholder="* Apellido Paterno" formControlName="aPaterno" [ngClass]="{'is-invalid': !nuevoUsuario.controls.aPaterno.valid && nuevoUsuario.controls.aPaterno.touched}">
                 </div>
@@ -141,7 +161,7 @@
                 <label for="aMaterno" class="d-none d-md-block">Apellido Materno:</label>
                 <div class="input-group">
                   <div class="input-group-addon" [ngClass]="{'badge-danger': !nuevoUsuario.controls.aMaterno.valid && nuevoUsuario.controls.aMaterno.touched}">
-                    <i class="mdi mdi-account"></i>
+                    <i class="mdi mdi-account-outline"></i>
                   </div>
                   <input type="text" class="form-control mayusculas" id="aMaterno" placeholder="* Apellido Materno" formControlName="aMaterno" [ngClass]="{'is-invalid': !nuevoUsuario.controls.aMaterno.valid && nuevoUsuario.controls.aMaterno.touched}">
                 </div>
@@ -174,6 +194,62 @@
         </div>
 
       </form>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal para editar usuario -->
+<div class="modal fade" id="editaUsuario" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-purple text-white">
+        <h5 class="modal-title" id="titulo"><i class="mdi mdi-clipboard-account"></i> Editar usuario</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="tipoUsuario">Tipo de usuario</label>
+              <div class="input-group">
+                <div class="input-group-addon">
+                  <i class="mdi mdi-account-convert"></i>
+                </div>
+                <select class="form-control" id="tipoUsuario">
+                  <option disabled value="">* Seleccione una opción</option>
+                  <option *ngFor="let permiso of tiposPermisos" value="{{ permiso.PER_clave }}">{{ permiso.PER_nombre }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <label class="custom-control custom-radio">
+              <input id="radio1" name="radio" type="radio" class="custom-control-input">
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description">Activo</span>
+            </label>
+            <label class="custom-control custom-radio">
+              <input id="radio2" name="radio" type="radio" class="custom-control-input">
+              <span class="custom-control-indicator"></span>
+              <span class="custom-control-description">Inactivo</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-outline-purple">
+          <i class="mdi mdi-content-save"></i>
+          Guardar cambios
+        </button>
+      </div>
     </div>
   </div>
 </div>

@@ -11,10 +11,12 @@
 	  $saludo="¡Muy buenas noches!";
 	};
 
-	if ( $rol == 2 ) {
+	if ( $clavePermiso == 2 ) {
 		$nombreRol = 'Administrador';
-	}elseif ( $rol == 3 ) {
+	}elseif ( $clavePermiso == 3 ) {
 		$nombreRol = 'Médico';
+	}elseif ( $clavePermiso == 4 ) {
+		$nombreRol = 'Interconsultante';
 	}
  ?>
 

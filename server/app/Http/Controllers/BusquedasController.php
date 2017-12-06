@@ -240,10 +240,14 @@ class BusquedasController extends Controller {
 	public function getUsuarios()
 	{
 		$respuesta = DB::table('redQx_usuarios')
-										->select('USU_id', 'USU_login', 'USU_nombreCompleto','USU_email','PER_clave','USU_fechaRegistro')
-										->where('USU_activo', 1)
-										->whereNotIn('PER_clave', [1,2])
-										->orderBy('USU_nombreCompleto')
+										->select('USU_id', 'USU_login', 'USU_nombreCompleto','USU_email','redQx_usuarios.PER_clave',
+														 'USU_fechaRegistro', 'PER_nombre', 'USU_activo')
+										->join('redQx_permisos', 'redQx_usuarios.PER_clave', '=', 'redQx_permisos.PER_clave')
+										// ->where('USU_activo', 1)
+										// ->whereNotIn('redQx_usuarios.PER_clave', [1,2])
+										->whereNotIn('redQx_usuarios.PER_clave', [1])
+										// ->orderBy('USU_nombreCompleto')
+										->orderBy(DB::raw('PER_nombre, USU_nombreCompleto'))
 										->get();
 
 		return $respuesta;

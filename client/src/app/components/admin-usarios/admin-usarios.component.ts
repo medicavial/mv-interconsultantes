@@ -21,6 +21,10 @@ export class AdminUsariosComponent implements OnInit {
   tiposPermisos:any = [];
   buscando:boolean = false;
   trabajando:boolean = false;
+  ver = {
+    inactivos: false,
+    admin: false
+  }
   nuevoUsuario:FormGroup;
   usrNuevo:any = {
     nombre: null,
@@ -119,6 +123,19 @@ export class AdminUsariosComponent implements OnInit {
                                 $('#crearUsuario').modal('hide');
                             }
                           });
+  }
+
+  inactivos(){
+    this.ver.inactivos = !this.ver.inactivos;
+  }
+
+  administradores(){
+    this.ver.admin = !this.ver.admin;
+  }
+
+  editaUsuario(datos){
+    console.log(datos);
+    $('#editaUsuario').modal('show');
   }
 
 }
