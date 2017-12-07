@@ -61,7 +61,7 @@ export class AsignacionPacientesComponent implements OnInit {
                }
 
   ngOnInit() {
-    // this.getMedicos();
+    this.getMedicos();
     this.getUnidades();
     this.getUsuarios();
     console.log(this.asignacion);

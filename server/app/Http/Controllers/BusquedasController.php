@@ -226,12 +226,12 @@ class BusquedasController extends Controller {
 
 	public function getMedicos()
 	{
-		$respuesta = DB::table('Medico')
-										->select(DB::raw('CONCAT(Med_nombre," ",Med_paterno," ",Med_materno) as nombreCompleto'), 'Medico.*', 'Uni_nombrecorto')
-										->join('Unidad', 'Medico.Uni_clave', '=', 'Unidad.Uni_clave')
-										->Where('Med_activo', 'S')
-										// ->Where('Uni_clave', '<>', 8) //deberiamos quitar la unidad 8
-										->orderBy(DB::raw('Uni_nombrecorto, nombreCompleto'))
+		$respuesta = DB::table('redQx_usuarios')
+										->select('USU_id', 'USU_login', 'USU_email', 'USU_nombreCompleto', 'redQx_usuarios.PER_clave', 'PER_nombre')
+										->join('redQx_permisos', 'redQx_usuarios.PER_clave', '=', 'redQx_permisos.PER_clave')
+										->where('USU_activo', 1)
+										->whereNotIn('redQx_usuarios.PER_clave', [1,2])
+										->orderBy(DB::raw('PER_nombre, USU_nombreCompleto'))
 										->get();
 
 		return $respuesta;

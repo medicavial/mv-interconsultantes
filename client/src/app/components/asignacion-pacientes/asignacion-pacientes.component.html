@@ -24,8 +24,8 @@
                 <!-- <option *ngFor="let medico of listadoMedicos" value="{{ medico.Med_clave }}">
                   {{ medico.Uni_nombrecorto }} - {{ medico.nombreCompleto | uppercase}}
                 </option> -->
-                <option *ngFor="let medico of listadoUsuarios" value="{{ medico.USU_id }}">
-                  {{ medico.USU_nombreCompleto | uppercase}}
+                <option *ngFor="let medico of listadoMedicos" value="{{ medico.USU_id }}">
+                  {{ medico.PER_nombre }} - {{ medico.USU_nombreCompleto | uppercase}}
                 </option>
               </select>
             </div>
