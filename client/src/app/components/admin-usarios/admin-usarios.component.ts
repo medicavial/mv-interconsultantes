@@ -36,6 +36,12 @@ export class AdminUsariosComponent implements OnInit {
     emailCreador: JSON.parse(sessionStorage.getItem('session'))[0].USU_email
   };
 
+  usrEditado: any = {
+    id: null,
+    permiso: null,
+    status: null
+  }
+
   constructor( private _busquedasService:BusquedasService,
                private _registroDatos:RegistroDatosService,
                private _authService:AuthService,
@@ -135,7 +141,57 @@ export class AdminUsariosComponent implements OnInit {
 
   editaUsuario(datos){
     console.log(datos);
+    this.usrEditado.id      = datos.USU_id;
+    this.usrEditado.permiso = datos.PER_clave;
+    this.usrEditado.status  = datos.USU_activo;
+    this.usrEditado.permisoActual = datos.PER_clave;
+    this.usrEditado.statusActual  = datos.USU_activo;
+
     $('#editaUsuario').modal('show');
+  }
+
+  verificaCambios(){
+    if ( this.usrEditado.id != null ) {
+        // console.log(this.usrEditado);
+        if ( parseInt(this.usrEditado.permiso) === this.usrEditado.permisoActual
+            && this.usrEditado.status === this.usrEditado.statusActual ) {
+            return false;
+        }
+        else{
+          return true;
+        }
+    } else {
+      return false;
+    }
+  }
+
+  cancelaEdicion(){
+    $('#editaUsuario').modal('hide');
+
+    this.usrEditado = {
+      id: null,
+      permiso: null,
+      status: null,
+      permisoActual: null,
+      statusActual: null
+    }
+  }
+
+  guardaEdicion(){
+    this.trabajando = true;
+
+    this._registroDatos.usuarioEditado( this.usrEditado )
+        .subscribe( data => {
+          console.log( data );
+          if ( data === 1 ) {
+            this.trabajando = false;
+              console.log('Usuario actualizado');
+              this.getUsuarios();
+              $('#editaUsuario').modal('hide');
+          } else{
+            alert('Error al actualizar datos. Intentelo nuevamente.');
+          }
+        });
   }
 
 }

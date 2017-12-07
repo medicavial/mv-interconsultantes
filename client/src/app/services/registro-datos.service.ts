@@ -205,4 +205,16 @@ export class RegistroDatosService {
                });
   }
 
+  usuarioEditado( datos ){
+    let url = `${ this.api }/administracion/editaUsuario`;
+    let headers = new Headers({
+      'Content-Type':'aplication/json'
+    });
+
+    return this._http.post( url, datos, { headers } )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
 }

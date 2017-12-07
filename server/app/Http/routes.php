@@ -39,5 +39,6 @@ Route::group(['prefix' => 'busquedas'], function()
 
 Route::group(['prefix' => 'administracion'], function()
 {
-    Route::post('nuevoUsuario', 'RegDatosController@nuevoUsuario');
+  Route::post('nuevoUsuario', 'RegDatosController@nuevoUsuario');
+  Route::post('editaUsuario', 'RegDatosController@editaUsuario');
 });

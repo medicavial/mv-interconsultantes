@@ -61,33 +61,33 @@
           </tr>
         </thead>
         <tbody>
-          <ng-container *ngFor="let usuario of listadoUsuarios; let i = index">
+          <ng-container *ngFor="let user of listadoUsuarios; let i = index">
             <tr class="seleccion animated fadeIn fast text-primary"
-                *ngIf="usuario.PER_clave === 2 && ver.admin" (click)="editaUsuario(usuario)">
-              <!-- <th scope="row">{{ usuario.USU_id }}</th> -->
+                *ngIf="user.USU_login != usuario.username && user.PER_clave === 2 && ver.admin" (click)="editaUsuario(user)">
+              <!-- <th scope="row">{{ user.USU_id }}</th> -->
               <!-- <th scope="row">{{ i+1 }}</th> -->
-              <td>{{ usuario.USU_login }}</td>
-              <td>{{ usuario.USU_nombreCompleto }}</td>
-              <td>{{ usuario.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
-              <td>{{ usuario.PER_nombre }}</td>
+              <td>{{ user.USU_login }}</td>
+              <td>{{ user.USU_nombreCompleto }}</td>
+              <td>{{ user.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
+              <td>{{ user.PER_nombre }}</td>
             </tr>
 
             <tr class="seleccion animated fadeIn fast"
-                *ngIf="usuario.PER_clave >= 3 && usuario.USU_activo === 1" (click)="editaUsuario(usuario)">
+                *ngIf="user.PER_clave >= 3 && user.USU_activo === 1" (click)="editaUsuario(user)">
               <!-- <th scope="row">{{ i+1 }}</th> -->
-              <td>{{ usuario.USU_login }}</td>
-              <td>{{ usuario.USU_nombreCompleto }}</td>
-              <td>{{ usuario.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
-              <td>{{ usuario.PER_nombre }}</td>
+              <td>{{ user.USU_login }}</td>
+              <td>{{ user.USU_nombreCompleto }}</td>
+              <td>{{ user.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
+              <td>{{ user.PER_nombre }}</td>
             </tr>
 
             <tr class="seleccion animated fadeIn fast text-muted"
-                *ngIf="usuario.USU_activo === 0 && ver.inactivos === true" (click)="editaUsuario(usuario)">
+                *ngIf="user.USU_activo === 0 && ver.inactivos === true" (click)="editaUsuario(user)">
               <!-- <th scope="row">{{ i+1 }}</th> -->
-              <td>{{ usuario.USU_login }}</td>
-              <td>{{ usuario.USU_nombreCompleto }}</td>
-              <td>{{ usuario.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
-              <td>{{ usuario.PER_nombre }}</td>
+              <td>{{ user.USU_login }}</td>
+              <td>{{ user.USU_nombreCompleto }}</td>
+              <td>{{ user.USU_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }}</td>
+              <td>{{ user.PER_nombre }}</td>
             </tr>
           </ng-container>
         </tbody>
@@ -206,7 +206,7 @@
     <div class="modal-content">
       <div class="modal-header bg-purple text-white">
         <h5 class="modal-title" id="titulo"><i class="mdi mdi-clipboard-account"></i> Editar usuario</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" (click)="cancelaEdicion()" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -214,41 +214,57 @@
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
-              <label for="tipoUsuario">Tipo de usuario</label>
+              <label for="tipoUsuario">Tipo de usuario:</label>
               <div class="input-group">
                 <div class="input-group-addon">
                   <i class="mdi mdi-account-convert"></i>
                 </div>
-                <select class="form-control" id="tipoUsuario">
+                <select class="form-control" id="tipoUsuario" [(ngModel)]="usrEditado.permiso">
                   <option disabled value="">* Seleccione una opción</option>
                   <option *ngFor="let permiso of tiposPermisos" value="{{ permiso.PER_clave }}">{{ permiso.PER_nombre }}</option>
                 </select>
               </div>
             </div>
           </div>
-        </div>
+        <!-- </div>
 
-        <div class="row">
+        <div class="row"> -->
           <div class="col-md-6">
-            <label class="custom-control custom-radio">
-              <input id="radio1" name="radio" type="radio" class="custom-control-input">
-              <span class="custom-control-indicator"></span>
-              <span class="custom-control-description">Activo</span>
-            </label>
-            <label class="custom-control custom-radio">
-              <input id="radio2" name="radio" type="radio" class="custom-control-input">
-              <span class="custom-control-indicator"></span>
-              <span class="custom-control-description">Inactivo</span>
-            </label>
+            <label for="radios">Status del usuario:</label>
+            <div class="input-group custom-controls-stacked">
+              <label class="custom-control custom-radio" id="radios">
+                <input id="radio1" name="statusUsuario" type="radio" class="purple custom-control-input" [value]="1"
+                       [checked]="usrEditado.status === 1" [(ngModel)]="usrEditado.status">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">Activo</span>
+              </label>
+              <label class="custom-control custom-radio">
+                <input id="radio2" name="statusUsuario" type="radio" class="purple custom-control-input" [value]="0"
+                       [checked]="usrEditado.status === 0" [(ngModel)]="usrEditado.status">
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">Inactivo</span>
+              </label>
+            </div>
+
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-outline-purple">
-          <i class="mdi mdi-content-save"></i>
-          Guardar cambios
-        </button>
+        <div class="col-sm-6 col-md-3 col-lg-2">
+          <button type="button" class="btn btn-outline-secondary btn-block" (click)="cancelaEdicion()">Cancelar</button>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-4">
+          <button type="button" class="btn btn-purple btn-block" (click)="guardaEdicion()"
+                  [disabled]="!verificaCambios() || trabajando" *ngIf="usrEditado.id != null">
+            <span *ngIf="!trabajando">
+              <i class="mdi mdi-content-save"></i> Guardar cambios
+            </span>
+
+            <span *ngIf="trabajando">
+              <i class="fa fa-cog fa-spin fa-fw"></i>
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

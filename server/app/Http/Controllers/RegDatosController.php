@@ -366,4 +366,23 @@ class RegDatosController extends Controller {
 		return $respuesta;
 	}
 
+	public function editaUsuario()
+	{
+		$id				= Input::get('id');
+		$permiso	= Input::get('permiso');
+		$status		= Input::get('status');
+
+		try {
+			$respuesta = DB::table('redQx_usuarios')
+											->where('USU_id', $id)
+											->update(['USU_activo'	=> DB::raw($status),
+																'PER_clave' 	=> $permiso
+																]);
+		} catch (Exception $e) {
+			$respuesta = array('error' => $e, 'mensaje' => 'error al actualizar');
+		}
+
+		return $respuesta;
+	}
+
 }
