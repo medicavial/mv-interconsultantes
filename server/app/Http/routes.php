@@ -24,6 +24,8 @@ Route::group(['prefix' => 'paciente'], function()
     Route::get('receta-{folio}', 'BusquedasController@getRecetaAbierta');
     Route::post('guardaIndicacion', 'RegDatosController@guardaIndicacion');
     Route::get('recetas-{folio}', 'BusquedasController@getRecetasXfolio');
+    Route::post('cierraAtencion', 'RegDatosController@cierraAtencion');
+    Route::post('actualizaObservaciones', 'RegDatosController@actualizaObs');
 });
 
 Route::group(['prefix' => 'busquedas'], function()

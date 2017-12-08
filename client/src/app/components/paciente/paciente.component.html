@@ -2,26 +2,51 @@
 <!-- Samuel Ramírez - Octubre 2017 -->
 
 <div class="container animated fadeIn fast">
-  <div class="card border-warning mb-3">
+  <div class="card border-info mb-3">
     <!-- <div class="card-header text-white bg-warning">Detalle del paciente</div> -->
     <div class="card-body">
       <div class="row">
-        <div class="col-md-9">
+        <div class="col-lg-8 col-md-12">
           <h4 class="card-title">{{ paciente.nombre }}</h4>
           <h6 class="card-subtitle mb-2 text-muted">{{ paciente.registro }}: {{ paciente.folio }}</h6>
-          <button type="button" class="btn btn-outline-purple btn-sm seleccion" (click)="confirmaCierre()">
-            <i class="mdi mdi-check-all"></i>
-            Cerrar atención
-          </button>
         </div>
-        <div class="col-md-3 text-secondary text-right">
-          <small>Ultima actualización: {{ digitales.horaConsulta }}</small>
-          <button type="button" class="btn btn-light btn-sm seleccion" (click)="getDigitales()">
+        <div class="col-lg-4 col-md-12 text-secondary text-right">
+          <div class="">
+            <small>Ultima actualización: {{ digitales.horaConsulta }}</small>
+          </div>
+
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-outline-info btn-sm seleccion" (click)="getDigitales()">
+              <i class="mdi mdi-refresh"></i>
+              Actualizar datos
+            </button>
+            <button type="button" class="btn btn-outline-yellow btn-sm seleccion" data-toggle="modal" data-target="#cerrarAtencion">
+              <i class="mdi mdi-check-all"></i>
+              Cerrar atención
+            </button>
+          </div>
+
+          <!-- <button type="button" class="btn btn-light btn-sm seleccion" (click)="getDigitales()">
             <i class="mdi mdi-refresh"></i>
             Actualizar datos
           </button>
+          <button type="button" class="btn btn-outline-yellow btn-sm seleccion" data-toggle="modal" data-target="#cerrarAtencion">
+            <i class="mdi mdi-check-all"></i>
+            Cerrar atención
+          </button> -->
         </div>
       </div>
+
+      <div class="espacio-titulo-card" *ngIf="paciente.observaciones!= null"></div>
+      <div class="row" *ngIf="paciente.observaciones!= null">
+          <div class="col-md-12">
+            <h6>Observaciones:</h6>
+            <p>
+              {{ paciente.observaciones }}
+            </p>
+          </div>
+      </div>
+
       <span class="text-info animated fadeIn fast" *ngIf="buscando===true">Obteniendo datos <i class="fa fa-cog fa-spin fa-fw"></i></span>
     </div>
   </div>
@@ -30,7 +55,7 @@
 
   <div class="row">
 
-    <div class="col-md-4" *ngIf="usuario.PER_clave === 1 || usuario.PER_clave === 2">
+    <div class="col-md-4" *ngIf="usuario.PER_asignaciones === 1">
       <div class="card bg-light text-white seleccion animated fadeIn" (click)="irAsignacion()">
         <img class="card-img img-bg-tarjeta" src="assets/img/bg/doctor.jpg">
         <div class="card-img-overlay row align-items-center">
@@ -57,8 +82,17 @@
       </div>
     </div>
 
-    <div class="col-md-12 d-none d-lg-block">
+    <!-- <div class="col-md-12 d-none d-lg-block">
       &nbsp;
+    </div> -->
+
+    <div class="col-md-4" *ngIf="digitales.listaDigitales">
+      <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('observaciones')">
+        <img class="card-img img-bg-tarjeta" src="assets/img/bg/pizarra.jpg">
+        <div class="card-img-overlay row align-items-center">
+          <h4 class="col card-title text-center con-sombra">Observaciones</h4>
+        </div>
+      </div>
     </div>
 
     <!-- <div class="col-md-4" *ngIf="digitales.listaDigitales">
@@ -266,6 +300,85 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-outline-success">Alguna acción</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Confirmación para cerrar atención -->
+<div class="modal fade" id="cerrarAtencion" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-yellow text-white">
+        <h5 class="modal-title" >
+          <i class="mdi mdi-clipboard-check"></i>
+          Cerrar Atención...
+        </h5>
+        <button type="button" class="close text-white seleccion" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        ¿Está seguro de que desea cerrar la atención?
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-yellow seleccion" (click)="confirmaCierre()" [disabled]="trabajando">
+          <span *ngIf="!trabajando">
+            <i class="mdi mdi-check-all"></i>
+          </span>
+
+          <span *ngIf="trabajando">
+            <i class="fa fa-cog fa-spin fa-fw"></i>
+          </span>
+          Cerrar Atención
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- modal observaciones -->
+<div class="modal fade" id="observaciones" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-green text-white">
+        <h5 class="modal-title" >
+          <i class="mdi mdi-message-alert"></i>
+          Mensajes y observaciones
+        </h5>
+        <button type="button" class="close text-white seleccion" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- <form> -->
+          <div class="form-group">
+            <label for="obs">Observaciones:</label>
+            <textarea class="form-control" id="obs" rows="10" [(ngModel)]="observaciones.edicion"
+                      [disabled]="trabajando"></textarea>
+          </div>
+        <!-- </form> -->
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-green" [disabled]="observaciones.edicion === observaciones.original"
+                (click)="guardaObservaciones()">
+          <span *ngIf="!trabajando">
+            <i class="mdi mdi-send"></i>
+          </span>
+
+          <span *ngIf="trabajando">
+            <i class="fa fa-cog fa-spin fa-fw"></i>
+          </span>
+          Actualizar
+        </button>
       </div>
     </div>
   </div>

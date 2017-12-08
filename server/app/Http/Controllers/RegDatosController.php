@@ -389,4 +389,43 @@ class RegDatosController extends Controller {
 		return $respuesta;
 	}
 
+	public function cierraAtencion()
+	{
+		$idAsignacion	= Input::get('idAsignacion');
+		$folio				= Input::get('folio');
+		$username			= Input::get('username');
+		$unidad				= Input::get('unidad');
+
+		try {
+			$respuesta = DB::table('redQx_asignaciones')
+											->where('ASI_id', $idAsignacion)
+											->where('Exp_folio', $folio)
+											->update(['UNI_clave' => $unidad,
+																'ASI_fechaAtencion' => DB::raw('now()'),
+																'ASI_terminada'	=> DB::raw(1),
+																'USU_terminada' 	=> $username
+																]);
+		} catch (Exception $e) {
+			$respuesta = array('error' => $e, 'mensaje' => 'error al actualizar');
+		}
+
+		return $respuesta;
+	}
+
+	public function actualizaObs()
+	{
+		$idAsignacion		= Input::get('idAsignacion');
+		$observaciones	= Input::get('observaciones');
+
+		try {
+			$respuesta = DB::table('redQx_asignaciones')
+											->where('ASI_id', $idAsignacion)
+											->update(['ASI_observaciones' => $observaciones]);
+		} catch (Exception $e) {
+			$respuesta = array('error' => $e, 'mensaje' => 'error al actualizar');
+		}
+
+		return $respuesta;
+	}
+
 }

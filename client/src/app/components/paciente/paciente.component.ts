@@ -17,9 +17,14 @@ declare var $: any;
 export class PacienteComponent implements OnInit {
   formUpload: FormGroup;
   cargando: boolean = false;
+  trabajando: boolean = false;
   refresh: boolean = false;
   paciente:any = [];
   digitales:any = [];
+  observaciones:any = {
+    original: null,
+    edicion: null,
+  };
   buscando:boolean = false;
   fechaDatos = null;
   usuario:any = JSON.parse(sessionStorage.getItem('session'))[0];
@@ -33,7 +38,10 @@ export class PacienteComponent implements OnInit {
                private router:Router,
                private formBuilder:FormBuilder ) {
                  if (sessionStorage.getItem('paciente')) {
-                   this.paciente = JSON.parse(sessionStorage.getItem('paciente'));
+                     this.paciente = JSON.parse(sessionStorage.getItem('paciente'));
+                     this.observaciones.original  = this.paciente.observaciones;
+                     this.observaciones.edicion   = this.paciente.observaciones;
+                     console.log(this.paciente);
                  } else{
                    this.router.navigate(['busqueda']);
                  }
@@ -51,7 +59,7 @@ export class PacienteComponent implements OnInit {
   }
 
   ngOnInit() {
-    // $('#digitales').modal('show');
+    this.abreModal('observaciones');
     this.createForm();
     // console.log(this.paciente);
     if (sessionStorage.getItem('digitales')) {
@@ -124,7 +132,51 @@ export class PacienteComponent implements OnInit {
   }
 
   confirmaCierre(){
-    console.log('cerrar caso');
+    this.trabajando = true;
+
+    let datos = {
+      idAsignacion  : this.paciente.idAsignacion,
+      folio         : this.paciente.folio,
+      username      : this.usuario.username,
+      unidad        : this.usuario.unidad
+    }
+
+    this._registroDatos.cerrarAtencion( datos )
+                        .subscribe( data => {
+                          this.trabajando=false;
+                          console.log(data);
+                          if (data === 1) {
+                            $('#cerrarAtencion').modal('hide');
+                            this.router.navigate(['home']);
+                          } else{
+                            alert('error al cerrar la atención, intentelo nuevamente');
+                          }
+                        });
+  }
+
+  guardaObservaciones(){
+    this.trabajando=true;
+
+    let datos = {
+      idAsignacion  : this.paciente.idAsignacion,
+      observaciones : this.observaciones.edicion,
+    }
+
+    this._registroDatos.actualizaObs( datos )
+                        .subscribe( data => {
+                          this.trabajando=false;
+                          console.log(data);
+                          if (data === 1) {
+                            this.paciente.observaciones = this.observaciones.edicion;
+                            sessionStorage.removeItem('paciente');
+                            sessionStorage.setItem('paciente', JSON.stringify(this.paciente));
+                            this.paciente = JSON.parse(sessionStorage.getItem('paciente'));
+
+                            $('#observaciones').modal('hide');
+                          } else{
+                            alert('error al cerrar la atención, intentelo nuevamente');
+                          }
+                        });
   }
 
 }

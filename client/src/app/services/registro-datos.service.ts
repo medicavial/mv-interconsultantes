@@ -217,4 +217,28 @@ export class RegistroDatosService {
                });
   }
 
+  cerrarAtencion( datos ){
+    let url = `${ this.api }/paciente/cierraAtencion`;
+    let headers = new Headers({
+      'Content-Type':'aplication/json'
+    });
+
+    return this._http.post( url, datos, { headers } )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  actualizaObs( datos ){
+    let url = `${ this.api }/paciente/actualizaObservaciones`;
+    let headers = new Headers({
+      'Content-Type':'aplication/json'
+    });
+
+    return this._http.post( url, datos, { headers } )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
 }

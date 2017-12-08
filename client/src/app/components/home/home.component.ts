@@ -119,6 +119,8 @@ export class HomeComponent implements OnInit {
     this._busquedasService.buscaPaciente( busca )
                           .subscribe( data => {
                             paciente = data[0];
+                            paciente.idAsignacion = asignacion.ASI_id;
+                            paciente.observaciones = asignacion.ASI_observaciones;
                             console.log(paciente);
                             sessionStorage.setItem('paciente', JSON.stringify( paciente ));
                             this.router.navigate(['paciente']);
