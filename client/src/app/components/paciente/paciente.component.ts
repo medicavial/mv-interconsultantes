@@ -122,4 +122,9 @@ export class PacienteComponent implements OnInit {
   irAsignacion(){
     this.router.navigate(['asignacion']);
   }
+
+  confirmaCierre(){
+    console.log('cerrar caso');
+  }
+
 }

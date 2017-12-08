@@ -41,4 +41,5 @@ Route::group(['prefix' => 'administracion'], function()
 {
   Route::post('nuevoUsuario', 'RegDatosController@nuevoUsuario');
   Route::post('editaUsuario', 'RegDatosController@editaUsuario');
+  Route::get('listadoAsignaciones', 'BusquedasController@getListadoAsignaciones');
 });

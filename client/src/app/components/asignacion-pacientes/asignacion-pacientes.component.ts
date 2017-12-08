@@ -30,7 +30,9 @@ export class AsignacionPacientesComponent implements OnInit {
     fechaAtencion: null,
     cveUnidad: null,
     medicoReg: false,
-    loginmedico: null
+    loginmedico: null,
+    motivo:null,
+    observaciones:null
   }
 
   constructor( private _busquedasService:BusquedasService,
@@ -50,6 +52,11 @@ export class AsignacionPacientesComponent implements OnInit {
                                                   Validators.required,
                                                   Validators.min(1)
                                                 ]),
+                   'motivo': new FormControl( '', [
+                                                 Validators.required,
+                                                 Validators.minLength(3)
+                                               ]),
+                   'observaciones': new FormControl( '', []),
                    // 'unidad': new FormControl( 0, [
                    //                               Validators.required,
                    //                               Validators.min(1)
@@ -62,8 +69,8 @@ export class AsignacionPacientesComponent implements OnInit {
 
   ngOnInit() {
     this.getMedicos();
-    this.getUnidades();
-    this.getUsuarios();
+    // this.getUnidades();
+    // this.getUsuarios();
     console.log(this.asignacion);
   }
 
@@ -93,11 +100,11 @@ export class AsignacionPacientesComponent implements OnInit {
 
   buscaUsuarioMedico( cveMedico ){
     console.log(cveMedico);
-    for (let i = 0; i < this.listadoUsuarios.length; i++) {
+    for (let i = 0; i < this.listadoMedicos.length; i++) {
 
-      if ( this.listadoUsuarios[i].USU_id === cveMedico ) {
-        console.log(this.listadoUsuarios[i]);
-          let username = this.listadoUsuarios[i].USU_login;
+      if ( this.listadoMedicos[i].USU_id === cveMedico ) {
+        console.log(this.listadoMedicos[i]);
+          let username = this.listadoMedicos[i].USU_login;
           return username;
       }
     }
@@ -107,18 +114,11 @@ export class AsignacionPacientesComponent implements OnInit {
     this.trabajando = true;
     this.asignacion.folio = this.paciente.folio;
     this.asignacion.cveMedico = parseInt(this.asignacionForm.value.medico);
-    this.asignacion.cveUnidad = this.asignacionForm.value.unidad;
-    this.asignacion.fechaAtencion = this.asignacionForm.value.fechaHora;
+    // this.asignacion.cveUnidad = this.asignacionForm.value.unidad;
+    // this.asignacion.fechaAtencion = this.asignacionForm.value.fechaHora;
     this.asignacion.loginmedico = this.buscaUsuarioMedico( this.asignacion.cveMedico );
-
-    //buscamos el medico por Clave de medico
-    // if ( this.buscaUsuarioMedico( this.asignacion.cveMedico ) === false ) {
-    //     console.log('se genera usuario y contraseña');
-    //     this.asignacion.medicoReg = false;
-    // } else{
-    //   console.log('ya hay credenciales');
-    //   this.asignacion.medicoReg = true;
-    // };
+    this.asignacion.motivo = this.asignacionForm.value.motivo;
+    this.asignacion.observaciones = this.asignacionForm.value.observaciones;
 
     this._registroDatos.guardaAsignacion( this.asignacion )
                           .subscribe( data => {

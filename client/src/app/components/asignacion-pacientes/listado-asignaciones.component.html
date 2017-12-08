@@ -1,0 +1,48 @@
+<div class="container animated fadeIn fast">
+  <div class="card border-info mb-3">
+    <div class="card-body text-dark">
+      <h4 class="card-title text-info"><i class="mdi mdi-clipboard-text"></i> Listado de asignaciones</h4>
+      <p class="card-text text-secondary">
+        Se muestran las asignaciones pendientes dentro de los últimos 3 meses.
+      </p>
+
+      <div class="espacio"></div>
+
+      <table class="table table-hover table-sm table-responsive" *ngIf="listadoAsignaciones.length>0">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Folio</th>
+            <th scope="col">Nombre Paciente</th>
+            <th scope="col">Motivo</th>
+            <th scope="col">Fecha Asignado</th>
+            <th scope="col">Editar</th>
+            <th scope="col">Cancelar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let asignacion of listadoAsignaciones; let i = index"
+              class="animated fadeIn fast">
+            <th scope="row">{{ i+1 }}</th>
+            <td>{{ asignacion.Exp_folio }}</td>
+            <td>{{ asignacion.Exp_completo }}</td>
+            <td>{{ asignacion.ASI_motivo | uppercase }}</td>
+            <td>{{ asignacion.ASI_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }} {{ asignacion.ASI_fechaRegistro | slice:11:16 }} hrs.</td>
+            <td>
+              <button type="button" class="btn btn-outline-purple btn-sm btn-block">
+                <span *ngIf="!trabajando"><i class="mdi mdi-pencil"></i> Editar</span>
+                <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+              </button>
+            </td>
+            <td>
+              <button type="button" class="btn btn-outline-warning btn-sm btn-block">
+                <span *ngIf="!trabajando"><i class="mdi mdi-cancel"></i> Cancelar</span>
+                <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

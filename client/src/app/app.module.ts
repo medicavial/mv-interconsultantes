@@ -23,6 +23,7 @@ import { NotaSoapComponent } from './components/notas-medicas/nota-soap.componen
 import { AsignacionPacientesComponent } from './components/asignacion-pacientes/asignacion-pacientes.component';
 import { AdminUsariosComponent } from './components/admin-usarios/admin-usarios.component';
 import { RecetaInternaComponent } from './components/notas-medicas/receta-interna.component';
+import { ListadoAsignacionesComponent } from './components/asignacion-pacientes/listado-asignaciones.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { RecetaInternaComponent } from './components/notas-medicas/receta-intern
     NotaSoapComponent,
     AsignacionPacientesComponent,
     AdminUsariosComponent,
-    RecetaInternaComponent
+    RecetaInternaComponent,
+    ListadoAsignacionesComponent,
   ],
   imports: [
     BrowserModule,

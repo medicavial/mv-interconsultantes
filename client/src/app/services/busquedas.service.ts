@@ -169,4 +169,13 @@ export class BusquedasService {
                });
   }
 
+  getListadoAsignaciones(){
+    let url = `${ this.api }/administracion/listadoAsignaciones`;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
 }

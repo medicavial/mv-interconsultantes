@@ -14,16 +14,19 @@
       <!-- formulario para la asignacion de médicos -->
       <form [formGroup]="asignacionForm" (ngSubmit)="guardaAsignacion()">
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
-              <!-- <label for="listaMedicos">Médico que atenderá al paciente</label> -->
+              <label class="col-form-label" for="motivo"
+                     [ngClass]="{'text-danger': asignacionForm.controls.medico.touched && !asignacionForm.controls.medico.valid}">
+                <i class="mdi mdi-stethoscope"></i>
+                Médico:
+              </label>
               <select class="form-control" id="listaMedicos"
                       formControlName="medico"
                       [ngClass]="{'is-invalid': asignacionForm.controls.medico.touched && asignacionForm.controls.medico.value === 0}">
-                <option value="0" selected disabled>* Seleccione al médico</option>
-                <!-- <option *ngFor="let medico of listadoMedicos" value="{{ medico.Med_clave }}">
-                  {{ medico.Uni_nombrecorto }} - {{ medico.nombreCompleto | uppercase}}
-                </option> -->
+                <option value="0" selected disabled>
+                  * Seleccione al médico
+                </option>
                 <option *ngFor="let medico of listadoMedicos" value="{{ medico.USU_id }}">
                   {{ medico.PER_nombre }} - {{ medico.USU_nombreCompleto | uppercase}}
                 </option>
@@ -31,31 +34,40 @@
             </div>
           </div>
 
-          <!-- <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
-              <label for="listaMedicos">Unidad de atención</label>
-              <select class="form-control" id="listaUnidades"
-                      formControlName="unidad"
-                      [ngClass]="{'is-invalid': asignacionForm.controls.unidad.touched && asignacionForm.controls.unidad.value === 0}">
-                <option value="0" selected disabled>* Seleccione</option>
-                <option value="{{ unidad.Uni_clave }}" *ngFor="let unidad of listadoUnidades">{{ unidad.Uni_nombrecorto }}</option>
-              </select>
+              <label class="col-form-label" for="motivo"
+                     [ngClass]="{'text-danger': asignacionForm.controls.motivo.touched && !asignacionForm.controls.motivo.valid}">
+                <i class="mdi mdi-content-paste"></i>
+                Motivo de asignación:
+              </label>
+              <input type="text" class="form-control mayuculas" id="motivo" placeholder="* Especifique el motivo de la asignación " formControlName="motivo"
+                     [ngClass]="{'is-invalid': asignacionForm.controls.motivo.touched && !asignacionForm.controls.motivo.valid}">
             </div>
           </div>
+        </div>
 
-          <div class="col-md-4">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="espacio-titulo-card"></div>
             <div class="form-group">
-              <label for="fechaHora">Programado para el</label>
-                <input class="form-control" type="datetime-local" id="fechaHora" [(ngModel)]="asignacion.fechaAtencion" formControlName="fechaHora">
+              <label for="motivoAsignacion">
+                <i class="mdi mdi-glasses"></i>
+                Observaciones:
+              </label>
+              <textarea class="form-control" id="motivoAsignacion" rows="4" formControlName="observaciones" placeholder="* Esto lo verá el médico al atender al paciente.">
+              </textarea>
             </div>
-          </div> -->
-        <!-- </div>
+          </div>
+        </div>
 
-        <div class="row"> -->
-          <div class="col-md-2">
+        <div class="row">
+          <div class="col-md-3" style="margin: auto !important">
+            <div class="espacio"></div>
             <button type="success" class="btn btn-success btn-block" [disabled]="!asignacionForm.valid || trabajando">
               <span *ngIf="!trabajando">
-                Confirmar <i class="mdi mdi-send"></i>
+                <i class="mdi mdi-content-save"></i>
+                Guardar
               </span>
 
               <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>

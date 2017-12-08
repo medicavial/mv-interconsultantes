@@ -103,6 +103,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['usuarios']);
   }
 
+  irlistadoAsignaciones(){
+    this.router.navigate(['listadoAsignaciones']);
+  }
+
   seleccionPaciente( asignacion ){
     console.log( asignacion );
     let busca = {

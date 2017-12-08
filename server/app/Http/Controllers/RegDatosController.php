@@ -56,12 +56,16 @@ class RegDatosController extends Controller {
 		$cveMedico 			= Input::get('cveMedico');
 		$username				= Input::get('username');
 		$loginMedico		= Input::get('loginmedico');
+		$motivo					= Input::get('motivo');
+		$observaciones	= Input::get('observaciones');
 
 		try {
 			$respuesta = DB::table('redQx_asignaciones')
 											->insert([
 														    'Exp_folio' 						=> $folio,
 																'USU_loginMedico' 			=> $loginMedico,
+																'ASI_motivo'						=> $motivo,
+																'ASI_observaciones'			=> $observaciones,
 																'USU_loginRegistro' 		=> $username,
 																'ASI_fechaRegistro' 		=> DB::raw('now()')
 																]);

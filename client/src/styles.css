@@ -136,11 +136,11 @@ body{
 }
 
 .bg-green {
-  background-color: #00c853 !important;
+  background-color: #7cb342 !important;
 }
 
 .text-green {
-  color: #00c853;
+  color: #7cb342;
 }
 
 .bg-lime {
@@ -158,6 +158,22 @@ body{
 
 .text-orange {
   color: #f57f17;
+}
+
+.bg-yellow {
+  background-color: #ffab00 !important;
+}
+
+.text-yellow {
+  color: #ffab00;
+}
+
+.bg-cyan {
+  background-color: #00b0ff !important;
+}
+
+.text-cyan {
+  color: #00b0ff;
 }
 
 /*---------- BOTONES PROPIOS ----------*/

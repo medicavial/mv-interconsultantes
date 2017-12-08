@@ -12,7 +12,7 @@
 
 <div class="espacio"></div>
 
-<div class="container" *ngIf="usuario.PER_clave === 1 || usuario.PER_clave === 2">
+<div class="container" *ngIf="usuario.PER_administracion === 1">
   <div class="row">
     <div class="col-md-4">
       <div class="card text-white bg-purple seleccion animated fadeIn" (click)="irAsignacion()">
@@ -25,8 +25,19 @@
 
     <div class="col-md-4 espacio-titulo-card d-block d-sm-none d-none d-sm-block d-md-none"></div>
 
-    <div class="col-md-4" *ngIf="usuario.PER_clave === 1 || usuario.PER_clave === 2">
-      <div class="card text-white bg-lime seleccion animated fadeIn" (click)="irUsuarios()">
+    <div class="col-md-4" *ngIf="usuario.PER_administracion === 1">
+      <div class="card text-white bg-green seleccion animated fadeIn" (click)="irlistadoAsignaciones()">
+        <div class="card-body">
+          <h2 class=" text-center"><i class="mdi mdi-clipboard-text"></i></h2>
+          <h5 class="card-title text-center">Listado de asignaciones</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 espacio-titulo-card d-block d-sm-none d-none d-sm-block d-md-none"></div>
+
+    <div class="col-md-4" *ngIf="usuario.PER_administracion === 1">
+      <div class="card text-white bg-yellow seleccion animated fadeIn" (click)="irUsuarios()">
         <div class="card-body">
           <h2 class=" text-center"><i class="mdi mdi-account-settings-variant"></i></h2>
           <h5 class="card-title text-center">Administración de usuarios</h5>
