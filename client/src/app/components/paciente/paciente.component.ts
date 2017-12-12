@@ -59,7 +59,7 @@ export class PacienteComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.abreModal('observaciones');
+    // this.abreModal('observaciones');
     this.createForm();
     // console.log(this.paciente);
     if (sessionStorage.getItem('digitales')) {

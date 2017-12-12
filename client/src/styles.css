@@ -26,6 +26,11 @@ body{
   height: 2em;
 }
 
+.espacio-cards{
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
 .loader,
 .loader:after {
   border-radius: 50%;
@@ -372,4 +377,26 @@ body{
   color: #fff;
   background-color: #7cb342;
   border-color: #7cb342;
+}
+
+.custom-control-input:checked.green ~ .custom-control-indicator {
+  color: #fff;
+  background-color: #7cb342; /* color normal */
+}
+
+.custom-control-input:focus.green ~ .custom-control-indicator {
+  box-shadow: 0 0 0 1px #fff, 0 0 0 3px #7cb342;
+}
+
+.custom-control-input:active.green ~ .custom-control-indicator {
+  color: #fff;
+  background-color: #9ccc65; /* color claro */
+}
+
+.custom-control-input:disabled.green ~ .custom-control-indicator {
+  background-color: #c5e1a5; /* color muy claro */
+}
+
+.custom-control-input:disabled.green ~ .custom-control-description {
+  color: #868e96; /* gris */
 }

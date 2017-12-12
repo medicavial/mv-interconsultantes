@@ -3,32 +3,40 @@
     <div class="card-body text-dark">
       <h4 class="card-title text-info"><i class="mdi mdi-clipboard-text"></i> Listado de asignaciones</h4>
       <p class="card-text text-secondary">
-        Se muestran las asignaciones pendientes dentro de los últimos 3 meses.
+        Se muestran las asignaciones abiertas dentro de los últimos 3 meses.
       </p>
 
-      <div class="espacio"></div>
+      <div class="espacio" *ngIf="!buscando"></div>
 
-      <table class="table table-hover table-sm table-responsive" *ngIf="listadoAsignaciones.length>0">
+      <hr *ngIf="buscando">
+
+      <p *ngIf="buscando" class="text-center">
+        <span *ngIf="buscando"><i class="fa fa-cog fa-spin fa-fw fa-4x text-secondary"></i></span>
+        <br>
+        Recuperando datos
+      </p>
+
+      <table class="table table-hover table-sm table-responsive" *ngIf="listadoAsignaciones.length>0 && !buscando">
         <thead>
           <tr>
             <th scope="col">#</th>
             <th scope="col">Folio</th>
             <th scope="col">Nombre Paciente</th>
             <th scope="col">Motivo</th>
+            <th scope="col">Médico</th>
             <th scope="col">Fecha Asignado</th>
-            <th scope="col">Editar</th>
-            <th scope="col">Cancelar</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let asignacion of listadoAsignaciones; let i = index"
-              class="animated fadeIn fast">
+              class="animated fadeIn fast seleccion" (click)="seleccionaDatos(asignacion)">
             <th scope="row">{{ i+1 }}</th>
             <td>{{ asignacion.Exp_folio }}</td>
             <td>{{ asignacion.Exp_completo }}</td>
             <td>{{ asignacion.ASI_motivo | uppercase }}</td>
+            <td>{{ asignacion.USU_nombreCompleto | uppercase }}</td>
             <td>{{ asignacion.ASI_fechaRegistro | slice:0:10 | date:'dd/MMM/yyyy' }} {{ asignacion.ASI_fechaRegistro | slice:11:16 }} hrs.</td>
-            <td>
+            <!-- <td>
               <button type="button" class="btn btn-outline-purple btn-sm btn-block">
                 <span *ngIf="!trabajando"><i class="mdi mdi-pencil"></i> Editar</span>
                 <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
@@ -39,10 +47,105 @@
                 <span *ngIf="!trabajando"><i class="mdi mdi-cancel"></i> Cancelar</span>
                 <span *ngIf="trabajando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
               </button>
-            </td>
+            </td> -->
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar asignaciones-->
+<div class="modal fade" id="editaAsignacion" tabindex="-1" role="dialog" aria-labelledby="editarAsignación" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-green text-white">
+        <h5 class="modal-title"><i class="mdi mdi-clipboard-text"></i> Editar asignación</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cancelaEdicion()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="usrlogin">Médico asignado:</label>
+              <div class="input-group">
+                <div class="input-group-addon">
+                  <i class="mdi mdi-account-convert"></i>
+                </div>
+                <select class="form-control" id="usrlogin" [(ngModel)]="editaDatos.nuevo.medico">
+                  <option disabled value="">* Seleccione una opción</option>
+                  <option *ngFor="let medico of listadoMedicos" value="{{ medico.USU_login }}">
+                    {{ medico.PER_nombre }} - {{ medico.USU_nombreCompleto }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="motivo">Motivo de asignación</label>
+              <div class="input-group">
+                <div class="input-group-addon">
+                  <i class="mdi mdi-content-paste"></i>
+                </div>
+                <input type="text" class="form-control" placeholder="" [(ngModel)]="editaDatos.nuevo.motivo">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="observaciones"><i class="mdi mdi-information"></i> Observaciones</label>
+              <textarea rows="5" class="form-control" id="observaciones" [(ngModel)]="editaDatos.nuevo.obs"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-md-12">
+              <label class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input green" [(ngModel)]="eliminar" >
+                <span class="custom-control-indicator"></span>
+                <span class="custom-control-description">Deseo eliminar esta asignación</span>
+              </label>
+            </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div class="col-sm-6 col-md-3 col-lg-2">
+          <button type="button" class="btn btn-outline-secondary btn-block" (click)="cancelaEdicion()">Cancelar</button>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-4">
+          <button type="button" class="btn btn-green btn-block animated fadeIn fast" (click)="guardaDatos()"
+                  [disabled]="!verificaEdicion() || trabajando" *ngIf="!eliminar">
+            <span *ngIf="!trabajando">
+              <i class="mdi mdi-content-save"></i> Guardar cambios
+            </span>
+
+            <span *ngIf="trabajando">
+              <i class="fa fa-cog fa-spin fa-fw"></i>
+            </span>
+          </button>
+
+          <button type="button" class="btn btn-outline-danger btn-block seleccion animated fadeIn fast"
+                  *ngIf="eliminar" (click)="eliminaAsignacion()" [disabled]="trabajando">
+            <span *ngIf="!trabajando">
+              <i class="mdi mdi-delete-forever"></i> Eliminar asignación
+            </span>
+
+            <span *ngIf="trabajando">
+              <i class="fa fa-cog fa-spin fa-fw"></i>
+            </span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

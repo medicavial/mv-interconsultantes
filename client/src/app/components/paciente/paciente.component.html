@@ -38,10 +38,10 @@
       </div>
 
       <div class="espacio-titulo-card" *ngIf="paciente.observaciones!= null"></div>
-      <div class="row" *ngIf="paciente.observaciones!= null">
+      <div class="row" *ngIf="paciente.observaciones != null">
           <div class="col-md-12">
             <h6>Observaciones:</h6>
-            <p>
+            <p class="text-truncate">
               {{ paciente.observaciones }}
             </p>
           </div>
@@ -54,8 +54,7 @@
   <!-- <div class="espacio"></div> -->
 
   <div class="row">
-
-    <div class="col-md-4" *ngIf="usuario.PER_asignaciones === 1">
+    <div class="col-md-4 espacio-cards" *ngIf="usuario.PER_asignaciones === 1">
       <div class="card bg-light text-white seleccion animated fadeIn" (click)="irAsignacion()">
         <img class="card-img img-bg-tarjeta" src="assets/img/bg/doctor.jpg">
         <div class="card-img-overlay row align-items-center">
@@ -64,7 +63,7 @@
       </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-4 espacio-cards">
       <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('notasMedicas')">
         <img class="card-img img-bg-tarjeta" src="assets/img/bg/stethoscope.jpg">
         <div class="card-img-overlay row align-items-center">
@@ -73,7 +72,7 @@
       </div>
     </div>
 
-    <div class="col-md-4" *ngIf="digitales.listaDigitales">
+    <div class="col-md-4 espacio-cards" *ngIf="digitales.listaDigitales">
       <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('digitales')">
         <img class="card-img img-bg-tarjeta" src="assets/img/bg/documents.jpg">
         <div class="card-img-overlay row align-items-center">
@@ -86,7 +85,7 @@
       &nbsp;
     </div> -->
 
-    <div class="col-md-4" *ngIf="digitales.listaDigitales">
+    <div class="col-md-4 espacio-cards" *ngIf="digitales.listaDigitales">
       <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('observaciones')">
         <img class="card-img img-bg-tarjeta" src="assets/img/bg/pizarra.jpg">
         <div class="card-img-overlay row align-items-center">
@@ -95,7 +94,7 @@
       </div>
     </div>
 
-    <!-- <div class="col-md-4" *ngIf="digitales.listaDigitales">
+    <!-- <div class="col-md-4 espacio-cards" *ngIf="digitales.listaDigitales">
       <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('facturas')">
         <img class="card-img img-bg-tarjeta" src="assets/img/bg/credit-card.jpg">
         <div class="card-img-overlay row align-items-center">
@@ -359,7 +358,7 @@
       <div class="modal-body">
         <!-- <form> -->
           <div class="form-group">
-            <label for="obs">Observaciones:</label>
+            <label for="obs" class="h6"><i class="mdi mdi-pencil-box-outline"></i> Observaciones:</label>
             <textarea class="form-control" id="obs" rows="10" [(ngModel)]="observaciones.edicion"
                       [disabled]="trabajando"></textarea>
           </div>

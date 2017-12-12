@@ -428,4 +428,46 @@ class RegDatosController extends Controller {
 		return $respuesta;
 	}
 
+	public function editaAsignacion()
+	{
+		$id				= Input::get('id');
+		$medico		= Input::get('medico');
+		$motivo		= Input::get('motivo');
+		$obs			= Input::get('obs');
+		$usuario 	= Input::get('usuario');
+
+		try {
+			$respuesta = DB::table('redQx_asignaciones')
+											->where('ASI_id', $id)
+											->update(['USU_loginMedico' 	=> $medico,
+																'ASI_motivo' 				=> $motivo,
+																'ASI_observaciones' => $obs,
+																'USU_loginRegistro' => $usuario]);
+		} catch (Exception $e) {
+			$respuesta = array('error' => $e, 'mensaje' => 'error al actualizar');
+		}
+
+		return $respuesta;
+	}
+
+	public function eliminaAsignacion()
+	{
+		$id				= Input::get('id');
+		$obs			= Input::get('obs');
+		$usuario 	= Input::get('usuario');
+
+		try {
+			$respuesta = DB::table('redQx_asignaciones')
+											->where('ASI_id', $id)
+											->update(['ASI_observaciones' 	=> $obs,
+																'USU_terminada' 			=> $usuario,
+																'ASI_cancelada'				=> DB::raw(1),
+																'ASI_fecha terminada'	=> DB::raw('now()')]);
+		} catch (Exception $e) {
+			$respuesta = array('error' => $e, 'mensaje' => 'error al actualizar');
+		}
+
+		return $respuesta;
+	}
+
 }

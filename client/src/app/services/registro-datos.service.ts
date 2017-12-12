@@ -241,4 +241,28 @@ export class RegistroDatosService {
                });
   }
 
+  editaAsignacion( datos ){
+    let url = `${ this.api }/administracion/editarAsignacion`;
+    let headers = new Headers({
+      'Content-Type':'aplication/json'
+    });
+
+    return this._http.post( url, datos, { headers } )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
+  eliminaAsignacion( datos ){
+    let url = `${ this.api }/administracion/eliminarAsignacion`;
+    let headers = new Headers({
+      'Content-Type':'aplication/json'
+    });
+
+    return this._http.post( url, datos, { headers } )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
 }

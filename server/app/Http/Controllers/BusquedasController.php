@@ -376,7 +376,7 @@ class BusquedasController extends Controller {
 	public function getListadoAsignaciones()
 	{
 		$respuesta = DB::table('redQx_asignaciones')
-										->select('redQx_asignaciones.*', 'Exp_completo', 'Uni_nombrecorto')
+										->select('redQx_asignaciones.*', 'Exp_completo', 'Uni_nombrecorto', 'USU_nombreCompleto', 'USU_id')
 										->leftJoin('Expediente', 'redQx_asignaciones.Exp_folio', '=', 'Expediente.Exp_folio')
 										->leftJoin('Unidad', 'redQx_asignaciones.UNI_clave', '=', 'Unidad.Uni_clave')
 										->join('redQx_usuarios', 'redQx_asignaciones.USU_loginMedico', '=', 'redQx_usuarios.USU_login')
