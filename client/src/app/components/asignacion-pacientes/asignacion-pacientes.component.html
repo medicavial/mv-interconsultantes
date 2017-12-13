@@ -3,6 +3,11 @@
 
 <div class="container animated fadeIn fast">
   <div class="card border-info mb-3">
+    <div class="card-header text-right bg-secundary">
+      <a [routerLink]="['/paciente']" class="text-info">
+        <i class="mdi mdi-arrow-left-thick"></i> Regresar al detalle del paciente
+      </a>
+    </div>
     <div class="card-body text-dark">
       <h4 class="card-title text-info"><i class="mdi mdi-account-switch"></i> Asignacion de médico para el paciente {{ paciente.nombre }}</h4>
       <p class="card-text text-secondary">

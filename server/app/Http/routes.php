@@ -26,6 +26,7 @@ Route::group(['prefix' => 'paciente'], function()
     Route::get('recetas-{folio}', 'BusquedasController@getRecetasXfolio');
     Route::post('cierraAtencion', 'RegDatosController@cierraAtencion');
     Route::post('actualizaObservaciones', 'RegDatosController@actualizaObs');
+    Route::get('asignacion-{folio}', 'BusquedasController@getAsignacion');
 });
 
 Route::group(['prefix' => 'busquedas'], function()
@@ -46,4 +47,5 @@ Route::group(['prefix' => 'administracion'], function()
   Route::get('listadoAsignaciones', 'BusquedasController@getListadoAsignaciones');
   Route::post('editarAsignacion', 'RegDatosController@editaAsignacion');
   Route::post('eliminarAsignacion', 'RegDatosController@eliminaAsignacion');
+  Route::get('correoAsignacion-{id}', 'RegDatosController@correoAsignacion');
 });

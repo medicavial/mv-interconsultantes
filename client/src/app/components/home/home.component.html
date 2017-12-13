@@ -60,11 +60,14 @@
       </h5>
 
       <hr *ngIf="pacientesAsignados.length<1">
-      <p *ngIf="pacientesAsignados.length<1" class="text-center">
-        <i class="mdi mdi-lightbulb-on-outline icono-grande text-secondary"></i>
-        <br>
-        En este momento no tiene pacientes asignados
-      </p>
+      <div *ngIf="pacientesAsignados.length<1" class="text-center">
+        <div>
+          <i class="mdi mdi-lightbulb-on-outline icono-grande text-secondary"></i>
+        </div>
+        <div>
+          En este momento no tiene pacientes asignados
+        </div>
+      </div>
 
       <table class="table table-hover table-sm table-responsive" *ngIf="pacientesAsignados.length>0">
         <thead>

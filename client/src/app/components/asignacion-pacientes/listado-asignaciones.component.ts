@@ -3,7 +3,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BusquedasService } from '../../services/busquedas.service';
 import { RegistroDatosService } from '../../services/registro-datos.service';
 import { AuthService } from '../../services/auth.service';
@@ -14,9 +14,10 @@ declare var $: any;
   templateUrl: './listado-asignaciones.component.html'
 })
 export class ListadoAsignacionesComponent implements OnInit {
+  id:number;
   listadoAsignaciones:any = [];
   listadoMedicos:any = [];
-  usuario:any  = JSON.parse(sessionStorage.getItem('session'))[0];
+  usuario:any = JSON.parse(sessionStorage.getItem('session'))[0];
   editaDatos:any = {
     original: {
       id: null,
@@ -40,18 +41,53 @@ export class ListadoAsignacionesComponent implements OnInit {
   constructor( private _busquedasService:BusquedasService,
                private _registroDatos:RegistroDatosService,
                private _authService:AuthService,
-               private router:Router ) {
+               private router:Router,
+               private parametro: ActivatedRoute) {
                  if ( this.usuario.PER_administracion != 1 ) {
                    this.router.navigate(['home']);
                  }
                }
 
   ngOnInit() {
+    if ( this.parametro.params ) {
+      this.parametro.params.subscribe( params => {
+        this.id = params['id'];
+      });
+
+      if ( this.id < 0 ) {
+          this.router.navigate['home'];
+          console.error('Incorrecto');
+      }
+
+      if ( this.id != undefined && this.id > 0 ) {
+          console.log('se ingresó el id '+ this.id);
+          this.asignacionXid( this.id );
+      }
+    }
+
     this.getListadoAsignaciones();
     this.getListadoMedicos();
     // console.log(this.usuario);
     this.editaDatos.original.usuario = this.usuario.username;
     this.editaDatos.nuevo.usuario = this.usuario.username;
+  }
+
+  asignacionXid( id ){
+    this.buscando = true;
+    this._busquedasService.getListadoAsignaciones()
+                          .subscribe( data => {
+                            this.listadoAsignaciones = data;
+                            this.buscando = false;
+                            // console.log(this.listadoAsignaciones);
+                            for (let i = 0; i < this.listadoAsignaciones.length; i++) {
+                                if ( parseInt(id) === this.listadoAsignaciones[i].ASI_id ) {
+                                    // console.log(this.listadoAsignaciones[i]);
+                                    this.seleccionaDatos( this.listadoAsignaciones[i] );
+                                };
+                            }
+
+
+                          });
   }
 
   getListadoAsignaciones(){
@@ -73,13 +109,13 @@ export class ListadoAsignacionesComponent implements OnInit {
   }
 
   verificaEdicion(){
+    let verificacion = false;
     if ( this.editaDatos.original.id != null ) {
-      // console.log(this.editaDatos);
-      if ( JSON.stringify( this.editaDatos.nuevo ) === JSON.stringify( this.editaDatos.original ) ) {
-          return false;
-      } else {
-        return true;
-      }
+        verificacion = false;
+        if ( JSON.stringify( this.editaDatos.nuevo ) != JSON.stringify( this.editaDatos.original ) ) {
+            verificacion = true;
+        }
+        return verificacion;
     }
   }
 
@@ -93,6 +129,8 @@ export class ListadoAsignacionesComponent implements OnInit {
     this.editaDatos.nuevo.medico = asignacion.USU_loginMedico;
     this.editaDatos.nuevo.motivo = asignacion.ASI_motivo;
     this.editaDatos.nuevo.obs    = asignacion.ASI_observaciones;
+
+    this.verificaEdicion();
 
     $('#editaAsignacion').modal({
       backdrop: 'static',
@@ -114,6 +152,10 @@ export class ListadoAsignacionesComponent implements OnInit {
     // this.editaDatos.nuevo = this.editaDatos.original;
 
     $('#editaAsignacion').modal('hide');
+
+    if ( this.id > 0 ) {
+      this.router.navigate(['paciente']);
+    }
     // console.log( this.editaDatos );
   }
 
@@ -127,8 +169,14 @@ export class ListadoAsignacionesComponent implements OnInit {
                             this.trabajando = false;
                             console.log(data);
                             if ( data === 1 ) {
-                                this.getListadoAsignaciones();
                                 this.cancelaEdicion();
+
+                                if ( this.id > 0 ) {
+                                  this.router.navigate(['paciente']);
+                                } else {
+                                  this.getListadoAsignaciones();
+                                  // this.cancelaEdicion();
+                                }
                             } else {
                               alert('Error al actualizar los datos');
                             }

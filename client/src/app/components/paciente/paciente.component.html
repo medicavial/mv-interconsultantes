@@ -54,11 +54,20 @@
   <!-- <div class="espacio"></div> -->
 
   <div class="row">
-    <div class="col-md-4 espacio-cards" *ngIf="usuario.PER_asignaciones === 1">
+    <div class="col-md-4 espacio-cards" *ngIf="usuario.PER_asignaciones === 1 && asignacion.length < 1">
       <div class="card bg-light text-white seleccion animated fadeIn" (click)="irAsignacion()">
         <img class="card-img img-bg-tarjeta" src="assets/img/bg/doctor.jpg">
         <div class="card-img-overlay row align-items-center">
           <h4 class="col card-title text-center con-sombra">Asignar médico</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 espacio-cards" *ngIf="usuario.PER_asignaciones === 1 && asignacion.length > 0">
+      <div class="card bg-light text-white seleccion animated fadeIn" (click)="editaAsignacion()">
+        <img class="card-img img-bg-tarjeta" src="assets/img/bg/notas2.jpg">
+        <div class="card-img-overlay row align-items-center">
+          <h4 class="col card-title text-center con-sombra">Editar Asignación</h4>
         </div>
       </div>
     </div>
@@ -81,11 +90,7 @@
       </div>
     </div>
 
-    <!-- <div class="col-md-12 d-none d-lg-block">
-      &nbsp;
-    </div> -->
-
-    <div class="col-md-4 espacio-cards" *ngIf="digitales.listaDigitales">
+    <div class="col-md-4 espacio-cards" *ngIf="usuario.PER_atencion === 1 && asignacion.length > 0">
       <div class="card bg-light text-white seleccion animated fadeIn" (click)="abreModal('observaciones')">
         <img class="card-img img-bg-tarjeta" src="assets/img/bg/pizarra.jpg">
         <div class="card-img-overlay row align-items-center">
@@ -255,7 +260,9 @@
             </div>
             <div class="col-md-6 espacio">
               <small>
-                <input type="file" (change)="archivoSeleccionado($event)" id="digital" #fileInput [disabled]="formUpload.value.cveDocumento == ''">
+                <input type="file" (change)="archivoSeleccionado($event)" id="digital" #fileInput
+                       [disabled]="formUpload.value.cveDocumento == ''"
+                       accept="application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint, text/plain, application/pdf, image/*">
               </small>
             </div>
             <div class="col-md-3 espacio">

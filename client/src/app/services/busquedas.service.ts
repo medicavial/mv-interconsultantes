@@ -178,4 +178,13 @@ export class BusquedasService {
                });
   }
 
+  getAsignacion( folio ){
+    let url = `${ this.api }/paciente/asignacion-`+folio;
+
+    return this._http.get( url )
+               .map( res => {
+                 return res.json();
+               });
+  }
+
 }

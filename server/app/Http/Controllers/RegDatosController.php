@@ -9,22 +9,22 @@ use Mail;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 
 class RegDatosController extends Controller {
 
 	public function saveNotaSoap()
 	{
-		$app 				= Input::get('app');
-		$apx 				= Input::get('apx');
-		$subjetivos = Input::get('subjetivos');
-		$objetivos 	= Input::get('objetivos');
-		$analisis 	= Input::get('analisis');
-		$plan 			= Input::get('plan');
+		$app 				= RegDatosController::limpiaCadena( Input::get('app') );
+		$apx 				= RegDatosController::limpiaCadena( Input::get('apx') );
+		$subjetivos = RegDatosController::limpiaCadena( Input::get('subjetivos') );
+		$objetivos 	= RegDatosController::limpiaCadena( Input::get('objetivos') );
+		$analisis 	= RegDatosController::limpiaCadena( Input::get('analisis') );
+		$plan 			= RegDatosController::limpiaCadena( Input::get('plan') );
 		$folio 			= Input::get('folioPaciente');
 		$username 	= Input::get('username');
 		$idRegistro = Input::get('idRegistro');
+		$unidad			= Input::get('unidad');
 
 		// return Input::all();
 
@@ -38,7 +38,7 @@ class RegDatosController extends Controller {
 					'analisis_notSOAP' 	=> $analisis,
 					'pronos_notSOAP' 		=> $plan,
 					'Usu_login' 				=> $username,
-					'Uni_clave' 				=> 0,
+					'Uni_clave' 				=> $unidad,
 					'fecreg_notSOAP' 		=> DB::raw('now()'),
 					'comentario_notSOAP'=> 'Sistema MV-Zima'
 			]);
@@ -56,24 +56,69 @@ class RegDatosController extends Controller {
 		$cveMedico 			= Input::get('cveMedico');
 		$username				= Input::get('username');
 		$loginMedico		= Input::get('loginmedico');
-		$motivo					= Input::get('motivo');
-		$observaciones	= Input::get('observaciones');
+		$motivo					= RegDatosController::limpiaCadena( Input::get('motivo') );
+		$observaciones	= RegDatosController::limpiaCadena( Input::get('observaciones') );
 
 		try {
-			$respuesta = DB::table('redQx_asignaciones')
-											->insert([
-														    'Exp_folio' 						=> $folio,
-																'USU_loginMedico' 			=> $loginMedico,
-																'ASI_motivo'						=> $motivo,
-																'ASI_observaciones'			=> $observaciones,
-																'USU_loginRegistro' 		=> $username,
-																'ASI_fechaRegistro' 		=> DB::raw('now()')
-																]);
+			$respuestaBase = DB::table('redQx_asignaciones')
+													->insertGetId([
+																			    'Exp_folio' 						=> $folio,
+																					'USU_loginMedico' 			=> $loginMedico,
+																					'ASI_motivo'						=> $motivo,
+																					'ASI_observaciones'			=> $observaciones,
+																					'USU_loginRegistro' 		=> $username,
+																					'ASI_fechaRegistro' 		=> DB::raw('now()')
+																				]);
+
+			$correo = RegDatosController::correoAsignacion( $respuestaBase );
+
+			$respuesta = array('base' 	=> $respuestaBase,
+												 'correo' => $correo);
+
 		} catch (Exception $e) {
 			$respuesta = $e;
 		}
 
 		return Response::json( array('respuesta' => $respuesta) );
+	}
+
+	public function correoAsignacion( $idAsignacion ){
+		$asignacion = DB::table('redQx_asignaciones')
+										->select('redQx_asignaciones.*', 'Exp_completo', 'Uni_nombrecorto', 'USU_nombreCompleto', 'USU_id', 'USU_email')
+										->join('Expediente', 'redQx_asignaciones.Exp_folio', '=', 'Expediente.Exp_folio')
+										->leftJoin('Unidad', 'redQx_asignaciones.UNI_clave', '=', 'Unidad.Uni_clave')
+										->join('redQx_usuarios', 'redQx_asignaciones.USU_loginMedico', '=', 'redQx_usuarios.USU_login')
+										->where('ASI_id', '=', $idAsignacion)
+										->first();
+
+		$creador = DB::table('redQx_usuarios')
+									->select('USU_login', 'USU_email', 'USU_nombreCompleto')
+									->where('USU_login', $asignacion->USU_loginRegistro)
+									->first();
+
+		$datos = array( 'folio' 		=> $asignacion->Exp_folio,
+										'paciente'	=> $asignacion->Exp_completo,
+										'motivo' 		=> $asignacion->ASI_motivo,
+										'obs' 			=> $asignacion->ASI_observaciones,
+										'medico'		=> $asignacion->USU_nombreCompleto,
+										'email' 		=> $asignacion->USU_email,
+										'fecha' 		=> $asignacion->ASI_fechaRegistro,
+										'admin' 		=> $creador->USU_nombreCompleto,
+										'mailAdmin'	=> $creador->USU_email,
+										'userAdmin'	=> $creador->USU_login,
+									);
+
+		Mail::send('emails.asignacion', $datos, function($message) use ($datos)
+		{
+			$message->from('sramirez@medicavial.com.mx', 'Médica Vial');
+		  $message->to($datos['email'], $datos['medico'])->subject('Seguimiento a paciente');
+			$message->cc($datos['mailAdmin']);
+    	$message->bcc(array('samuel11rr@gmail.com'));
+		});
+
+    return Response::json(array('respuesta' => 'Correo enviado Correctamente'));
+		// return $asignacion->ASI_id;
+		// return view('emails.asignacion', $datos);
 	}
 
 	public function verificaUserlogin( $usrLogin )
@@ -190,7 +235,7 @@ class RegDatosController extends Controller {
     	$message->bcc(array('samuel11rr@gmail.com'));
 		});
 
-        return Response::json(array('respuesta' => 'Correo enviado Correctamente'));
+    return Response::json(array('respuesta' => 'Correo enviado Correctamente'));
 
 	}
 
@@ -203,16 +248,12 @@ class RegDatosController extends Controller {
 		$cantidad				= Input::get('cantidad');
 		$descripcion		= Input::get('descripcion');
 		$idMedicamento	= Input::get('idMedicamento');
-		$posologia			= Input::get('posologia');
 		$presentacion		= Input::get('presentacion');
 		$existencia			= Input::get('existencia');
 		$tipo_item			= Input::get('tipo_item');
+		$posologia			= RegDatosController::limpiaCadena( Input::get('posologia') );
 
 		$tipoReceta = 6;
-
-		//limpiamos las Indicaciones (posologia)
-		$noPermitidos = array("'", '\\', '<', '>', "\"");
-		$posologia = str_replace($noPermitidos,"", $posologia);
 
 		try {
 			//primero realizamos la reserva del item
@@ -341,8 +382,8 @@ class RegDatosController extends Controller {
 	public function guardaIndicacion()
 	{
 		$folio			= Input::get('folio');
-		$indicacion	= Input::get('obs');
 		$tipoReceta	= Input::get('tipoReceta');
+		$indicacion	= RegDatosController::limpiaCadena( Input::get('obs') );
 
 		$idReceta = DB::table('RecetaMedica')
 									->where('Exp_folio', $folio)
@@ -415,7 +456,7 @@ class RegDatosController extends Controller {
 	public function actualizaObs()
 	{
 		$idAsignacion		= Input::get('idAsignacion');
-		$observaciones	= Input::get('observaciones');
+		$observaciones 	= RegDatosController::limpiaCadena( Input::get('observaciones') );
 
 		try {
 			$respuesta = DB::table('redQx_asignaciones')
@@ -432,9 +473,9 @@ class RegDatosController extends Controller {
 	{
 		$id				= Input::get('id');
 		$medico		= Input::get('medico');
-		$motivo		= Input::get('motivo');
-		$obs			= Input::get('obs');
 		$usuario 	= Input::get('usuario');
+		$obs 			= RegDatosController::limpiaCadena( Input::get('obs') );
+		$motivo 	= RegDatosController::limpiaCadena( Input::get('motivo') );
 
 		try {
 			$respuesta = DB::table('redQx_asignaciones')
@@ -470,4 +511,11 @@ class RegDatosController extends Controller {
 		return $respuesta;
 	}
 
+	public function limpiaCadena( $cadena )
+	{
+		$noPermitidos = array("'", '\\', '<', '>', "\"");
+		$cadenaLimpia = str_replace($noPermitidos,"", $cadena);
+
+		return $cadenaLimpia;
+	}
 }

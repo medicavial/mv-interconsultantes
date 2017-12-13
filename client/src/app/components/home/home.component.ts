@@ -38,7 +38,8 @@ export class HomeComponent implements OnInit {
     this._datosLocalesService.verificaRutaPaciente();
 
     //si se trata de un medico
-    if ( this.usuario.PER_clave === 3 ) {
+    // if ( this.usuario.PER_clave === 3 ) {
+    if ( this.usuario.PER_atencion === 1 ) {
         if (this.usuario.unidad === '0') {
           this.consultaUnidades();
           this.modalUnidad();

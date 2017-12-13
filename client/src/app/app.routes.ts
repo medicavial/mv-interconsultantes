@@ -42,6 +42,13 @@ const APP_ROUTES: Routes = [
     component: ListadoAsignacionesComponent,
     canActivate: [AuthService]
   },
+
+  {
+    path: 'listadoAsignaciones/:id',
+    component: ListadoAsignacionesComponent,
+    canActivate: [AuthService]
+  },
+
   {
     path: 'paciente',
     component: PacienteComponent,

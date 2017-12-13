@@ -124,7 +124,7 @@
         </div>
         <div class="col-sm-6 col-md-6 col-lg-4">
           <button type="button" class="btn btn-green btn-block animated fadeIn fast" (click)="guardaDatos()"
-                  [disabled]="!verificaEdicion() || trabajando" *ngIf="!eliminar">
+                  *ngIf="!eliminar" [disabled]="!verificaEdicion() || trabajando">
             <span *ngIf="!trabajando">
               <i class="mdi mdi-content-save"></i> Guardar cambios
             </span>

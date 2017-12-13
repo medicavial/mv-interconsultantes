@@ -21,6 +21,7 @@ export class PacienteComponent implements OnInit {
   refresh: boolean = false;
   paciente:any = [];
   digitales:any = [];
+  asignacion:any = [];
   observaciones:any = {
     original: null,
     edicion: null,
@@ -61,6 +62,7 @@ export class PacienteComponent implements OnInit {
   ngOnInit() {
     // this.abreModal('observaciones');
     this.createForm();
+    this.getAsignacion();
     // console.log(this.paciente);
     if (sessionStorage.getItem('digitales')) {
         this.digitales =JSON.parse( sessionStorage.getItem('digitales') );
@@ -88,7 +90,16 @@ export class PacienteComponent implements OnInit {
                             console.log(this.digitales);
                             this.refresh=false;
                           });
+  }
 
+  getAsignacion(){
+    this.buscando = true;
+    this._busquedasService.getAsignacion( this.paciente.folio )
+                          .subscribe( data => {
+                            this.buscando=false;
+                            this.asignacion=data;
+                            console.log(this.asignacion);
+                          });
   }
 
   abreModal(nombre){
@@ -129,6 +140,10 @@ export class PacienteComponent implements OnInit {
 
   irAsignacion(){
     this.router.navigate(['asignacion']);
+  }
+
+  editaAsignacion(){
+    this.router.navigate(['listadoAsignaciones/'+this.asignacion[0].ASI_id]);
   }
 
   confirmaCierre(){

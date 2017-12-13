@@ -388,4 +388,20 @@ class BusquedasController extends Controller {
 		return $respuesta;
 	}
 
+	public function getAsignacion( $folio )
+	{
+		$respuesta = DB::table('redQx_asignaciones')
+										->select('redQx_asignaciones.*', 'Exp_completo', 'Uni_nombrecorto', 'USU_nombreCompleto', 'USU_id')
+										->join('Expediente', 'redQx_asignaciones.Exp_folio', '=', 'Expediente.Exp_folio')
+										->leftJoin('Unidad', 'redQx_asignaciones.UNI_clave', '=', 'Unidad.Uni_clave')
+										->join('redQx_usuarios', 'redQx_asignaciones.USU_loginMedico', '=', 'redQx_usuarios.USU_login')
+										->where('redQx_asignaciones.Exp_folio', '=', $folio)
+										->where('ASI_terminada', '<>', 1)
+										->where('ASI_cancelada', '<>', 1)
+										->where('ASI_fechaRegistro', '>=', DB::raw('DATE(DATE_SUB(NOW(), INTERVAL 3 MONTH))'))
+										->orderBy('ASI_fechaRegistro', 'desc')
+										->get();
+		return $respuesta;
+	}
+
 }

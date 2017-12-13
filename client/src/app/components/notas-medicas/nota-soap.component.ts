@@ -27,7 +27,8 @@ export class NotaSoapComponent implements OnInit {
     analisis: null,
     plan: null,
     folioPaciente: null,
-    idRegistro: null
+    idRegistro: null,
+    unidad: JSON.parse(sessionStorage.getItem('session'))[0].unidad,
   };
 
   usuario:any = JSON.parse(sessionStorage.getItem('session'))[0];
