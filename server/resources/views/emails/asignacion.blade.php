@@ -45,7 +45,7 @@
  					&nbsp;&nbsp;
  				</th>
  				<th colspan="4">
- 					<h2>&nbsp;&nbsp;Acceso Generado&nbsp;&nbsp;</h2>
+ 					<h2>&nbsp;&nbsp;Seguimiento a paciente&nbsp;&nbsp;</h2>
  				</th>
  				<th>&nbsp;&nbsp;<a href="http://qx.medicavial.net" class="link-white" target="_blank">Sistema de Red Qx</a>&nbsp;&nbsp;</th>
  			</tr>

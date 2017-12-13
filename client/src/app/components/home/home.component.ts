@@ -40,6 +40,9 @@ export class HomeComponent implements OnInit {
     //si se trata de un medico
     // if ( this.usuario.PER_clave === 3 ) {
     if ( this.usuario.PER_atencion === 1 ) {
+        if ( this.usuario.PER_clave === 1) {
+            this.usuario.unidad = 8;
+        }
         if (this.usuario.unidad === '0') {
           this.consultaUnidades();
           this.modalUnidad();

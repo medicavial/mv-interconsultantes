@@ -121,21 +121,21 @@ export class AsignacionPacientesComponent implements OnInit {
     this.asignacion.observaciones = this.asignacionForm.value.observaciones;
 
     this._registroDatos.guardaAsignacion( this.asignacion )
-                          .subscribe( data => {
-                            this.trabajando = false;
-                            if (data.respuesta === true) {
-                              this.confirmacion = data;
-                              console.log(this.confirmacion);
-                              // this.getUsuarios();
-                              $('#avisoCorrecto').modal('show');
+                        .subscribe( data => {
+                          this.trabajando = false;
+                          if (data.respuesta.base > 0) {
+                            this.confirmacion = data;
+                            console.log(this.confirmacion);
+                            // this.getUsuarios();
+                            $('#avisoCorrecto').modal('show');
 
-                              setTimeout(() => {
-                                this.asignacionForm.reset();
-                                $('#avisoCorrecto').modal('hide');
-                                this.router.navigate(['paciente']);
-                              }, 3000);
-                            }
-                          });
+                            setTimeout(() => {
+                              this.asignacionForm.reset();
+                              $('#avisoCorrecto').modal('hide');
+                              this.router.navigate(['paciente']);
+                            }, 3000);
+                          }
+                        });
   }
 
 

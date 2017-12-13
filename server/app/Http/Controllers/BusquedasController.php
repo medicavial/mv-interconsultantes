@@ -68,7 +68,7 @@ class BusquedasController extends Controller {
 										->select('Exp_folio as folio', 'Uni_claveActual as cveUnidad', 'Exp_completo as nombre',  'Exp_edad as edad', 'Exp_sexo as sexo',
 														 'Exp_siniestro as siniestro', 'Exp_poliza as poliza', 'Exp_reporte as reporte', 'Exp_RegCompania as folioElectronico',
 														 'Exp_fecreg as fechaRegistro', 'Expediente.Cia_clave as cveCompania', 'Usu_registro as loginRegistro',
-														 'Exp_obs as observaciones', 'Expediente.Pro_clave as cveProducto', 'Cia_nombrecorto as nombreCompania',
+														 'Exp_obs as obs', 'Expediente.Pro_clave as cveProducto', 'Cia_nombrecorto as nombreCompania',
 														 'Pro_nombre as nombreProducto', 'Expediente.RIE_clave as cveRiesgo', 'RIE_nombre as nombreRiesgo',
 														 'Usu_nombre as nombreUsuario', 'Uni_nombrecorto as nombreUnidad',
 														 'Fol_ZIMA', DB::raw('CONCAT("Médica Vial") as registro'), DB::raw('CONCAT(1) as id_registro'))
@@ -92,7 +92,7 @@ class BusquedasController extends Controller {
 										->select('Exp_folio as folio', 'Uni_claveActual as cveUnidad', 'Exp_completo as nombre',  'Exp_edad as edad', 'Exp_sexo as sexo',
 														 'Exp_siniestro as siniestro', 'Exp_poliza as poliza', 'Exp_reporte as reporte', 'Exp_RegCompania as folioElectronico',
 														 'Exp_fecreg as fechaRegistro', 'Expediente.Cia_clave as cveCompania', 'Usu_registro as loginRegistro',
-														 'Exp_obs as observaciones', 'Expediente.Pro_clave as cveProducto', 'Cia_nombrecorto as nombreCompania',
+														 'Exp_obs as obs', 'Expediente.Pro_clave as cveProducto', 'Cia_nombrecorto as nombreCompania',
 														 'Pro_nombre as nombreProducto', 'Expediente.RIE_clave as cveRiesgo', 'RIE_nombre as nombreRiesgo',
 														 'Usu_nombre as nombreUsuario', 'Uni_nombrecorto as nombreUnidad',
 														 'Fol_ZIMA', DB::raw('CONCAT("Médica Vial") as registro'), DB::raw('CONCAT(1) as id_registro'))
@@ -116,7 +116,7 @@ class BusquedasController extends Controller {
 							 ->select('REG_folio as folio', 'PURegistro.UNI_clave as cveUnidad', 'REG_nombrecompleto as nombre',  'REG_edad as edad', 'REG_genero as sexo',
 							 					'REG_siniestro as siniestro', 'REG_poliza as poliza', 'REG_reporte as reporte', 'REG_folioelectronico as folioElectronico',
 												'REG_fechahora as fechaRegistro', 'PURegistro.ASE_clave as cveCompania', 'PURegistro.USU_login as loginRegistro',
-												'REG_observaciones as observaciones', 'PURegistro.ProdZima_Clave as cveProducto', 'ASE_nomCorto as nombreCompania',
+												'REG_observaciones as obs', 'PURegistro.ProdZima_Clave as cveProducto', 'ASE_nomCorto as nombreCompania',
 												'ProdZima_Desc as nombreProducto', 'PURegistro.RIE_clave as cveRiesgo', 'RIE_nombre as nombreRiesgo',
 												DB::raw('CONCAT(PUUsu_nombre," ",PUUsu_apaterno," ",PUUsu_amaterno) as nombreUsuario'), 'UNI_nomCorto as nombreUnidad',
 												'REG_folioMV', DB::raw('CONCAT("Zima") as registro'), DB::raw('CONCAT(2) as id_registro'))
@@ -140,7 +140,7 @@ class BusquedasController extends Controller {
 							 ->select('REG_folio as folio', 'PURegistro.UNI_clave as cveUnidad', 'REG_nombrecompleto as nombre', 'REG_edad as edad', 'REG_genero as sexo',
 							 					'REG_siniestro as siniestro', 'REG_poliza as poliza', 'REG_reporte as reporte', 'REG_folioelectronico as folioElectronico',
 												'REG_fechahora as fechaRegistro', 'PURegistro.ASE_clave as cveCompania', 'PURegistro.USU_login as loginRegistro',
-												'REG_observaciones as observaciones', 'PURegistro.ProdZima_Clave as cveProducto', 'ASE_nomCorto as nombreCompania',
+												'REG_observaciones as obs', 'PURegistro.ProdZima_Clave as cveProducto', 'ASE_nomCorto as nombreCompania',
 												'ProdZima_Desc as nombreProducto', 'PURegistro.RIE_clave as cveRiesgo', 'RIE_nombre as nombreRiesgo',
 												DB::raw('CONCAT(PUUsu_nombre," ",PUUsu_apaterno," ",PUUsu_amaterno) as nombreUsuario'), 'UNI_nomCorto as nombreUnidad',
 												'REG_folioMV', DB::raw('CONCAT("Zima") as registro'), DB::raw('CONCAT(2) as id_registro'))
@@ -209,7 +209,7 @@ class BusquedasController extends Controller {
 		$respuesta = DB::table('Unidad')
 										->Where('Uni_propia', 'S')
 										->Where('Uni_activa', 'S')
-										// ->Where('Uni_clave', '<>', 8) //deberiamos quitar la unidad 8
+										->Where('Uni_clave', '<>', 8) //deberiamos quitar la unidad 8
 										->orderBy('Uni_nombrecorto', 'asc')
 										->get();
 

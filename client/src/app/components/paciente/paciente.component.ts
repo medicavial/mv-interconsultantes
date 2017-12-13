@@ -40,8 +40,10 @@ export class PacienteComponent implements OnInit {
                private formBuilder:FormBuilder ) {
                  if (sessionStorage.getItem('paciente')) {
                      this.paciente = JSON.parse(sessionStorage.getItem('paciente'));
-                     this.observaciones.original  = this.paciente.observaciones;
-                     this.observaciones.edicion   = this.paciente.observaciones;
+                     // if ( this.paciente.observaciones != undefined ) {
+                     //     this.observaciones.original  = this.paciente.observaciones;
+                     //     this.observaciones.edicion   = this.paciente.observaciones;
+                     // }
                      console.log(this.paciente);
                  } else{
                    this.router.navigate(['busqueda']);
@@ -98,6 +100,11 @@ export class PacienteComponent implements OnInit {
                           .subscribe( data => {
                             this.buscando=false;
                             this.asignacion=data;
+                            if ( this.asignacion.length > 0 ) {
+                              this.paciente.observaciones   = this.asignacion[0].ASI_observaciones;
+                              this.observaciones.original   = this.asignacion[0].ASI_observaciones;
+                              this.observaciones.edicion    = this.asignacion[0].ASI_observaciones;
+                            }
                             console.log(this.asignacion);
                           });
   }
@@ -173,7 +180,7 @@ export class PacienteComponent implements OnInit {
     this.trabajando=true;
 
     let datos = {
-      idAsignacion  : this.paciente.idAsignacion,
+      idAsignacion  : this.asignacion[0].ASI_id,
       observaciones : this.observaciones.edicion,
     }
 
@@ -189,7 +196,7 @@ export class PacienteComponent implements OnInit {
 
                             $('#observaciones').modal('hide');
                           } else{
-                            alert('error al cerrar la atención, intentelo nuevamente');
+                            alert('error al guardar');
                           }
                         });
   }
