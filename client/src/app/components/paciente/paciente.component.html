@@ -20,7 +20,9 @@
               <i class="mdi mdi-refresh"></i>
               Actualizar datos
             </button>
-            <button type="button" class="btn btn-outline-yellow btn-sm seleccion" data-toggle="modal" data-target="#cerrarAtencion">
+            <button type="button" class="btn btn-outline-yellow btn-sm seleccion"
+                    data-toggle="modal" data-target="#cerrarAtencion"
+                    *ngIf="asignacion && asignacion.length>0">
               <i class="mdi mdi-check-all"></i>
               Cerrar atención
             </button>
@@ -195,8 +197,14 @@
               </td>
               <td>{{ doc.TID_nombre }}</td>
               <td class="text-center">
-                <small>
+                <small *ngIf="doc.Arc_clave===''">
                   <a href="http://medicavial.net/registro/{{ doc.Arc_Archivo }}" target="_blank" class="text-info">
+                    Visualizar
+                    <i class="mdi mdi-open-in-new"></i>
+                  </a>
+                </small>
+                <small *ngIf="doc.Arc_clave != ''">
+                  <a href="http://medicavial.net/registro/{{ doc.Arc_Archivo }}{{ doc.Arc_clave }}" target="_blank" class="text-info">
                     Visualizar
                     <i class="mdi mdi-open-in-new"></i>
                   </a>

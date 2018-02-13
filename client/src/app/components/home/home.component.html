@@ -56,16 +56,24 @@
     <div class="card-body">
       <h5 class="card-title text-info">
         Asignaciones pendientes
-        <span *ngIf="buscando"><i class="fa fa-cog fa-spin fa-fw"></i></span>
       </h5>
 
       <hr *ngIf="pacientesAsignados.length<1">
-      <div *ngIf="pacientesAsignados.length<1" class="text-center">
+      <div *ngIf="pacientesAsignados.length<1 && !buscando" class="text-center">
         <div>
           <i class="mdi mdi-lightbulb-on-outline icono-grande text-secondary"></i>
         </div>
         <div>
           En este momento no tiene pacientes asignados
+        </div>
+      </div>
+
+      <div *ngIf="buscando" class="text-center">
+        <div>
+          <i class="fa fa-cog fa-spin fa-fw icono-grande text-secondary"></i>
+        </div>
+        <div>
+          Recuperando asignaciones
         </div>
       </div>
 
