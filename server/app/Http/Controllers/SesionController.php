@@ -69,4 +69,21 @@ class SesionController extends Controller {
 		return $busqueda;
 	}
 
+	public function sesionExternos()
+	{
+		$username 	= Input::get('username');
+		$password 	= md5(Input::get('password'));
+
+		$busqueda = DB::connection('externos')
+							 ->table('usuarios')
+							 ->select('USU_nombre as fullName', 'USU_username as username', 'USU_email', 'USU_telefono',
+							 					'USU_avatar', 'USU_activo', 'USU_fechaAlta', 'permisos.*')
+							 ->join('permisos', 'usuarios.PER_id', '=', 'permisos.PER_id')
+							 ->Where('USU_username', $username)
+							 ->Where('USU_password', $password)
+							 ->Where('USU_activo', 1)
+							 ->get();
+		return $busqueda;
+	}
+
 }

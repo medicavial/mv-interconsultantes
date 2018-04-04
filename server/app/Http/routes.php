@@ -49,3 +49,12 @@ Route::group(['prefix' => 'administracion'], function()
   Route::post('eliminarAsignacion', 'RegDatosController@eliminaAsignacion');
   Route::get('correoAsignacion-{id}', 'RegDatosController@correoAsignacion');
 });
+
+Route::group(['prefix' => 'externos'], function()
+{
+  Route::post('login', 'SesionController@sesionExternos');
+  Route::get('listadoMedicos', 'ExternosController@listadoMedicos');
+  Route::post('generapase', 'ExternosController@generaPase');
+  Route::get('listadopases', 'ExternosController@listadoPases');
+
+});
