@@ -76,7 +76,7 @@ class SesionController extends Controller {
 
 		$busqueda = DB::connection('externos')
 							 ->table('usuarios')
-							 ->select('USU_nombre as fullName', 'USU_username as username', 'USU_email', 'USU_telefono',
+							 ->select('USU_id', 'USU_nombre as fullName', 'USU_username as username', 'USU_email', 'USU_telefono',
 							 					'USU_avatar', 'USU_activo', 'USU_fechaAlta', 'permisos.*')
 							 ->join('permisos', 'usuarios.PER_id', '=', 'permisos.PER_id')
 							 ->Where('USU_username', $username)
