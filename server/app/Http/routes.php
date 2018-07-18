@@ -56,5 +56,12 @@ Route::group(['prefix' => 'externos'], function()
   Route::get('listadoMedicos', 'ExternosController@listadoMedicos');
   Route::post('generapase', 'ExternosController@generaPase');
   Route::get('listadopases-{idUsuario}', 'ExternosController@listadoPases');
-  Route::get('creapdf', 'ExternosController@creapdf');
+  Route::get('creapdf-{idPase}', 'ExternosController@creapdf');
+  Route::get('verpdf-{idPase}', 'ExternosController@verpdf');
+  Route::get('buscaPase-{idPase}', 'ExternosController@buscaPase');
+  Route::post('pasesXnombre', 'ExternosController@buscaPaseXnombre');
+  Route::post('pasesXfolio', 'ExternosController@buscaPaseXfolioMV');
+  Route::post('guarda-usuario', 'ExternosController@guardaUsuario');
+  Route::get('verifica-{username}', 'ExternosController@verificaUsername');
+  Route::post('actualizaEstado', 'ExternosController@actualizaEstatus');
 });
