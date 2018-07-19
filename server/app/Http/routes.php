@@ -65,3 +65,9 @@ Route::group(['prefix' => 'externos'], function()
   Route::get('verifica-{username}', 'ExternosController@verificaUsername');
   Route::post('actualizaEstado', 'ExternosController@actualizaEstatus');
 });
+
+Route::group(['prefix' => 'reportes'], function()
+{
+  Route::get('prueba', 'ReportesController@index');
+  // Route::post('login', 'SesionController@sesionExternos');
+});
