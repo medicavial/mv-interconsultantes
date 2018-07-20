@@ -101,7 +101,7 @@ class ReportesController extends Controller {
 		// ->download('xls');
 	}
 
-	public function repDatos(){
+	public function getDatos(){
 		$idUsuario = 1;
 		$listado = DB::connection('externos')
 							 ->table('pases')
@@ -122,6 +122,11 @@ class ReportesController extends Controller {
 								$listado->limit(1500);
 							}
 		$datos = $listado->get();
+		return $datos;
+	}
+
+	public function repDatos(){
+		$datos = ReportesController::getDatos();
 
 		Excel::create('datos', function($excel) use( $datos ){
 			$excel->sheet('pases', function($sheet) use($datos) {
@@ -132,16 +137,14 @@ class ReportesController extends Controller {
 					$sheet->prependRow($variables);
 					$sheet->row(1, function($row) {
 					    $row->setBackground('#FFFFFF');
-							// $row->setBorder('thin', 'thin', 'thin', 'thin');
+							$row->setBorder('thin', 'thin', 'thin', 'thin');
 							$row->setFont(array(
 							    'family'    => 'Arial',
 							    'size'      => '10'
 							));
 					});
 					$sheet->cells('A1',function($cells) {
-
 					    $cells->setBorder('thin', 'thin', 'thin', 'thin');
-
 					});
 				}
 
@@ -169,4 +172,19 @@ class ReportesController extends Controller {
 		})->download('xlsx');
 	}
 
+	public function repTemplate(){
+		$datos = ReportesController::getDatos();
+		$variables = array_keys(get_object_vars($datos[0]));
+
+		$data = array('datos' 		=> $datos,
+									'variables'	=> $variables);
+
+		Excel::create('template', function($excel) use($data) {
+		    $excel->sheet('primera', function($sheet)  use($data){
+						$sheet->loadView('excel.prueba', $data);
+		    });
+		})->download('xlsx');
+
+		return view('excel.prueba', $data);
+	}
 }

@@ -70,5 +70,6 @@ Route::group(['prefix' => 'reportes'], function()
 {
   Route::get('prueba', 'ReportesController@index');
   Route::get('datos', 'ReportesController@repDatos');
+  Route::get('template', 'ReportesController@repTemplate');
   // Route::post('login', 'SesionController@sesionExternos');
 });
