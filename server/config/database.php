@@ -111,6 +111,15 @@ return [
 			'schema'   => 'public',
 		],
 
+		'mvlocal' => [
+			'driver'   => 'sqlsrv',
+			'host'     => env('DB_HOST_MV', ''),
+			'database' => env('DB_DATABASE_MV', 'forge'),
+			'username' => env('DB_USERNAME_MV', 'forge'),
+			'password' => env('DB_PASSWORD_MV', ''),
+			'prefix'   => '',
+		],
+
 		'sqlsrv' => [
 			'driver'   => 'sqlsrv',
 			'host'     => env('DB_HOST', 'localhost'),
@@ -119,7 +128,6 @@ return [
 			'password' => env('DB_PASSWORD', ''),
 			'prefix'   => '',
 		],
-
 	],
 
 	/*

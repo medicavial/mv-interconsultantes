@@ -1,13 +1,14 @@
 <?php namespace App\Http\Controllers;
 /***** Controlador para creación de reportes *****/
 /***** Samuel Ramírez - Julio 2018 *****/
-
+// setlocale(LC_ALL,"es_MX");
 use DB;
 use View;
 use Input;
 use Mail;
 use Response;
 use Excel;
+use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use App\Http\Requests;
@@ -172,19 +173,103 @@ class ReportesController extends Controller {
 		})->download('xlsx');
 	}
 
+	public function connectionTest(){
+		$newLocale = setlocale(LC_TIME, 'Spanish');
+
+		$query = "select A.Cliente, count(Cliente) as 'CantidadCliente',";
+
+		//TOTALES POR CLIENTE AÑO ANTERIOR
+		$query.= "ISNULL(
+							 (SELECT count(Cliente)
+							 from MVReportes.dbo.ListadoOperativo B
+							 where B.Cliente = A.Cliente
+							 and FCaptura < '".date('Y')."'
+							 group by Cliente),0
+							) as '". (date('Y')-1) ."',";
+
+		//TOTALES POR CLIENTE MES - AÑO ACTUAL
+		for ($i=1; $i <= 12 ; $i++) {
+			if ($i < 12 ) {
+				$query.="
+					ISNULL(
+					 (SELECT count(Cliente)
+					 from MVReportes.dbo.ListadoOperativo C
+					 where C.Cliente = A.Cliente
+					 and FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".date('Y')."-".($i+1)."-01 00:00:00', 121)
+					 group by Cliente), 0
+					) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."',
+				";
+			} elseif($i == 12)
+				$query.="
+					ISNULL(
+					 (SELECT count(Cliente)
+					 from MVReportes.dbo.ListadoOperativo C
+					 where C.Cliente = A.Cliente
+					 and FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".(date('Y')+1)."-".($i-11)."-01 00:00:00', 121)
+					 group by Cliente), 0
+					) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."',
+				";
+		}
+
+		//TOTALES POR CLIENTE AÑO ACTUAL
+		$query.= "ISNULL(
+							 (SELECT count(Cliente)
+							 from MVReportes.dbo.ListadoOperativo B
+							 where B.Cliente = A.Cliente
+							 and FCaptura >= '".date('Y')."'
+							 group by Cliente),0
+							) as '". date('Y') ."'";
+
+		$query.=" from MVReportes.dbo.ListadoOperativo A
+							 group by Cliente
+							 order by Cliente asc";
+
+		$clientes =  DB::connection( 'mvlocal' )->select( DB::raw($query) );
+		// return $clientes;
+
+		$totales = DB::connection( 'mvlocal' )
+									 ->select( DB::raw("SELECT ISNULL(COUNT(*), 0) as 'TOTALES',
+																			 	   ISNULL((SELECT count(*) from MVReportes.dbo.ListadoOperativo where FCaptura < '2018' ), 0) as 'total2017',
+																			 	   ISNULL((SELECT count(*) from MVReportes.dbo.ListadoOperativo where FCaptura >= '2018' ), 0) as 'total2018',
+																			 	   ISNULL(CEILING(count(*) * 0.20), 0) as 'minimo'
+																			 from MVReportes.dbo.ListadoOperativo"));
+		return array('totales'	=> $totales,
+								 'clientes' => $clientes);
+	}
+
 	public function repTemplate(){
-		$datos = ReportesController::getDatos();
+		// $datos = ReportesController::getDatos();
+		// $variables = array_keys(get_object_vars($datos[0]));
+		//
+		// $data = array('datos' 		=> $datos,
+		// 							'variables'	=> $variables);
+		//
+		// Excel::create('template', function($excel) use($data) {
+		//     $excel->sheet('primera', function($sheet)  use($data){
+		// 				$sheet->loadView('excel.prueba', $data);
+		//     });
+		// })->download('xlsx');
+		//
+		// return view('excel.prueba', $data);
+
+		$todo = ReportesController::connectionTest();
+		$datos = $todo['clientes'];
 		$variables = array_keys(get_object_vars($datos[0]));
 
 		$data = array('datos' 		=> $datos,
 									'variables'	=> $variables);
 
 		Excel::create('template', function($excel) use($data) {
-		    $excel->sheet('primera', function($sheet)  use($data){
-						$sheet->loadView('excel.prueba', $data);
+		    $excel->sheet('1', function($sheet)  use($data){
+						$sheet->setOrientation('landscape');
+						// $sheet->loadView('excel.prueba', $data);
+						$sheet->loadView('reportes.operativo', $data);
+						$sheet->setPaperSize('letter');
 		    });
-		})->download('xlsx');
+		})
+		->download('xlsx');
 
 		return view('excel.prueba', $data);
 	}
+
 }

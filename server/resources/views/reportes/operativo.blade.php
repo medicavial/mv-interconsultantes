@@ -19,27 +19,17 @@
 	<head>
 		<meta charset="utf-8">
 
-		<style>
-      table{
-        border-collapse: collapse;
-      }
-      table, th, td {
-          border: 1px solid #000000;
-      }
-		</style>
 	</head>
 	<body>
+		<h1>hola</h1>
     <table>
-      <thead>
-        <tr style="background-color: #0082cd; color: #FFFFFF; font-size: 16px;">
-          @foreach ($variables as $var)
-						@if ( $var != 'CantidadCliente')
-							<th align="center">{{ $var }}</th>
-						@endif
-          @endforeach
-        </tr>
-      </thead>
-      <tbody>
+			<tr style="background-color: #0082cd; color: #FFFFFF; font-size: 16px; border: 1px solid #000000">
+				@foreach ($variables as $var)
+					@if ( $var != 'CantidadCliente')
+						<th align="center">{{ $var }}</th>
+					@endif
+				@endforeach
+			</tr>
         {{ $contador = 0 }}
 
         @foreach ($datos as $dato)
@@ -56,7 +46,6 @@
           </tr>
           {{ $contador++ }}
         @endforeach
-      </tbody>
     </table>
 	</body>
 </html>
