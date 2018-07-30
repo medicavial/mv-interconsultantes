@@ -185,7 +185,7 @@ class ReportesController extends Controller {
 							 where B.Cliente = A.Cliente
 							 and FCaptura < '".date('Y')."'
 							 group by Cliente),0
-							) as '". (date('Y')-1) ."',";
+							) as 'y". (date('Y')-1) ."',";
 
 		//TOTALES POR CLIENTE MES - AÑO ACTUAL
 		for ($i=1; $i <= 12 ; $i++) {
@@ -218,7 +218,7 @@ class ReportesController extends Controller {
 							 where B.Cliente = A.Cliente
 							 and FCaptura >= '".date('Y')."'
 							 group by Cliente),0
-							) as '". date('Y') ."'";
+							) as 'y". date('Y') ."'";
 
 		$query.=" from MVReportes.dbo.ListadoOperativo A
 							 group by Cliente
@@ -227,12 +227,32 @@ class ReportesController extends Controller {
 		$clientes =  DB::connection( 'mvlocal' )->select( DB::raw($query) );
 		// return $clientes;
 
+		$queryTotales ="SELECT ISNULL(COUNT(*), 0) as 'TOTALES',
+										ISNULL((SELECT count(*) from MVReportes.dbo.ListadoOperativo where FCaptura < '".(date('Y'))."' ), 0) as 'total".(date('Y')-1)."',";
+
+		for ($i=1; $i <= 12 ; $i++) {
+			if ($i < 12 ) {
+				$queryTotales.="ISNULL(
+													( SELECT count(*)
+														from MVReportes.dbo.ListadoOperativo
+														where FCaptura between CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121)
+														and CONVERT(datetime, '".date('Y')."-".($i+1)."-01 00:00:00', 121) ), 0
+													) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."',";
+			} elseif($i == 12){
+				$queryTotales.="ISNULL(
+													( SELECT count(*)
+														from MVReportes.dbo.ListadoOperativo
+														where FCaptura between CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121)
+														and CONVERT(datetime, '".(date('Y')+1)."-".($i-11)."-01 00:00:00', 121) ), 0
+													) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."',";
+			}
+		}
+		$queryTotales.="ISNULL((SELECT count(*) from MVReportes.dbo.ListadoOperativo where FCaptura >= '".(date('Y'))."' ), 0) as 'total".(date('Y'))."',
+										ISNULL(CEILING(count(*) * 0.001), 0) as 'minimo'
+										from MVReportes.dbo.ListadoOperativo";
+
 		$totales = DB::connection( 'mvlocal' )
-									 ->select( DB::raw("SELECT ISNULL(COUNT(*), 0) as 'TOTALES',
-																			 	   ISNULL((SELECT count(*) from MVReportes.dbo.ListadoOperativo where FCaptura < '2018' ), 0) as 'total2017',
-																			 	   ISNULL((SELECT count(*) from MVReportes.dbo.ListadoOperativo where FCaptura >= '2018' ), 0) as 'total2018',
-																			 	   ISNULL(CEILING(count(*) * 0.20), 0) as 'minimo'
-																			 from MVReportes.dbo.ListadoOperativo"));
+									 ->select( DB::raw($queryTotales));
 		return array('totales'	=> $totales,
 								 'clientes' => $clientes);
 	}
@@ -257,14 +277,191 @@ class ReportesController extends Controller {
 		$variables = array_keys(get_object_vars($datos[0]));
 
 		$data = array('datos' 		=> $datos,
-									'variables'	=> $variables);
+									'variables'	=> $variables,
+									'totales' 	=> $todo['totales']);
 
 		Excel::create('template', function($excel) use($data) {
 		    $excel->sheet('1', function($sheet)  use($data){
-						$sheet->setOrientation('landscape');
-						// $sheet->loadView('excel.prueba', $data);
-						$sheet->loadView('reportes.operativo', $data);
-						$sheet->setPaperSize('letter');
+					//configuramos hoja
+					$sheet->setPaperSize('letter');
+					$sheet->setOrientation('landscape');
+
+					$sheet->mergeCells('A1:O1');
+					$sheet->cells('A1:O1', function($cells) {
+							$cells->setBackground('#ffffff');
+					});
+
+					$sheet->mergeCells('A2:O2');
+					$sheet->cells('A2:O2', function($cells) {
+							$cells->setBackground('#ffffff');
+							$cells->setFontColor('#000000');
+							$cells->setFont(array(
+							    'family'    => 'Arial',
+							    'size'      => '26',
+							    'bold'      =>  true
+							));
+							// $cells->setBorder('none', 'solid', 'solid', 'none');
+							$cells->setAlignment('center');
+							$cells->setValignment('center');
+					});
+					$sheet->row(2, array(
+					     'Lesionados por aseguradora / Mes captura (Solo 1ra Atención)',
+					));
+
+					//encabezados de la tabla
+					// $sheet->setWidth('A', 68);
+					$sheet->setWidth(array( 'A'=>60, 'B'=>20, 'C'=>20, 'D'=>20, 'E'=>20, 'F'=>20, 'G'=>20, 'H'=>20,
+																	'I'=>20, 'J'=>20, 'K'=>20, 'L'=>20, 'M'=>20, 'N'=>20, 'O'=>20 ));
+					$sheet->mergeCells('A3:A4');
+					$sheet->cell('A3', function($cell) {
+					    $cell->setValue('Cliente');
+					});
+					$sheet->cell('B3', function($cell) {
+					    $cell->setValue('Total');
+					});
+					$sheet->mergeCells('C3:N3');
+					$sheet->cell('C3', function($cell) {
+					    $cell->setValue(date('Y'));
+					});
+					$sheet->cell('O3', function($cell) {
+					    $cell->setValue('Total');
+					});
+					$sheet->cells('A3:O3', function($cells) {
+							$cells->setBackground('#AAAAAA');
+							$cells->setFontColor('#000000');
+							$cells->setFont(array(
+							    'family'    => 'Arial',
+							    'size'      => '20',
+							    'bold'      =>  true
+							));
+							// $cells->setBorder('none', 'solid', 'solid', 'none');
+							$cells->setAlignment('center');
+							$cells->setValignment('center');
+					});
+					$sheet->cells('A4:O4', function($cells) {
+							$cells->setBackground('#AAAAAA');
+							$cells->setFontColor('#000000');
+							$cells->setFont(array(
+									'family'    => 'Arial',
+									'size'      => '20',
+									'bold'      =>  true
+							));
+							$cells->setAlignment('center');
+							$cells->setValignment('center');
+					});
+					$sheet->cell('B4', function($cell) { $cell->setValue('2017'); });
+					$sheet->cell('C4', function($cell) { $cell->setValue('ENE'); });
+					$sheet->cell('D4', function($cell) { $cell->setValue('FEB'); });
+					$sheet->cell('E4', function($cell) { $cell->setValue('MAR'); });
+					$sheet->cell('F4', function($cell) { $cell->setValue('ABR'); });
+					$sheet->cell('G4', function($cell) { $cell->setValue('MAY'); });
+					$sheet->cell('H4', function($cell) { $cell->setValue('JUN'); });
+					$sheet->cell('I4', function($cell) { $cell->setValue('JUL'); });
+					$sheet->cell('J4', function($cell) { $cell->setValue('AGO'); });
+					$sheet->cell('K4', function($cell) { $cell->setValue('SEP'); });
+					$sheet->cell('L4', function($cell) { $cell->setValue('OCT'); });
+					$sheet->cell('M4', function($cell) { $cell->setValue('NOV'); });
+					$sheet->cell('N4', function($cell) { $cell->setValue('DIC'); });
+					$sheet->cell('O4', function($cell) { $cell->setValue('2018'); });
+					// $sheet->loadView('excel.prueba', $data);
+					// $sheet->loadView('reportes.operativo', $data);
+
+					//datos
+					$fila = 5;
+					$anioActual = 'y'.date('Y');
+					$anioAnterior = 'y'.((date('Y'))-1);
+
+					foreach ($data['datos'] as $dato) {
+						// if ($dato->CantidadCliente > $data['totales'][0]->minimo || $dato->Cliente == 'PARTICULARES') {
+							//formato de fila
+							$sheet->row($fila, function($row) use($fila) {
+									if ($fila%2 == 0 ) $row->setBackground('#FFFFFF');
+									if ($fila%2 != 0 ) $row->setBackground('#E0E0E0');
+							});
+							$sheet->cells('A'.$fila.':'.'O'.$fila, function($cells) use($fila){
+								if($fila == 5) $cells->setBorder('thin', 'none', 'none', 'none');
+								$cells->setAlignment('center');
+								$cells->setValignment('center');
+								$cells->setFontFamily('Arial');
+								$cells->setFontSize(20);
+							});
+							$sheet->cell('A'.$fila, function($cell) use($dato) { $cell->setAlignment('left'); $cell->setValue($dato->Cliente); });
+							$sheet->cell('B'.$fila, function($cell) use($dato, $anioAnterior) { $cell->setValue($dato->$anioAnterior); });
+							$sheet->cell('C'.$fila, function($cell) use($dato) { if($dato->ENE > 0) $cell->setValue($dato->ENE); });
+							$sheet->cell('D'.$fila, function($cell) use($dato) { if($dato->FEB > 0) $cell->setValue($dato->FEB); });
+							$sheet->cell('E'.$fila, function($cell) use($dato) { if($dato->MAR > 0) $cell->setValue($dato->MAR); });
+							$sheet->cell('F'.$fila, function($cell) use($dato) { if($dato->ABR > 0) $cell->setValue($dato->ABR); });
+							$sheet->cell('G'.$fila, function($cell) use($dato) { if($dato->MAY > 0) $cell->setValue($dato->MAY); });
+							$sheet->cell('H'.$fila, function($cell) use($dato) { if($dato->JUN > 0) $cell->setValue($dato->JUN); });
+							$sheet->cell('I'.$fila, function($cell) use($dato) { if($dato->JUL > 0) $cell->setValue($dato->JUL); });
+							$sheet->cell('J'.$fila, function($cell) use($dato) { if($dato->AGO > 0) $cell->setValue($dato->AGO); });
+							$sheet->cell('K'.$fila, function($cell) use($dato) { if($dato->SEP > 0) $cell->setValue($dato->SEP); });
+							$sheet->cell('L'.$fila, function($cell) use($dato) { if($dato->OCT > 0) $cell->setValue($dato->OCT); });
+							$sheet->cell('M'.$fila, function($cell) use($dato) { if($dato->NOV > 0) $cell->setValue($dato->NOV); });
+							$sheet->cell('N'.$fila, function($cell) use($dato) { if($dato->DIC > 0) $cell->setValue($dato->DIC); });
+							$sheet->cell('O'.$fila, function($cell) use($dato, $anioActual) { $cell->setFontWeight('bold'); $cell->setValue($dato->$anioActual); });
+
+							$fila++;
+						// } // cierra if
+					}
+					$totalAnioActual = 'total'.date('Y');
+					$totalAnioAnterior = 'total'.((date('Y'))-1);
+					$sheet->row($fila, function($row) use($fila) {
+							if ($fila%2 == 0 ) $row->setBackground('#FFFFFF');
+							if ($fila%2 != 0 ) $row->setBackground('#E0E0E0');
+					});
+					$sheet->cells('A'.$fila.':'.'O'.$fila, function($cells) use($fila){
+						$cells->setBorder('thin', 'none', 'none', 'none');
+						$cells->setAlignment('center');
+						$cells->setValignment('center');
+						$cells->setFontFamily('Arial');
+						$cells->setFontWeight('bold');
+						$cells->setFontSize(20);
+					});
+					$sheet->cell('A'.$fila, function($cell) use($data) { $cell->setAlignment('left'); $cell->setValue( 'TOTAL GENERAL' ); });
+					$sheet->cell('B'.$fila, function($cell) use($data, $totalAnioAnterior) { $cell->setValue( $data['totales'][0]->$totalAnioAnterior); });
+					$sheet->cell('C'.$fila, function($cell) use($data) { if($data['totales'][0]->ENE > 0) $cell->setValue($data['totales'][0]->ENE); });
+					$sheet->cell('D'.$fila, function($cell) use($data) { if($data['totales'][0]->FEB > 0) $cell->setValue($data['totales'][0]->FEB); });
+					$sheet->cell('E'.$fila, function($cell) use($data) { if($data['totales'][0]->MAR > 0) $cell->setValue($data['totales'][0]->MAR); });
+					$sheet->cell('F'.$fila, function($cell) use($data) { if($data['totales'][0]->ABR > 0) $cell->setValue($data['totales'][0]->ABR); });
+					$sheet->cell('G'.$fila, function($cell) use($data) { if($data['totales'][0]->MAY > 0) $cell->setValue($data['totales'][0]->MAY); });
+					$sheet->cell('H'.$fila, function($cell) use($data) { if($data['totales'][0]->JUN > 0) $cell->setValue($data['totales'][0]->JUN); });
+					$sheet->cell('I'.$fila, function($cell) use($data) { if($data['totales'][0]->JUL > 0) $cell->setValue($data['totales'][0]->JUL); });
+					$sheet->cell('J'.$fila, function($cell) use($data) { if($data['totales'][0]->AGO > 0) $cell->setValue($data['totales'][0]->AGO); });
+					$sheet->cell('K'.$fila, function($cell) use($data) { if($data['totales'][0]->SEP > 0) $cell->setValue($data['totales'][0]->SEP); });
+					$sheet->cell('L'.$fila, function($cell) use($data) { if($data['totales'][0]->OCT > 0) $cell->setValue($data['totales'][0]->OCT); });
+					$sheet->cell('M'.$fila, function($cell) use($data) { if($data['totales'][0]->NOV > 0) $cell->setValue($data['totales'][0]->NOV); });
+					$sheet->cell('N'.$fila, function($cell) use($data) { if($data['totales'][0]->DIC > 0) $cell->setValue($data['totales'][0]->DIC); });
+					$sheet->cell('O'.$fila, function($cell) use($data, $totalAnioActual) { $cell->setFontWeight('bold'); $cell->setValue( $data['totales'][0]->$totalAnioActual ); });
+
+					$fila++;
+
+					$sheet->row($fila, function($row) use($fila) { $row->setBackground('#FFFFFF'); });
+					$fila++;
+					$sheet->row($fila, function($row) use($fila) { $row->setBackground('#FFFFFF'); });
+					$fila++;
+
+					$sheet->cells('A'.$fila.':'.'O'.$fila, function($cells) {
+							$cells->setBackground('#AAAAAA');
+							$cells->setFontColor('#000000');
+							$cells->setFont(array(
+									'family'    => 'Arial',
+									'size'      => '20',
+									'bold'      =>  true
+							));
+							$cells->setAlignment('center');
+							$cells->setValignment('center');
+					});
+					$sheet->cell('A'.$fila, function($cell) use($data) { $cell->setValue( 'Cliente/Producto' ); });
+					$sheet->cell('B'.$fila, function($cell) use($data) { $cell->setValue( 'Total' ); });
+					$sheet->mergeCells('C'.$fila.':'.'N'.$fila);
+					$sheet->cell('C'.$fila, function($cell) {
+							$cell->setAlignment('center');
+							$cell->setValue(date('Y'));
+					});
+					$sheet->cell('O'.$fila, function($cell) {
+					    $cell->setValue('Total');
+					});
 		    });
 		})
 		->download('xlsx');
