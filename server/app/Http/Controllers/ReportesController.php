@@ -433,6 +433,10 @@ class ReportesController extends Controller {
 		return DB::connection( 'mvlocal' )->select( DB::raw($query) );
 	}
 
+	public function localidadClinicaPropia(){
+		// return DB::connection( 'mvlocal' )->select( DB::raw($query) );
+	}
+
 	public function repTemplate(){
 		// $datos = ReportesController::getDatos();
 		// $variables = array_keys(get_object_vars($datos[0]));
