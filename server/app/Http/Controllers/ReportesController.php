@@ -434,24 +434,82 @@ class ReportesController extends Controller {
 	}
 
 	public function localidadClinicaPropia(){
-		// return DB::connection( 'mvlocal' )->select( DB::raw($query) );
+		//listado ordenado de zonas
+		$query = "SELECT A.Localidad
+							from MVReportes.dbo.ListadoOperativo A
+							where A.Localidad in (SELECT top 1 Localidad
+									from MVReportes.dbo.ListadoOperativo C
+									where C.Unidad like '%mv%'
+									and C.Localidad = A.Localidad)
+							group by A.Localidad
+							order by count(A.Localidad) desc";
+		$resQuery = DB::connection( 'mvlocal' )->select( DB::raw($query) );
+
+		$queryDatos = "";
+		foreach ($resQuery as $dato) {
+			//select para unidades propias
+			$queryDatos .= "SELECT A.Unidad, count(Unidad) as CantidadUnidad, '1' as prioridad,
+													   ISNULL( (SELECT count(Unidad)
+																			from MVReportes.dbo.ListadoOperativo B
+																			where B.Unidad = A.Unidad
+																			and FCaptura < '2018'
+																			group by Unidad), 0 ) as 'y". (date('Y')-1) ."',
+													   ISNULL( (SELECT count(Unidad)
+																			from MVReportes.dbo.ListadoOperativo B
+																			where B.Unidad = A.Unidad
+																			and FCaptura >= CONVERT(datetime, '2017-12-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '2018-01-01 00:00:00', 121)
+																			group by Unidad), 0 ) as 'dic2017',
+													   ISNULL( (SELECT count(Unidad)
+																			from MVReportes.dbo.ListadoOperativo C
+																			where C.Unidad = A.Unidad
+																			and FCaptura >= CONVERT(datetime, '2018-01-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '2018-02-01 00:00:00', 121)
+																			group by Unidad), 0 ) as 'Enero',
+													   ISNULL( (SELECT count(Unidad)
+																			from MVReportes.dbo.ListadoOperativo C
+																			where C.Unidad = A.Unidad
+																			and FCaptura >= '2018'
+																			group by Unidad), 0 ) as 'y2018'
+											from MVReportes.dbo.ListadoOperativo A
+											where Unidad like '%mv%'
+											and A.Localidad = '". $dato->Localidad ."'
+											group by Unidad
+
+											UNION
+
+											select 'Red' as Unidad, count(*) as CantidadUnidad, '2' as prioridad,
+													   ISNULL( (SELECT count(*)
+																			from MVReportes.dbo.ListadoOperativo B
+																			where FCaptura < '2018'
+																			and Localidad = '". $dato->Localidad ."'
+																			and Unidad NOT LIKE '%mv%'), 0 ) as 'y2017',
+													   ISNULL( (SELECT count(*)
+																			from MVReportes.dbo.ListadoOperativo B
+																			where FCaptura >= CONVERT(datetime, '2017-12-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '2018-01-01 00:00:00', 121)
+																			and Localidad = '". $dato->Localidad ."'
+																			and Unidad NOT LIKE '%mv%'), 0 ) as 'dic2017',
+													   ISNULL( (SELECT count(*)
+																			from MVReportes.dbo.ListadoOperativo C
+																			where FCaptura >= CONVERT(datetime, '2018-01-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '2018-02-01 00:00:00', 121)
+																			and Localidad = '". $dato->Localidad ."'
+																			and Unidad NOT LIKE '%mv%'), 0 ) as 'Enero',
+													   ISNULL( (SELECT count(*)
+																			from MVReportes.dbo.ListadoOperativo C
+																			where FCaptura >= '2018'
+																			and Localidad = '". $dato->Localidad ."'
+																			and Unidad NOT LIKE '%mv%'), 0 ) as 'y2018'
+											from MVReportes.dbo.ListadoOperativo A
+											where Unidad NOT LIKE '%mv%'
+											and Localidad = '". $dato->Localidad ."'
+											order by prioridad asc, count(Unidad) desc ";
+		}
+		// return $queryDatos;
+		$resDatos = DB::connection( 'mvlocal' )->select( DB::raw($queryDatos) );
+		return $resDatos;
+
 	}
 
 	public function repTemplate(){
-		// $datos = ReportesController::getDatos();
-		// $variables = array_keys(get_object_vars($datos[0]));
-		//
-		// $data = array('datos' 		=> $datos,
-		// 							'variables'	=> $variables);
-		//
-		// Excel::create('template', function($excel) use($data) {
-		//     $excel->sheet('primera', function($sheet)  use($data){
-		// 				$sheet->loadView('excel.prueba', $data);
-		//     });
-		// })->download('xlsx');
-		//
-		// return view('excel.prueba', $data);
-
+		return ReportesController::localidadClinicaPropia();
 		$todo = ReportesController::connectionTest();
 		$datos = $todo['clientes'];
 		$variables = array_keys(get_object_vars($datos[0]));
