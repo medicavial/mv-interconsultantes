@@ -434,6 +434,7 @@ class ReportesController extends Controller {
 	}
 
 	public function localidadClinicaPropia(){
+		$newLocale = setlocale(LC_TIME, 'Spanish');
 		//listado ordenado de zonas
 		$query = "SELECT A.Localidad
 							from MVReportes.dbo.ListadoOperativo A
@@ -446,29 +447,49 @@ class ReportesController extends Controller {
 		$resQuery = DB::connection( 'mvlocal' )->select( DB::raw($query) );
 
 		$queryDatos = "";
+		$contadorLoc = 1;
+		$localidades = "";
+
+		foreach ($resQuery as $locNombre) {
+			if ( $locNombre->Localidad != $resQuery[sizeof($resQuery)-1]->Localidad ) {
+				$localidades .= "'".$locNombre->Localidad."',";
+			}elseif( $locNombre->Localidad == $resQuery[sizeof($resQuery)-1]->Localidad ){
+				$localidades .= "'".$locNombre->Localidad."'";
+			}
+		}
+
 		foreach ($resQuery as $dato) {
-			//select para unidades propias
-			$queryDatos .= "SELECT A.Unidad, count(Unidad) as CantidadUnidad, '1' as prioridad,
-													   ISNULL( (SELECT count(Unidad)
-																			from MVReportes.dbo.ListadoOperativo B
+			//select para localidades con unidades propias
+			if ( $dato->Localidad == 'Cd. Mex. (Z. Metro)') {
+				$queryDatos .= "SELECT '".$dato->Localidad."' as loc, A.Unidad, '".$contadorLoc."' as priLoc, '1' as prioridad, count(Unidad) as CantidadUnidad, ";
+			}elseif( $dato->Localidad != 'Cd. Mex. (Z. Metro)' ){
+				$queryDatos .= "SELECT '".$dato->Localidad."' as loc, 'Propias foráneas' as Unidad, '".$contadorLoc."' as priLoc, '1' as prioridad, count(Unidad) as CantidadUnidad, ";
+			}
+							$queryDatos.= "ISNULL( (SELECT count(Unidad) from MVReportes.dbo.ListadoOperativo B
 																			where B.Unidad = A.Unidad
-																			and FCaptura < '2018'
+																			and FCaptura < '". date('Y') ."'
 																			group by Unidad), 0 ) as 'y". (date('Y')-1) ."',
-													   ISNULL( (SELECT count(Unidad)
-																			from MVReportes.dbo.ListadoOperativo B
+													   ISNULL( (SELECT count(Unidad) from MVReportes.dbo.ListadoOperativo B
 																			where B.Unidad = A.Unidad
-																			and FCaptura >= CONVERT(datetime, '2017-12-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '2018-01-01 00:00:00', 121)
-																			group by Unidad), 0 ) as 'dic2017',
-													   ISNULL( (SELECT count(Unidad)
-																			from MVReportes.dbo.ListadoOperativo C
+																			and FCaptura between CONVERT(datetime, '".(date('Y')-1)."-12-01 00:00:00', 121) and CONVERT(datetime, '".date('Y')."-01-01 00:00:00', 121)
+																			group by Unidad), 0 ) as 'dic".(date('Y')-1)."', ";
+					for ($i=1; $i <= 12 ; $i++) {
+						if ($i < 12 ) {
+							$queryDatos .="ISNULL( (SELECT count(Unidad) from MVReportes.dbo.ListadoOperativo C
 																			where C.Unidad = A.Unidad
-																			and FCaptura >= CONVERT(datetime, '2018-01-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '2018-02-01 00:00:00', 121)
-																			group by Unidad), 0 ) as 'Enero',
-													   ISNULL( (SELECT count(Unidad)
-																			from MVReportes.dbo.ListadoOperativo C
+																			and FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".date('Y')."-".($i+1)."-01 00:00:00', 121)
+																			group by Unidad), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+						}elseif($i == 12){
+							$queryDatos .="ISNULL( (SELECT count(Unidad) from MVReportes.dbo.ListadoOperativo C
 																			where C.Unidad = A.Unidad
-																			and FCaptura >= '2018'
-																			group by Unidad), 0 ) as 'y2018'
+																			and FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".(date('Y')+1)."-".($i-11)."-01 00:00:00', 121)
+																			group by Unidad), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+						}
+					}
+							$queryDatos.= "ISNULL( (SELECT count(Unidad) from MVReportes.dbo.ListadoOperativo C
+																			where C.Unidad = A.Unidad
+																			and FCaptura >= '". date('Y') ."'
+																			group by Unidad), 0 ) as 'y". date('Y') ."'
 											from MVReportes.dbo.ListadoOperativo A
 											where Unidad like '%mv%'
 											and A.Localidad = '". $dato->Localidad ."'
@@ -476,40 +497,170 @@ class ReportesController extends Controller {
 
 											UNION
 
-											select 'Red' as Unidad, count(*) as CantidadUnidad, '2' as prioridad,
-													   ISNULL( (SELECT count(*)
-																			from MVReportes.dbo.ListadoOperativo B
-																			where FCaptura < '2018'
+											SELECT '".$dato->Localidad."' as loc, 'Red' as Unidad, '".$contadorLoc."' as priLoc, '2' as prioridad, count(*) as CantidadUnidad,
+													   ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo B
+																			where FCaptura < '". date('Y') ."'
 																			and Localidad = '". $dato->Localidad ."'
-																			and Unidad NOT LIKE '%mv%'), 0 ) as 'y2017',
-													   ISNULL( (SELECT count(*)
-																			from MVReportes.dbo.ListadoOperativo B
-																			where FCaptura >= CONVERT(datetime, '2017-12-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '2018-01-01 00:00:00', 121)
+																			and Unidad NOT LIKE '%mv%'), 0 ) as 'y". (date('Y')-1) ."',
+													   ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo B
+																			where FCaptura between CONVERT(datetime, '".(date('Y')-1)."-12-01 00:00:00', 121) and CONVERT(datetime, '".date('Y')."-01-01 00:00:00', 121)
 																			and Localidad = '". $dato->Localidad ."'
-																			and Unidad NOT LIKE '%mv%'), 0 ) as 'dic2017',
-													   ISNULL( (SELECT count(*)
-																			from MVReportes.dbo.ListadoOperativo C
-																			where FCaptura >= CONVERT(datetime, '2018-01-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '2018-02-01 00:00:00', 121)
+																			and Unidad NOT LIKE '%mv%'), 0 ) as 'dic".(date('Y')-1)."', ";
+					for ($i=1; $i <= 12 ; $i++) {
+						if ($i < 12 ) {
+							$queryDatos .="ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+																			where FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".date('Y')."-".($i+1)."-01 00:00:00', 121)
 																			and Localidad = '". $dato->Localidad ."'
-																			and Unidad NOT LIKE '%mv%'), 0 ) as 'Enero',
-													   ISNULL( (SELECT count(*)
-																			from MVReportes.dbo.ListadoOperativo C
-																			where FCaptura >= '2018'
+																			and Unidad NOT LIKE '%mv%'), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+						}elseif($i == 12){
+							$queryDatos .="ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+																			where FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".(date('Y')+1)."-".($i-11)."-01 00:00:00', 121)
 																			and Localidad = '". $dato->Localidad ."'
-																			and Unidad NOT LIKE '%mv%'), 0 ) as 'y2018'
+																			and Unidad NOT LIKE '%mv%'), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+						}
+					}
+							$queryDatos.= "ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+																			where FCaptura >= '". date('Y') ."'
+																			and Localidad = '". $dato->Localidad ."'
+																			and Unidad NOT LIKE '%mv%'), 0 ) as 'y". date('Y') ."'
 											from MVReportes.dbo.ListadoOperativo A
 											where Unidad NOT LIKE '%mv%'
 											and Localidad = '". $dato->Localidad ."'
-											order by prioridad asc, count(Unidad) desc ";
-		}
+
+											UNION
+
+											SELECT '".$dato->Localidad."' as loc, 'total' as Unidad, '".$contadorLoc."' as priLoc, '3' as prioridad, count(*) as CantidadUnidad,
+													   ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo B
+																			where FCaptura < '". date('Y') ."'
+																			and Localidad = '". $dato->Localidad ."'), 0 ) as 'y". (date('Y')-1) ."',
+													   ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo B
+																			where FCaptura between CONVERT(datetime, '".(date('Y')-1)."-12-01 00:00:00', 121) and CONVERT(datetime, '".date('Y')."-01-01 00:00:00', 121)
+																			and Localidad = '". $dato->Localidad ."'), 0 ) as 'dic".(date('Y')-1)."', ";
+					for ($i=1; $i <= 12 ; $i++) {
+						if ($i < 12 ) {
+							$queryDatos .="ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+																			where FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".date('Y')."-".($i+1)."-01 00:00:00', 121)
+																			and Localidad = '". $dato->Localidad ."'), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+						}elseif($i == 12){
+							$queryDatos .="ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+																			where FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".(date('Y')+1)."-".($i-11)."-01 00:00:00', 121)
+																			and Localidad = '". $dato->Localidad ."'), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+						}
+					}
+							$queryDatos.= "ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+																			where FCaptura >= '". date('Y') ."'
+																			and Localidad = '". $dato->Localidad ."'), 0 ) as 'y". date('Y') ."'
+											from MVReportes.dbo.ListadoOperativo A
+											where Localidad = '". $dato->Localidad ."'
+											";
+
+					if ( $resQuery[ sizeof($resQuery)-1 ]->Localidad != $dato->Localidad ) {
+						$queryDatos.="UNION
+												 ";
+					}
+					$contadorLoc++;
+		} // aqui termina foreach por cada localidad
+
+		// totales de propias
+		$queryDatos.="UNION
+
+									SELECT 'totalPropias' as loc, 'totalPropias' as Unidad, '".$contadorLoc."' as priLoc, '1' as prioridad, count(*) as CantidadUnidad,
+												 ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo B
+																	where FCaptura < '". date('Y') ."'
+																	and Unidad like '%mv%'), 0 ) as 'y". (date('Y')-1) ."',
+												 ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo B
+																	where FCaptura between CONVERT(datetime, '".(date('Y')-1)."-12-01 00:00:00', 121) and CONVERT(datetime, '".date('Y')."-01-01 00:00:00', 121)
+																	and Unidad like '%mv%'), 0 ) as 'dic".(date('Y')-1)."', ";
+				for ($i=1; $i <= 12 ; $i++) {
+					if ($i < 12 ) {
+					$queryDatos .="ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+															where FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".date('Y')."-".($i+1)."-01 00:00:00', 121)
+															and Unidad like '%mv%'), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+					}elseif($i == 12){
+					$queryDatos .="ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+															where FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".(date('Y')+1)."-".($i-11)."-01 00:00:00', 121)
+															and Unidad like '%mv%'), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+					}
+				}
+					$queryDatos.= "ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+															where FCaptura >= '". date('Y') ."'
+															and Unidad like '%mv%'), 0 ) as 'y". date('Y') ."'
+							from MVReportes.dbo.ListadoOperativo A
+							where Unidad like '%mv%'
+							";
+
+		// totales de red
+		$queryDatos.="UNION
+
+									SELECT 'totalRed' as loc, 'totalRed' as Unidad, '".$contadorLoc."' as priLoc, '2' as prioridad, count(*) as CantidadUnidad,
+												 ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo B
+																	where FCaptura < '". date('Y') ."'
+																	and Unidad NOT LIKE '%mv%'
+																	and Localidad in (".$localidades.")), 0 ) as 'y". (date('Y')-1) ."',
+												 ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo B
+																	where FCaptura between CONVERT(datetime, '".(date('Y')-1)."-12-01 00:00:00', 121) and CONVERT(datetime, '".date('Y')."-01-01 00:00:00', 121)
+																	and Localidad in (".$localidades.")
+																), 0 ) as 'dic".(date('Y')-1)."', ";
+				for ($i=1; $i <= 12 ; $i++) {
+					if ($i < 12 ) {
+					$queryDatos .="ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+															where FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".date('Y')."-".($i+1)."-01 00:00:00', 121)
+															and Localidad in (".$localidades.")
+															and Unidad NOT LIKE '%mv%'), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+					}elseif($i == 12){
+					$queryDatos .="ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+															where FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".(date('Y')+1)."-".($i-11)."-01 00:00:00', 121)
+															and Localidad in (".$localidades.")
+															and Unidad NOT LIKE '%mv%'), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+					}
+				}
+					$queryDatos.= "ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+															where FCaptura >= '". date('Y') ."'
+															and Localidad in (".$localidades.")
+															and Unidad NOT LIKE '%mv%'), 0 ) as 'y". date('Y') ."'
+							from MVReportes.dbo.ListadoOperativo A
+							where Localidad in (".$localidades.") and Unidad NOT LIKE '%mv%'
+							";
+
+		// totales generales
+		$queryDatos.="UNION
+
+									SELECT 'totalGeneral' as loc, 'totalGeneral' as Unidad, '".$contadorLoc."' as priLoc, '3' as prioridad, count(*) as CantidadUnidad,
+												 ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo B
+																	where FCaptura < '". date('Y') ."'
+																	and Localidad in (".$localidades.")), 0 ) as 'y". (date('Y')-1) ."',
+												 ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo B
+																	where FCaptura between CONVERT(datetime, '".(date('Y')-1)."-12-01 00:00:00', 121) and CONVERT(datetime, '".date('Y')."-01-01 00:00:00', 121)
+																	and Localidad in (".$localidades.")
+																), 0 ) as 'dic".(date('Y')-1)."', ";
+				for ($i=1; $i <= 12 ; $i++) {
+					if ($i < 12 ) {
+					$queryDatos .="ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+															where FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".date('Y')."-".($i+1)."-01 00:00:00', 121)
+															and Localidad in (".$localidades.")), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+					}elseif($i == 12){
+					$queryDatos .="ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+															where FCaptura >= CONVERT(datetime, '".date('Y')."-".$i."-01 00:00:00', 121) and FCaptura < CONVERT(datetime, '".(date('Y')+1)."-".($i-11)."-01 00:00:00', 121)
+															and Localidad in (".$localidades.")), 0 ) as '". strtoupper( strftime('%b', strtotime(date('Y')."-".$i)) ) ."', ";
+					}
+				}
+					$queryDatos.= "ISNULL( (SELECT count(*) from MVReportes.dbo.ListadoOperativo C
+															where FCaptura >= '". date('Y') ."'
+															and Localidad in (".$localidades.")), 0 ) as 'y". date('Y') ."'
+							from MVReportes.dbo.ListadoOperativo A
+							where Localidad in (".$localidades.")
+							";
+
+		$queryDatos.="ORDER BY priLoc ASC, prioridad ASC, COUNT(Unidad) DESC";
+
 		// return $queryDatos;
 		$resDatos = DB::connection( 'mvlocal' )->select( DB::raw($queryDatos) );
-		return $resDatos;
-
+		// return $resDatos;
+		return array('localidades' => $resQuery, 'datos' => $resDatos);
 	}
 
 	public function repTemplate(){
-		return ReportesController::localidadClinicaPropia();
+		// return ReportesController::localidadClinicaPropia();
 		$todo = ReportesController::connectionTest();
 		$datos = $todo['clientes'];
 		$variables = array_keys(get_object_vars($datos[0]));
@@ -929,8 +1080,8 @@ class ReportesController extends Controller {
 		    });
 
 				//Lesionados por localidad
-				$excel->sheet('3', function($sheet) {
-					// $datosTotalesLocalidad = ReportesController::totalesXlocalidades();
+				$excel->sheet('2c', function($sheet) {
+					$datosTotalesLocalidad = ReportesController::localidadClinicaPropia();
 
 					//inicializamos las filas
 					$fila3 = 1;
@@ -965,8 +1116,8 @@ class ReportesController extends Controller {
 					$sheet->mergeCells('D'.$fila3.':'.'O'.$fila3);
 
 					$sheet->cell('A'.$fila3, function($cell) { $cell->setBorder('none', 'none', 'thin', 'none'); $cell->setValue('Localidad'); });
-					$sheet->cell('B'.$fila3, function($cell) { $cell->setValue('Total'); });
-					$sheet->cell('C'.$fila3, function($cell) { $cell->setValue('2017'); });
+					$sheet->cell('B'.$fila3, function($cell) { $cell->setValue('2017'); });
+					$sheet->cell('C'.$fila3, function($cell) { $cell->setValue('Total'); });
 					$sheet->cell('D'.$fila3, function($cell) { $cell->setValue(date('Y')); });
 					$sheet->cell('P'.$fila3, function($cell) { $cell->setValue('Total'); });
 
@@ -984,8 +1135,8 @@ class ReportesController extends Controller {
 					});
 					$fila3++;
 
-					$sheet->cell('B'.$fila3, function($cell) { $cell->setValue( (date('Y')-1) ); });
-					$sheet->cell('C'.$fila3, function($cell) { $cell->setValue('DIC'); });
+					$sheet->cell('B'.$fila3, function($cell) { $cell->setValue('DIC'); });
+					$sheet->cell('C'.$fila3, function($cell) { $cell->setValue( (date('Y')-1) ); });
 					$sheet->cell('D'.$fila3, function($cell) { $cell->setValue('ENE'); });
 					$sheet->cell('E'.$fila3, function($cell) { $cell->setValue('FEB'); });
 					$sheet->cell('F'.$fila3, function($cell) { $cell->setValue('MAR'); });
@@ -1013,6 +1164,86 @@ class ReportesController extends Controller {
 							$cells->setValignment('center');
 					});
 					$fila3++;
+
+					$anioAnterior = 'y'.(date('Y')-1);
+					$dicAnterior = 'dic'.(date('Y')-1);
+					$anioActual = 'y'.date('Y');
+
+					$totalRed = 0;
+					$totalPropias = 0;
+					$totalGeneral = 0;
+
+					// array('localidades' => $resQuery, 'datos' => $resDatos);
+					foreach ($datosTotalesLocalidad['datos'] as $dato) {
+						//formato de fila
+						$sheet->row($fila3, function($row) use($fila3) {
+								if ($fila3%2 == 0 ) $row->setBackground('#E0E0E0');
+								if ($fila3%2 != 0 ) $row->setBackground('#FFFFFF');
+						});
+						$sheet->cells('A'.$fila3, function($cells) use($fila3){
+							$cells->setAlignment('left');
+							$cells->setValignment('center');
+							$cells->setFontFamily('Arial');
+							$cells->setFontSize(14);
+						});
+						$sheet->cells('B'.$fila3.':'.'P'.$fila3, function($cells) use($fila3){
+							$cells->setAlignment('center');
+							$cells->setValignment('center');
+							$cells->setFontFamily('Arial');
+							$cells->setFontSize(14);
+						});
+						if ($dato->Unidad == 'total') {
+							$sheet->cells('A'.$fila3.':'.'P'.$fila3, function($cells) use($fila3){
+								$cells->setFont(array(
+										'family'    => 'Arial',
+										'size'      => '14',
+										'bold'      =>  true
+								));
+								$cells->setBackground('#AAAAAA');
+								$cells->setBorder('thin', 'none', 'none', 'none');
+							});
+						}
+
+						//datos
+						$sheet->cell('A'.$fila3, function($cell) use($dato) {
+							if ($dato->Unidad == 'total') $cell->setValue( $dato->loc );
+							if ($dato->Unidad != 'total') $cell->setValue( $dato->Unidad );
+						});
+						$sheet->cell('B'.$fila3, function($cell) use($dato, $dicAnterior) { if($dato->$dicAnterior > 0) $cell->setValue( $dato->$dicAnterior ); });
+						$sheet->cell('C'.$fila3, function($cell) use($dato, $anioAnterior) { $cell->setFontWeight('bold'); if($dato->$anioAnterior > 0) $cell->setValue( $dato->$anioAnterior ); });
+						$sheet->cell('D'.$fila3, function($cell) use($dato) { if($dato->ENE > 0) $cell->setValue( $dato->ENE ); });
+						$sheet->cell('E'.$fila3, function($cell) use($dato) { if($dato->FEB > 0) $cell->setValue( $dato->FEB ); });
+						$sheet->cell('F'.$fila3, function($cell) use($dato) { if($dato->MAR > 0) $cell->setValue( $dato->MAR ); });
+						$sheet->cell('G'.$fila3, function($cell) use($dato) { if($dato->ABR > 0) $cell->setValue( $dato->ABR ); });
+						$sheet->cell('H'.$fila3, function($cell) use($dato) { if($dato->MAY > 0) $cell->setValue( $dato->MAY ); });
+						$sheet->cell('I'.$fila3, function($cell) use($dato) { if($dato->JUN > 0) $cell->setValue( $dato->JUN ); });
+						$sheet->cell('J'.$fila3, function($cell) use($dato) { if($dato->JUL > 0) $cell->setValue( $dato->JUL ); });
+						$sheet->cell('K'.$fila3, function($cell) use($dato) { if($dato->AGO > 0) $cell->setValue( $dato->AGO ); });
+						$sheet->cell('L'.$fila3, function($cell) use($dato) { if($dato->SEP > 0) $cell->setValue( $dato->SEP ); });
+						$sheet->cell('M'.$fila3, function($cell) use($dato) { if($dato->OCT > 0) $cell->setValue( $dato->OCT ); });
+						$sheet->cell('N'.$fila3, function($cell) use($dato) { if($dato->NOV > 0) $cell->setValue( $dato->NOV ); });
+						$sheet->cell('O'.$fila3, function($cell) use($dato) { if($dato->DIC > 0) $cell->setValue( $dato->DIC ); });
+						$sheet->cell('P'.$fila3, function($cell) use($dato, $anioActual) { $cell->setFontWeight('bold'); if($dato->$anioActual > 0) $cell->setValue( $dato->$anioActual ); });
+
+						if ($dato->Unidad == 'total') {
+							$fila3++;
+							$sheet->cells('A'.$fila3.':'.'P'.$fila3, function($cells) use($fila3){
+								$cells->setBackground('#FFFFFF');
+							});
+						}
+
+						// //contadores
+						// for ($i=0; $i < ; $i++) {
+						// 	// code...
+						// }
+						// if ( $dato->Unidad == 'Red' ) $totalRed = $totalRed+$dato->CantidadUnidad;
+						// $totalRed = 0;
+						// $totalPropias = 0;
+						// $totalGeneral = 0;
+
+						$fila3++;
+					}
+
 				});
 		})
 		->download('xlsx');
