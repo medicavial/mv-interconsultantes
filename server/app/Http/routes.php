@@ -74,3 +74,8 @@ Route::group(['prefix' => 'reportes'], function()
   Route::get('test', 'ReportesController@connectionTest');
   // Route::post('login', 'SesionController@sesionExternos');
 });
+
+Route::group(['prefix' => 'qws'], function()
+{
+  Route::get('prueba', 'QWSController@index');
+});
