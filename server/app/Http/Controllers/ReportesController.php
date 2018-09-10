@@ -653,14 +653,44 @@ class ReportesController extends Controller {
 
 		$queryDatos.="ORDER BY priLoc ASC, prioridad ASC, COUNT(Unidad) DESC";
 
-		// return $queryDatos;
 		$resDatos = DB::connection( 'mvlocal' )->select( DB::raw($queryDatos) );
-		// return $resDatos;
 		return array('localidades' => $resQuery, 'datos' => $resDatos);
 	}
 
+	public function localidadAseguradora(){
+		$newLocale = setlocale(LC_TIME, 'Spanish');
+
+		$qCliente = "SELECT Cliente from MVReportes.dbo.ListadoOperativo group by Cliente order by Cliente asc;";
+		$rCliente = DB::connection( 'mvlocal' )->select( DB::raw($qCliente) );
+
+		$qLocalidad = "SELECT Localidad from MVReportes.dbo.ListadoOperativo group by Localidad order by count(Localidad) desc;";
+		$rLocalidad = DB::connection( 'mvlocal' )->select( DB::raw($qLocalidad) );
+
+		$qCantidades = "SELECT ";
+		$qCantidades.= "ISNULL((SELECT count(*) from MVReportes.dbo.ListadoOperativo
+														where FCaptura >= CONVERT(datetime, '".(date('Y')-1)."-01-01 00:00:00', 121)
+														and FCaptura < CONVERT(datetime, '".date('Y')."-01-01 00:00:00', 121)), 0)
+														as 'y".(date('Y')-1)."', ";
+
+		foreach ($rCliente as $cliente) {
+			$qCantidades.= "ISNULL((SELECT count(Cliente) from MVReportes.dbo.ListadoOperativo where Cliente = '".$cliente->Cliente."'
+															and FCaptura >= CONVERT(datetime, '".date('Y')."-01-01 00:00:00', 121)
+															and FCaptura < CONVERT(datetime, '".(date('Y')+1)."-01-01 00:00:00', 121)), 0)
+															as '".$cliente->Cliente."', ";
+		}
+
+		$qCantidades.= "ISNULL((SELECT count(*) from MVReportes.dbo.ListadoOperativo
+														where FCaptura >= CONVERT(datetime, '".date('Y')."-01-01 00:00:00', 121)
+														and FCaptura < CONVERT(datetime, '".(date('Y')+1)."-01-01 00:00:00', 121)), 0)
+														as 'y".date('Y')."' ";
+
+		return $qCantidades;
+
+		return array('clientes' => $rCliente, 'localidades' => $rLocalidad);
+	}
+
 	public function repTemplate(){
-		// return ReportesController::localidadClinicaPropia();
+		return ReportesController::localidadAseguradora();
 		$todo = ReportesController::connectionTest();
 		$datos = $todo['clientes'];
 		$variables = array_keys(get_object_vars($datos[0]));
@@ -1111,7 +1141,7 @@ class ReportesController extends Controller {
 					$fila3++;
 
 					//ENCABEZADOS
-					$sheet->setWidth(array( 'A'=>30, 'B'=>10, 'C'=>10, 'D'=>10, 'E'=>10, 'F'=>10, 'G'=>10, 'H'=>10, 'I'=>10, 'J'=>10, 'K'=>10, 'L'=>10, 'M'=>10, 'N'=>10, 'O'=>10, 'P'=>10 ));
+					$sheet->setWidth(array( 'A'=>50, 'B'=>10, 'C'=>10, 'D'=>10, 'E'=>10, 'F'=>10, 'G'=>10, 'H'=>10, 'I'=>10, 'J'=>10, 'K'=>10, 'L'=>10, 'M'=>10, 'N'=>10, 'O'=>10, 'P'=>10 ));
 					$sheet->mergeCells('A'.$fila3.':'.'A'.($fila3+1));
 					$sheet->mergeCells('D'.$fila3.':'.'O'.$fila3);
 
@@ -1192,7 +1222,8 @@ class ReportesController extends Controller {
 							$cells->setFontFamily('Arial');
 							$cells->setFontSize(14);
 						});
-						if ($dato->Unidad == 'total') {
+
+						if ( $dato->Unidad == 'total' || $dato->Unidad == 'totalPropias' || $dato->Unidad == 'totalRed' || $dato->Unidad == 'totalGeneral' ) {
 							$sheet->cells('A'.$fila3.':'.'P'.$fila3, function($cells) use($fila3){
 								$cells->setFont(array(
 										'family'    => 'Arial',
@@ -1202,12 +1233,23 @@ class ReportesController extends Controller {
 								$cells->setBackground('#AAAAAA');
 								$cells->setBorder('thin', 'none', 'none', 'none');
 							});
+
+							if ( $dato->Unidad == 'totalPropias' || $dato->Unidad == 'totalRed' || $dato->Unidad == 'totalGeneral' ) {
+								$sheet->cells('A'.$fila3.':'.'P'.$fila3, function($cells) use($fila3){
+									// $cells->setFontWeight('bold');
+									$cells->setAlignment('right');
+									$cells->setValignment('center');
+								});
+							}
 						}
 
 						//datos
 						$sheet->cell('A'.$fila3, function($cell) use($dato) {
 							if ($dato->Unidad == 'total') $cell->setValue( $dato->loc );
 							if ($dato->Unidad != 'total') $cell->setValue( $dato->Unidad );
+							if ($dato->Unidad == 'totalPropias') $cell->setValue( 'Atenciones en Clínicas Propias' );
+							if ($dato->Unidad == 'totalRed') $cell->setValue( 'Atenciones Clínicas de Red' );
+							if ($dato->Unidad == 'totalGeneral') $cell->setValue( 'Total General de Atenciones' );
 						});
 						$sheet->cell('B'.$fila3, function($cell) use($dato, $dicAnterior) { if($dato->$dicAnterior > 0) $cell->setValue( $dato->$dicAnterior ); });
 						$sheet->cell('C'.$fila3, function($cell) use($dato, $anioAnterior) { $cell->setFontWeight('bold'); if($dato->$anioAnterior > 0) $cell->setValue( $dato->$anioAnterior ); });
@@ -1232,18 +1274,41 @@ class ReportesController extends Controller {
 							});
 						}
 
-						// //contadores
-						// for ($i=0; $i < ; $i++) {
-						// 	// code...
-						// }
-						// if ( $dato->Unidad == 'Red' ) $totalRed = $totalRed+$dato->CantidadUnidad;
-						// $totalRed = 0;
-						// $totalPropias = 0;
-						// $totalGeneral = 0;
-
 						$fila3++;
 					}
 
+				});
+
+				//Lesionados por localidad
+				$excel->sheet('3', function($sheet) {
+					// $datosTotalesLocalidad = ReportesController::localidadClinicaPropia();
+
+					//inicializamos las filas
+					$fila4 = 1;
+					//configuramos hoja
+					$sheet->setPaperSize('letter');
+					$sheet->setOrientation('landscape');
+
+					$sheet->mergeCells('A'.$fila4.':'.'P'.$fila4);
+					$sheet->cells('A'.$fila4.':'.'P'.$fila4, function($cells) {
+							$cells->setBackground('#ffffff');
+					});
+					$fila4++;
+
+					$sheet->mergeCells('A'.$fila4.':'.'P'.$fila4);
+					$sheet->cells('A'.$fila4.':'.'P'.$fila4, function($cells) {
+							$cells->setBackground('#ffffff');
+							$cells->setFontColor('#000000');
+							$cells->setFont(array(
+							    'family'    => 'Arial',
+							    'size'      => '24',
+							    'bold'      =>  true
+							));
+							$cells->setAlignment('center');
+							$cells->setValignment('center');
+					});
+					$sheet->row($fila4, array( 'Lesionados En Plaza Con Clínica Propia', ));
+					$fila4++;
 				});
 		})
 		->download('xlsx');
