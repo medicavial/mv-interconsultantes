@@ -32,7 +32,7 @@
 			<tr style="background-color: #0082cd; color: white;">
 
 				<th colspan="5">
-					<h2>ORDEN DE REHABILITACIÓN</h2>
+					<h2>ORDEN DE ATENCIÓN</h2>
 				</th>
 				<th style="background-color: white;" width="150">
 					&nbsp;&nbsp;
@@ -41,12 +41,12 @@
 				</th>
 			</tr>
 
-      <tr style="background-color: #FBF8EF;">
+      <tr style="background-color: #EBF5FB;">
         <td colspan="6" style="padding-left: 15px; padding-right: 15px;">
           <br>
           	<h2>{{ $saludo }}</h2>
           	<br><br>
-          	Ha sido generada una Orden de Rehabilitación para {{ $nombreCompleto }} con Clave <b>{{ $claveOrden }}</b>
+          	Ha sido generada una Orden de Atención para {{ $nombreCompleto }} con Clave <b>{{ $claveOrden }}</b>
           	<br>
           	Deberá presentar la Clave de la orden al presentarse en la clínica correspondiente.
           	<br><br><br>

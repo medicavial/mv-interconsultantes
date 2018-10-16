@@ -65,7 +65,7 @@ class ExternosController extends Controller {
 
 		return DB::connection('externos')
 						 ->table('pases')
-						 ->select('medica_externos.pases.*', 'Unidad.*', 'USU_nombre', 'USU_username', 'medicos.*',
+						 ->select('medica_externos.pases.*', 'Unidad.*', 'USU_nombre', 'USU_aPaterno', 'USU_aMaterno', 'USU_username', 'medicos.*',
 						 					DB::raw( 'if( PAS_id < 10, concat(PAS_clave,"00", PAS_id), if( PAS_id < 100, concat(PAS_clave, "0", PAS_id), concat(PAS_clave, PAS_id) ) ) as claveOrden' ),
 						 					DB::raw( 'CONCAT( PAS_nombre, " ", PAS_aPaterno, " ", PAS_aMaterno ) as nombreCompleto' ),
 											DB::raw( 'DATEDIFF( now(), PAS_fechaAlta ) as dias' ) )
@@ -84,7 +84,7 @@ class ExternosController extends Controller {
 
 		return DB::connection('externos')
 						 ->table('pases')
-						 ->select('medica_externos.pases.*', 'Unidad.*', 'USU_nombre', 'USU_username', 'medicos.*',
+						 ->select('medica_externos.pases.*', 'Unidad.*', 'USU_nombre', 'USU_aPaterno', 'USU_aMaterno', 'USU_username', 'medicos.*',
 						 					DB::raw( 'if( PAS_id < 10, concat(PAS_clave,"00", PAS_id), if( PAS_id < 100, concat(PAS_clave, "0", PAS_id), concat(PAS_clave, PAS_id) ) ) as claveOrden' ),
 						 					DB::raw( 'CONCAT( PAS_nombre, " ", PAS_aPaterno, " ", PAS_aMaterno ) as nombreCompleto' ),
 											DB::raw( 'DATEDIFF( now(), PAS_fechaAlta ) as dias' ) )
@@ -136,8 +136,11 @@ class ExternosController extends Controller {
 		$enviaMedico = Input::get('copiaOrden');
 		$mailUsuario = Input::get('mailUsuario');
 		$clave = ExternosController::generaPrefijo();
-
-		// return Input::All();
+		if ( Input::has('servicio') ){
+		    $claveServicio = Input::get('servicio');
+		} else{
+			$claveServicio = null;
+		}
 
 		if ( sizeof( $usuario ) > 0 ) {
 			try {
@@ -151,6 +154,7 @@ class ExternosController extends Controller {
 																		'PAS_sexo'						=> $datos['sexo'],
 																		'USU_id' 							=> $usuario[0]->USU_id,
 																		'UNI_clave' 					=> $datos['unidad'],
+																		'PAS_claveServicio'		=> $claveServicio,
 																		'PAS_diagnostico' 		=> $datos['diagnostico'],
 																		'PAS_servicio' 				=> $datos['objetivo'],
 																		'PAS_tipoTerapia' 		=> $datos['tipoTerapia'],

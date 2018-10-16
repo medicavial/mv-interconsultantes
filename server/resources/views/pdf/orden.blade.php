@@ -21,6 +21,8 @@
 			footer { position: fixed; bottom: -50px; left: 0px; right: 0px; height: 50px; }
 			body{ font-family: 'Alegreya Sans', sans-serif; font-size: 1em; }
 			.titulo{ font-size: 1.5em; font-weight: bold; }
+			.subtitulo{ font-size: 1.2em; font-weight: bold; }
+			.titulo > .subtitulo{ font-size: 0.6em; font-weight: bold; }
 			.bg-mv{ background-color: #0082cd; }
 			.bg-white{ background-color: #fff; }
 			.bg-yellow{ background: #FCF3CF; }
@@ -40,6 +42,7 @@
 			.espacio{ margin-top: 2em; }
 			.saludo{ font-size: 1.2em; font-weight: bold; }
 			.datos{ font-weight: bold; }
+			.encabezado{ width: auto;}
    </style>
  </head>
  <body>
@@ -50,7 +53,15 @@
 					 <img src="img/logomv.png" class="logomv" />
 				 </td>
 				 <td class="titulo" width="50%" align="center">
-					 ORDEN DE REHABILITACIÓN
+					 @if( $data->PAS_claveServicio == 'SR' )
+					 		ORDEN DE REHABILITACIÓN
+					 @elseif( $data->PAS_claveServicio == 'SC' )
+					 		ORDEN DE ATENCIÓN <br> <span class="subtitulo">(SÓLO CONSULTA)</span>
+					 @elseif( $data->PAS_claveServicio == 'CR' )
+						 	ORDEN DE ATENCIÓN <br> <span class="subtitulo">(CONSULTA Y REHABILITACIÓN)</span>
+					 @else
+							ORDEN DE REHABILITACIÓN
+					 @endif
 				 </td>
 				 <td width="25%" class="notas" align="right">
 					 Orden emitida el<br>
@@ -79,7 +90,16 @@
 					 <br>
 						¡Agradecemos mucho tu preferencia!
 						Daremos nuestro mejor esfuerzo para atenderte de la mejor manera posible. A continuación encontrarás los detalles
-						para tus sesiones de rehabilitación.
+						para
+						@if( $data->PAS_claveServicio == 'SR' )
+							 tus sesiones de rehabilitación.
+						@elseif( $data->PAS_claveServicio == 'SC' )
+							 tu consulta.
+						@elseif( $data->PAS_claveServicio == 'CR' )
+							 tu atención y rehabilitación.
+						@else
+							 tu atención.
+						@endif
 					</p>
        </td>
      </tr>
@@ -93,7 +113,7 @@
 		 </tr>
 
 		 <tr>
-			 <td  width="140" class="tbl-container">
+			 <td  width="140" class="tbl-container encabezado">
 				 Clave de la orden: <span class="datos">{{ $clave }}</span>
 			 </td>
 
@@ -110,7 +130,7 @@
 				 Direccionado por:
 			 </td>
 			 <td  width="75%" class="tbl-container datos">
-				 {{ $data->USU_nombre }}
+				 {{ $data->USU_nombre }} {{ $data->USU_aPaterno }} {{ $data->USU_aMaterno }}
 				 <br>
 				 <span class="notas">
 					 @if( $data->MED_cedula )
