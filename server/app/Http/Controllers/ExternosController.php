@@ -65,7 +65,7 @@ class ExternosController extends Controller {
 
 		return DB::connection('externos')
 						 ->table('pases')
-						 ->select('medica_externos.pases.*', 'Unidad.*', 'USU_nombre', 'USU_aPaterno', 'USU_aMaterno', 'USU_username', 'medicos.*',
+						 ->select('medica_externos.pases.*', 'Unidad.*', 'USU_nombre', 'USU_aPaterno', 'USU_aMaterno', 'USU_username', 'CIA_claveMV', 'medicos.*',
 						 					DB::raw( 'if( PAS_id < 10, concat(PAS_clave,"00", PAS_id), if( PAS_id < 100, concat(PAS_clave, "0", PAS_id), concat(PAS_clave, PAS_id) ) ) as claveOrden' ),
 						 					DB::raw( 'CONCAT( PAS_nombre, " ", PAS_aPaterno, " ", PAS_aMaterno ) as nombreCompleto' ),
 											DB::raw( 'DATEDIFF( now(), PAS_fechaAlta ) as dias' ) )
@@ -337,6 +337,9 @@ class ExternosController extends Controller {
 			}
 			if ( $tipo == 'Ejecutivo' ) {
 				$tipoUsuario = 5;
+			}
+			if ( $tipo == 'Convenio' ) {
+				$tipoUsuario = 6;
 			}
 
 			$idUsuario = DB::connection('externos')

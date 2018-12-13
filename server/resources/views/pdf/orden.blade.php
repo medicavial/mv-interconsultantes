@@ -34,7 +34,7 @@
 			td { padding: 0.5em, 0, 0.5em, 0; }
 			.img-map{ height: auto; max-width: 530px; }
 			.img-qr{ height: auto; max-width: 150px; }
-			.logomv{ height: auto; max-width: 20%; }
+			.logomv{ height: auto; max-width: 20%;}
 			.text-mv{ color: #0082cd; }
 			.text-white{ color: #fff; }
 			.notas{ font-size: 0.8em; color: #555; font-weight: normal; }
@@ -50,7 +50,15 @@
 		 <table class="tbl">
 			 <tr>
 				 <td width="25%">
-					 <img src="img/logomv.png" class="logomv" />
+					 @if( $data->CIA_claveMV == 66 )
+						 <img src="img/genou-sm.png" class="logomv" style="width: 120px"/>
+						 <br><br>
+						 <img src="img/logomv.png" class="logomv" style="width: 50px" />
+						 &nbsp;&nbsp;&nbsp;&nbsp;
+						 <img src="img/logomedici.jpg" class="logomv" style="width: 50px" />
+					 @else
+					 <img src="img/logomv.png" class="logomv"/>
+					 @endif
 				 </td>
 				 <td class="titulo" width="50%" align="center">
 					 @if( $data->PAS_claveServicio == 'SR' )
@@ -89,7 +97,9 @@
 	 				 </b>
 					 <br>
 						¡Agradecemos mucho tu preferencia!
-						Daremos nuestro mejor esfuerzo para atenderte de la mejor manera posible. A continuación encontrarás los detalles
+						Daremos nuestro mejor esfuerzo para atenderte de la mejor manera posible.
+						<br>
+						A continuación encontrarás los detalles
 						para
 						@if( $data->PAS_claveServicio == 'SR' )
 							 tus sesiones de rehabilitación.
@@ -143,6 +153,16 @@
 						 {{ $data->MED_cedulaEsp }}
 					 @endif
 				 </span>
+			 </td>
+		 </tr>
+
+		 <tr>
+			 <td width="25%" class="tbl-container">
+				 Servicio:
+			 </td>
+
+			 <td width="75%" class="tbl-container datos">
+					 {{ $data->PAS_catidadRehab }} sesiones de rehabilitación.
 			 </td>
 		 </tr>
 
