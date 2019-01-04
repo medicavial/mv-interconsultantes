@@ -79,3 +79,10 @@ Route::group(['prefix' => 'qws'], function()
 {
   Route::get('prueba', 'QWSController@index');
 });
+
+
+Route::group(['prefix' => 'tienda'], function()
+{
+  Route::get('test', 'TiendaController@index');
+  Route::post('venta', 'TiendaController@alertaVenta');
+});
