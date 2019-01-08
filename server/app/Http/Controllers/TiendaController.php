@@ -17,49 +17,46 @@ use App\Http\Controllers\Controller;
 class TiendaController extends Controller {
 
 	public function index() {
-		return 'it´s works';
+		return 'Funciona';
 	}
 
-
 	public function alertaVenta(){
-		Mail::raw('Entro un pago', function($message)
-		{
-			$message->from('sramirez@medicavial.com.mx', 'SistemaMV');
+		// Recibir el cuerpo de la petición.
+		$input = @file_get_contents("php://input");
+		// Parsear el contenido como JSON.
+		$data = json_decode($input);
 
-			$message->to('samuel11rr@gmail.com');
-			$message->cc('sramirez@medicavial.com.mx');
-		});
-
-
-		$data = Input::get('object');
-
-		// return $data['customer']['default_address'];
-
-		$customer	= $data['customer']['name'];
-		$address 	= $data['customer']['default_address']['address1'].', '.$data['customer']['default_address']['address2'].','.$data['customer']['default_address']['address2'];
-		$items 		= $data['items'][0]['name'];
-		$cantidad	= $data['items'][0]['quantity'];
-		$email 		= $data['email'];
-		$phone 		= $data['customer']['default_address']['phone'];
-		
-		$texto = 'Se ha completado la compra de '.$cantidad.' '.$items.' para '.$customer.': '.$address.' | '.$phone.' | '.$email;
-
+		// Usar los datos del Webhooks para alguna acción.
+			$datos = array('datos' => $data->data->object);
+			// return $datos['datos']->id;
 		try {
-			Mail::raw($texto, function($message)
+			Mail::send('emails.venta', $datos, function($message)
 			{
 				$message->from('sramirez@medicavial.com.mx', 'SistemaMV');
+				$message->subject('Venta Online MedicaVial');
 
 				$message->to('samuel11rr@gmail.com');
 				$message->cc('sramirez@medicavial.com.mx');
 			});
-		} catch (Exception $e) {
-			return array('error' 	=> $e, 
-						 'data' 	=> $data,
-						 'message' 	=> 'No enviado' );
+		} catch (Error $e) {
+			
 		}
 
-		return array('data' 	=> $data,
-					 'message' 	=> 'Enviado' );
+		// Responder
+		return http_response_code(200);
+	}
+
+
+	public function vistaVenta(){
+		// Recibir el cuerpo de la petición.
+		$input = @file_get_contents("php://input");
+		// Parsear el contenido como JSON.
+		$data = json_decode($input);
+
+		$datos = array('datos' => $data);
+
+
+		return view('emails.venta', $datos);
 	}
 
 }
