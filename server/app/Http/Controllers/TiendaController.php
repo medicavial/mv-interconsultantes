@@ -27,8 +27,8 @@ class TiendaController extends Controller {
 		$data = json_decode($input);
 
 		// Usar los datos del Webhooks para alguna acción.
-			$datos = array('datos' => $data->data->object);
-			// return $datos['datos']->id;
+		$datos = array('datos' => $data->data->object);
+		
 		try {
 			Mail::send('emails.venta', $datos, function($message)
 			{
@@ -53,7 +53,7 @@ class TiendaController extends Controller {
 		// Parsear el contenido como JSON.
 		$data = json_decode($input);
 
-		$datos = array('datos' => $data);
+		$datos = array('datos' => $data->data->object);
 
 
 		return view('emails.venta', $datos);
