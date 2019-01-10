@@ -1,40 +1,3 @@
-<p>
-    ID Evento: {{ $datos->id }}
-</p>
-
-@if( $datos->object == 'order' && $datos->financial_status == 'paid' )
-<p>
-    Orden Pagada
-</p>
-@endif
-
-@if( $datos->email )
-<p>
-    Email: {{ $datos->email }}
-</p>
-@endif
-
-@if($datos->customer)
-<p>
-    Cliente: {{ $datos->customer->name }}
-</p>
-
-<p>
-    Domicilio: {{ $datos->customer->default_address->address1 }}
-</p>
-@endif
-
-
-<p>
-    Items:
-    <br>
-    @foreach ($datos->items as $item)
-        <span> {{ $item->quantity }} {{ $item->name }} <br> </span>
-    @endforeach
-</p>
-
-{{ date('Y/m/d H:i:s', $datos->updated_at) }}
-
 <!DOCTYPE html>
 
 <?php
@@ -77,13 +40,32 @@
         <td colspan="6" style="padding-left: 15px; padding-right: 15px;">
           <br>
           	<h3>{{ $saludo }}</h3>
-          	<br><br>
-          	Se ha registrado una compra a nombre de {{ $datos->customer->name }} con ID:  <b>{{ $datos->id }}</b>
           	<br>
-          	Deberá presentar la Clave de la orden al presentarse en la clínica correspondiente.
+          	Se adjunta comprobante de compra a nombre <b>{{ $datos->customer->name }}</b> registrada el {{ date('Y/m/d H:i:s', $datos->updated_at) }}
+          	<br>
+
+			<p>
+				Items:
+				<br>
+				@foreach ($datos->items as $item)
+					<span> {{ $item->quantity }} {{ $item->name }} <br> </span>
+				@endforeach
+			</p>
+
+			<p>
+				Email: {{ $datos->email }}
+			</p>
+
+			<p>
+				Domicilio: {{ $datos->customer->default_address->address1 }}
+			</p>
+
+          	Deberá presentar este comprobante en clínica
           	<br><br><br>
           	<div class="notas">
-          		* Correo automático enviado por Médica Vial.
+			  {{ $datos->id }}
+			  	<br>
+          		* Correo automático enviado por MédicaVial.
           	</div>
           	<br>
         </td>
