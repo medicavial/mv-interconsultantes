@@ -32,11 +32,12 @@ class TiendaController extends Controller {
 		try {
 			Mail::send('emails.venta', $datos, function($message)
 			{
-				$message->from('sramirez@medicavial.com.mx', 'SistemaMV');
+				$message->from('sramirez@medicavial.com.mx', 'MedicaVial');
 				$message->subject('Venta Online MedicaVial');
 
-				$message->to('samuel11rr@gmail.com');
-				$message->cc('sramirez@medicavial.com.mx');
+				$message->to('agutierrez@medicavial.com.mx');
+				$message->cc('chernandez@medicavial.com.mx');
+				$message->bcc('sramirez@medicavial.com.mx');
 			});
 		} catch (Error $e) {
 			

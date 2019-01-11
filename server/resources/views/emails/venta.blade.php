@@ -31,7 +31,7 @@
 				</th>
 				<th style="background-color: white;" width="150">
 					&nbsp;&nbsp;
-
+					<img src="{{ $message->embed('http://medicavial.net/mvnuevo/imgs/logos/mv.jpg') }}" width="100" />
 					&nbsp;&nbsp;
 				</th>
 			</tr>
@@ -40,7 +40,9 @@
         <td colspan="6" style="padding-left: 15px; padding-right: 15px;">
           <br>
           	<h3>{{ $saludo }}</h3>
-          	<br>
+			<b>ESTE ES UN CORREO DE PRUEBAS DE DESARROLLO. SE INCLUIRÁ TAMBIEN UN DOCUMENTO PDF ADJUNTO CON MÁS DETALLES DE LAS COMPRAS.</b>
+
+          	<br><br>
           	Se adjunta comprobante de compra a nombre <b>{{ $datos->customer->name }}</b> registrada el {{ date('Y/m/d H:i:s', $datos->updated_at) }}
           	<br>
 
@@ -48,16 +50,46 @@
 				Items:
 				<br>
 				@foreach ($datos->items as $item)
-					<span> {{ $item->quantity }} {{ $item->name }} <br> </span>
+					<b> {{ $item->quantity }} {{ $item->name }} </b><br>
 				@endforeach
 			</p>
 
 			<p>
-				Email: {{ $datos->email }}
+				Teléfono: <b>{{ $datos->shipping->phone }}</b>
 			</p>
 
 			<p>
-				Domicilio: {{ $datos->customer->default_address->address1 }}
+				Email: <b>{{ $datos->email }}</b>
+			</p>
+
+			<p>
+				Domicilio: 
+				<b>{{ $datos->shipping->address->address1 }}</b>
+
+				@if( $datos->shipping->address->address2 )
+					<b>, {{ $datos->shipping->address->address2 }} </b>
+				@endif
+
+				@if( $datos->shipping->address->city )
+					<b>, {{ $datos->shipping->address->city }} </b>
+				@endif
+
+				@if( $datos->shipping->address->state )
+					<b>, {{ $datos->shipping->address->state }} </b>
+				@endif
+
+				@if( $datos->shipping->address->country )
+					<b>, {{ $datos->shipping->address->country }} </b>
+				@endif
+
+				@if( $datos->shipping->address->postcode )
+					<b>, CP {{ $datos->shipping->address->postcode }} </b>
+				@endif
+
+				@if( $datos->shipping->address->references )
+					<b>| Referencia: {{ $datos->shipping->address->references }} </b>
+				@endif
+				.
 			</p>
 
           	Deberá presentar este comprobante en clínica
