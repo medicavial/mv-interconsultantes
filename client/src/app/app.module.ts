@@ -24,6 +24,7 @@ import { AsignacionPacientesComponent } from './components/asignacion-pacientes/
 import { AdminUsariosComponent } from './components/admin-usarios/admin-usarios.component';
 import { RecetaInternaComponent } from './components/notas-medicas/receta-interna.component';
 import { ListadoAsignacionesComponent } from './components/asignacion-pacientes/listado-asignaciones.component';
+import { CuentaComponent } from './components/cuenta/cuenta.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { ListadoAsignacionesComponent } from './components/asignacion-pacientes/
     AdminUsariosComponent,
     RecetaInternaComponent,
     ListadoAsignacionesComponent,
+    CuentaComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,284 @@
+<!-- Pantalla Cuenta -->
+<!-- Samuel Ramírez - Febrero 2019 -->
+
+
+<div class="container"> <!-- contenedor botones -->
+  <div class="row">
+    <div class="col-sm-12">
+    <h3>Datos de la cuenta</h3>
+    <p>Debe proporcionar los datos para poder utilizar su cuenta</p>
+    <hr>
+    </div>
+  </div>
+  
+  <div class="row"> <!-- row -->
+    <div class="col-md-4 col-lg-3">
+      <div class="btn-menu card text-white bg-orange seleccion animated fadeIn" (click)="modal( 'Acceso' )">
+        <div class="card-body">
+          <h2 class=" text-center"><i class="mdi mdi-shield-lock"></i></h2>
+          <p class="card-title text-center">Acceso y seguridad</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-lg-3">
+      <div class="btn-menu card text-white bg-teal seleccion animated fadeIn" (click)="modal( 'personales' )">
+        <div class="card-body">
+          <h2 class=" text-center"><i class="mdi mdi-clipboard-account"></i></h2>
+          <p class="card-title text-center">Datos personales</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-lg-3">
+      <div class="btn-menu card text-white bg-pink-darken seleccion animated fadeIn" (click)="modal( 'institucion' )">
+        <div class="card-body">
+          <h2 class=" text-center"><i class="mdi mdi-hospital-building"></i></h2>
+          <p class="card-title text-center">Institución</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 col-lg-3">
+      <div class="btn-menu card text-white bg-cyan seleccion animated fadeIn" (click)="modal( 'contacto' )">
+        <div class="card-body">
+          <h2 class=" text-center"><i class="mdi mdi-folder-account"></i></h2>
+          <p class="card-title text-center">Datos de contacto</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-lg-3">
+      <div class="btn-menu card text-white bg-purple seleccion animated fadeIn" (click)="modal( 'fiscales' )">
+        <div class="card-body">
+          <h2 class=" text-center"><i class="mdi mdi-bank"></i></h2>
+          <p class="card-title text-center">Datos fiscales</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-lg-3">
+      <div class="btn-menu card text-white bg-green seleccion animated fadeIn" (click)="modal( 'bancarios' )">
+        <div class="card-body">
+          <h2 class=" text-center"><i class="mdi mdi-cash-usd"></i></h2>
+          <p class="card-title text-center">Datos bancarios</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-lg-3">
+      <div class="btn-menu card text-white bg-yellow seleccion animated fadeIn" (click)="modal( 'domicilio' )">
+        <div class="card-body">
+          <h2 class=" text-center"><i class="mdi mdi-map-marker-radius"></i></h2>
+          <p class="card-title text-center">Domicilios</p>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- /row -->
+</div> <!-- /contenedor botones -->
+
+
+<!-- Modal ACCESO Y SEGURIDAD -->
+<div class="modal fade" id="modal-acceso" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <form>
+        <div class="modal-header bg-orange text-light">
+          <h5 class="modal-title"><i class="mdi mdi-shield-lock"></i>Acceso y seguridad</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="usuario">Usuario</label>
+              <input type="email" class="form-control" id="usuario" value="{{usuario.username}}" readonly>
+              <!-- <small id="emailHelp" class="form-text text-muted">Doble click para editar.</small> -->
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <label>Cambio de contraseña</label>
+          </div>
+
+          <div class="col-sm-6">
+            <div class="form-group">
+              <input type="password" class="form-control" id="passwordIni" placeholder="Nueva contraseña">
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <input type="password" class="form-control" id="passwordConf" placeholder="Confirmar contraseña">
+            </div>
+          </div>
+        </div>
+
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-orange">Guardar cambios</button>
+        </div>
+
+      </form>
+
+    </div> <!-- /modal content -->
+  </div>
+</div>
+
+
+<!-- MODAL DATOS PERSONALES -->
+<div class="modal fade" id="modal-personales" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <form>
+        <div class="modal-header bg-teal text-light">
+          <h5 class="modal-title"><i class="mdi mdi-clipboard-account"></i>Datos personales</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" class="form-control" id="nombre">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="apellidoP">Apellido Paterno</label>
+                <input type="text" class="form-control" id="apellidoP">
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="apellidoM">Apellido Materno</label>
+                <input type="text" class="form-control" id="apellidoM">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-teal">Guardar cambios</button>
+        </div>
+
+      </form>
+
+    </div> <!-- /modal content -->
+  </div>
+</div>
+
+
+<!-- MODAL INSTITUCIÓN -->
+<div class="modal fade" id="modal-institucion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <form>
+        <div class="modal-header bg-pink-darken text-light">
+          <h5 class="modal-title"><i class="mdi mdi-hospital-building"></i> Institución</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-12">
+              <select class="custom-select custom-select-lg col-sm-12">
+                <option selected>Open this select menu</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-pink-darken">Guardar cambios</button>
+        </div>
+
+      </form>
+
+    </div> <!-- /modal content -->
+  </div>
+</div>
+
+
+<!-- MODAL CONTACTO -->
+<div class="modal fade" id="modal-contacto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form>
+        <div class="modal-header bg-cyan text-light">
+          <h5 class="modal-title"><i class="mdi mdi-folder-account"></i> Datos de contacto</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-12">
+              <select class="custom-select custom-select-lg col-sm-12">
+                <option selected>Open this select menu</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
+            </div>
+          </div>
+    
+        </div>
+    
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-cyan">Guardar cambios</button>
+        </div>
+    
+      </form>
+    
+    </div> <!-- /modal content -->
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

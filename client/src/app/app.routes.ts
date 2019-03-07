@@ -7,8 +7,10 @@ import { PacienteComponent } from './components/paciente/paciente.component';
 import { NotaSoapComponent } from './components/notas-medicas/nota-soap.component';
 import { AsignacionPacientesComponent } from './components/asignacion-pacientes/asignacion-pacientes.component';
 import { AdminUsariosComponent } from './components/admin-usarios/admin-usarios.component';
+import { CuentaComponent } from './components/cuenta/cuenta.component';
 import { RecetaInternaComponent } from './components/notas-medicas/receta-interna.component';
 import { ListadoAsignacionesComponent } from './components/asignacion-pacientes/listado-asignaciones.component';
+
 
 import { AuthService } from "./services/auth.service";
 
@@ -27,6 +29,15 @@ const APP_ROUTES: Routes = [
     //   { path: 'nota-soap', component: NotaSoapComponent },
     // ]
   },
+  {
+    path: 'cuenta',
+    component: CuentaComponent,
+    canActivate: [AuthService],
+    // children: [
+    //   { path: 'nota-soap', component: NotaSoapComponent },
+    // ]
+  },
+
   {
     path: 'busqueda',
     component: BusquedaComponent,
