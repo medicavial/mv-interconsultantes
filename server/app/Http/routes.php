@@ -86,4 +86,5 @@ Route::group(['prefix' => 'tienda'], function()
   Route::get('test', 'TiendaController@index');
   Route::post('venta', 'TiendaController@alertaVenta');
   Route::post('vista-venta', 'TiendaController@vistaVenta');
+  Route::post('pdf-venta', 'TiendaController@pdfVenta');
 });

@@ -1,8 +1,6 @@
 <?php
 date_default_timezone_set('America/Mexico_City');
-$datetime = new DateTime();
-$fecha = new DateTime( $datos->PAS_fechaAlta );
-// $rutaLocal = pathinfo($_SERVER['PHP_SELF'])['dirname'];
+$fecha = date('Y/m/d H:i:s', $datos->updated_at)
 ?>
 
 <html lang="es-MX">
@@ -65,7 +63,7 @@ $fecha = new DateTime( $datos->PAS_fechaAlta );
 			<td width="100%">
 				<p align="justify">
 					<b>
-						Estimad@ {{ $datos->name }}:
+						Estimad@ {{ $datos->customer->name }}:
 					</b>
 					<br>
 					¡Agradecemos mucho tu preferencia!
@@ -83,14 +81,55 @@ $fecha = new DateTime( $datos->PAS_fechaAlta );
 
 		<tr>
 			<td  width="140" class="tbl-container encabezado">
-				Clave de la orden: <span class="datos">KMMV{{ $datos->number }}</span>
+				ID de la orden: <span class="datos">{{ $datos->number }}</span>
+				<span class="notas">{{ $datos->id }}</span>
 			</td>
 
 			<td  class="tbl-container">
-				Nombre del paciente:
+				Entregar a
 				<span class="datos">
-					Este es el nombre
+					{{ strtoupper( $datos->shipping->name ) }}
+					<br><br>
+					{{ strtoupper( $datos->shipping->address->address1 ) }}
+
+					@if( $datos->shipping->address->address2 )
+						, {{ strtoupper( $datos->shipping->address->address2 ) }}
+					@endif
+
+					@if( $datos->shipping->address->city )
+						, {{ strtoupper( $datos->shipping->address->city ) }}
+					@endif
+
+					@if( $datos->shipping->address->state )
+						, {{ strtoupper( $datos->shipping->address->state ) }}
+					@endif
+
+					@if( $datos->shipping->address->country )
+						, {{ strtoupper( $datos->shipping->address->country ) }}
+					@endif
+
+					@if( $datos->shipping->address->postcode )
+						, CP {{ strtoupper( $datos->shipping->address->postcode ) }}
+					@endif
+
+					@if( $datos->shipping->address->references )
+						<br>Referencias: {{ strtoupper( $datos->shipping->address->references ) }}.
+					@endif
 				</span>
+				<br><br>
+				Teléfono: <b>{{ $datos->shipping->phone }}</b>
+				<br>
+				Email: <b>{{ $datos->email }}</b>
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="2" width="100%" class="tbl-container">
+				Items:
+				<br>
+				@foreach ($datos->items as $item)
+					<b> {{ $item->quantity }} {{ $item->name }} </b><br>
+				@endforeach
 			</td>
 		</tr>
 

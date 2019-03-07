@@ -60,4 +60,16 @@ class TiendaController extends Controller {
 		return view('emails.venta', $datos);
 	}
 
+
+	public function pdfVenta(){
+		// Recibir el cuerpo de la petición.
+		$input = @file_get_contents("php://input");
+		// Parsear el contenido como JSON.
+		$data = json_decode($input);
+
+		$datos = array('datos' => $data->data->object);
+
+
+		return view('pdf.venta', $datos);
+	}
 }

@@ -31,7 +31,10 @@
 				</th>
 				<th style="background-color: white;" width="150">
 					&nbsp;&nbsp;
-					<img src="{{ $message->embed('http://medicavial.net/mvnuevo/imgs/logos/mv.jpg') }}" width="100" />
+					<?  
+					//	$message->embed('http://medicavial.net/mvnuevo/imgs/logos/mv.jpg')
+					?>
+					<img src="http://medicavial.net/mvnuevo/imgs/logos/mv.jpg" width="100" />
 					&nbsp;&nbsp;
 				</th>
 			</tr>
