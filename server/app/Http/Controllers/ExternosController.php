@@ -476,4 +476,10 @@ class ExternosController extends Controller {
 	// 	// return $base64;
 	// 	return array('datos' => Input::All(), 'img' => $base64 );
 	// }
+
+
+	// DATOS DE REHABILITACIONES PARA LA BITACORA
+	public function datosSesionesRh( $folioMV ){
+		return DB::table('Rehabilitacion')->where('Exp_folio', $folioMV)->get();
+	}
 }
