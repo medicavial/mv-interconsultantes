@@ -35,8 +35,11 @@ class ExternosController extends Controller {
 									  DB::raw( 'if( PAS_id < 10, concat(PAS_clave,"00", PAS_id), if( PAS_id < 100, concat(PAS_clave, "0", PAS_id), concat(PAS_clave, PAS_id) ) ) as claveOrden' ),
 									  DB::raw( 'DATEDIFF( now(), PAS_fechaAlta ) as dias' ),
 									  DB::raw( 'DATE_FORMAT(PAS_fechaAlta, "%d-%m-%Y") as fechaFacil' ),
-									  DB::raw( 'if( datediff( now(), PAS_fechaAlta)<5, "0 a 5 días", if( datediff( now(), PAS_fechaAlta) between 5 and 10, "5 a 10 días", if( datediff( now(), PAS_fechaAlta) between 10 and 30, "10 a 30 días", if( datediff( now(), PAS_fechaAlta) between 30 and 90, "30 a 90 días", if( datediff( now(), PAS_fechaAlta) > 90, "mas de 90 días", "N/A" ) ) ) ) ) as estatusDias' ),
-									  'InformeRehabilitacion.infRehab_id'
+										DB::raw( 'if( datediff( now(), PAS_fechaAlta)<5, "0 a 5 días", if( datediff( now(), PAS_fechaAlta) between 5 and 10, "5 a 10 días", if( datediff( now(), PAS_fechaAlta) between 10 and 30, "10 a 30 días", if( datediff( now(), PAS_fechaAlta) between 30 and 90, "30 a 90 días", if( datediff( now(), PAS_fechaAlta) > 90, "mas de 90 días", "N/A" ) ) ) ) ) as estatusDias' ),
+										DB::raw( '( select max( Rehab_cons ) from medica_registromv.Rehabilitacion
+																where medica_registromv.Rehabilitacion.Exp_folio = pases.Exp_folio
+															) as cantidad_rehab' ),
+										'InformeRehabilitacion.infRehab_id'
 									)
 							 ->leftJoin('estatusAdministrativo', 'pases.EAD_id', '=', 'estatusAdministrativo.EAD_id')
 							 ->leftJoin('estatusAtencion', 'pases.EAT_id', '=', 'estatusAtencion.EAT_id')
