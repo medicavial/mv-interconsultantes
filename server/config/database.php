@@ -66,10 +66,10 @@ return [
 
 		'inventario' => [
 			'driver'    => 'mysql',
-			'host'      => 'www.medicavial.mx',
-			'database'  => 'medica2_inventario',
-			'username'  => 'medica2_webusr',
-			'password'  => 'tosnav50',
+			'host'      => env('DB_HOST_INVENTARIO', ''),
+			'database'  => env('DB_DATABASE_INVENTARIO', 'forge'),
+			'username'  => env('DB_USERNAME_INVENTARIO', 'forge'),
+			'password'  => env('DB_PASSWORD_INVENTARIO', ''),
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
@@ -78,10 +78,10 @@ return [
 
 		'zima' => [
 			'driver'    => 'mysql',
-			'host'      => 'www.pmzima.net',
-			'database'  => 'zima_sscp_3',
-			'username'  => 'zima_web2',
-			'password'  => 'W3dik@_0i12',
+			'host'      => env('DB_HOST_ZIMA', ''),
+			'database'  => env('DB_DATABASE_ZIMA', 'forge'),
+			'username'  => env('DB_USERNAME_ZIMA', 'forge'),
+			'password'  => env('DB_PASSWORD_ZIMA', ''),
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',

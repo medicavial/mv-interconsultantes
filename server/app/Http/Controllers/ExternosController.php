@@ -478,8 +478,13 @@ class ExternosController extends Controller {
 	// }
 
 
-	// DATOS DE REHABILITACIONES PARA LA BITACORA
+	// DATOS DE REHABILITACIONES PARA LA BITACORA Y EL INFORME
 	public function datosSesionesRh( $folioMV ){
-		return DB::table('Rehabilitacion')->where('Exp_folio', $folioMV)->get();
+		$sesiones = DB::table('Rehabilitacion')->where('Exp_folio', $folioMV)->orderBy('Rehab_cons', 'desc')->get();
+		$informe 	= DB::table('InformeRehabilitacion')->where('Exp_folio', $folioMV)->get();
+
+		return array( 'sesiones' 	=> $sesiones,
+									'informe' 	=> $informe
+								);
 	}
 }
