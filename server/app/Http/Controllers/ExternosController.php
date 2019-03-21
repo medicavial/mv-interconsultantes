@@ -338,14 +338,21 @@ class ExternosController extends Controller {
 			//si no existe el usuario lo registramos en la base
 			// return array( 'respuesta' => Input::All() );
 
+
+			// perfil y tipo son diferentes
+			// hace falta definirlo bien en el front
+			// y que el dato venga desde ahi
 			if ( $tipo == 'Promotor' ) {
+				$permisoUsuario = 4;
 				$tipoUsuario = 4;
 			}
 			if ( $tipo == 'Ejecutivo' ) {
-				$tipoUsuario = 5;
+				$permisoUsuario = 5;
+				$tipoUsuario = 4;
 			}
 			if ( $tipo == 'Convenio' ) {
-				$tipoUsuario = 6;
+				$permisoUsuario = 6;
+				$tipoUsuario = 3;
 			}
 
 			$idUsuario = DB::connection('externos')
@@ -355,11 +362,12 @@ class ExternosController extends Controller {
 																		'USU_nombre' 		=> $nombre,
 																		'USU_aPaterno'	=> $paterno,
 																		'USU_aMaterno'	=> $materno,
-																		'PER_id'				=> $tipoUsuario,
+																		'PER_id'				=> $permisoUsuario,
 																		'USU_email'			=> $email,
 																		'USU_activo'		=> DB::raw('1'),
 																		'USU_fechaAlta'	=> DB::raw('now()'),
-																		'USU_fechaMod' 	=> DB::raw('now()')]);
+																		'USU_fechaMod' 	=> DB::raw('now()'),
+																		'TIU_id' 				=> $tipoUsuario]);
 
 			//Si se guardó correctamente el usuario procedemos a guardar telefonos y cuenta
 			if ($idUsuario > 0) {
