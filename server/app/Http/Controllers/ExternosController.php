@@ -15,14 +15,24 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class ExternosController extends Controller {
-	public function listadoMedicos()
+	public function listadoMedicos( $usuario=null )
 	{
-		$listado = DB::connection('externos')
+		$query = DB::connection('externos')
 							 ->table('usuarios')
-							 ->select('USU_id', 'USU_username', 'USU_nombre', 'USU_aPaterno', 'USU_aMaterno', 'PER_id', 'USU_email', 'USU_fechaAlta')
-							 ->Where('USU_activo', 1)
-							 ->where('USU_id', '>', 1 )
-							 ->get();
+							 ->select('usuarios.USU_id', 'usuarios.USU_username', 'usuarios.USU_nombre', 
+												'usuarios.USU_aPaterno', 'usuarios.USU_aMaterno', 'usuarios.PER_id', 
+												'usuarios.USU_email', 'usuarios.USU_fechaAlta', 'usuarios.USU_creador as CRE_id',
+												DB::raw('users.USU_username as CRE_username'),
+												DB::raw('CONCAT( users.USU_nombre, " ", users.USU_aPaterno, " ", users.USU_aMaterno) as CRE_nombre'),
+												'usuarios.USU_modificacion as MOD_id', 'usuarios.CIA_claveMV', 'PER_alias',
+												'usuarios.USU_activo')
+							 ->leftjoin('usuarios as users', 'users.USU_id', '=', 'usuarios.USU_creador')
+							 ->join('permisos', 'usuarios.PER_id', '=', 'permisos.PER_id')
+							 ->where('usuarios.USU_id', '>', 1 );
+							if ($usuario && $usuario>1) {
+								$query->where('usuarios.USU_creador', $usuario);
+							}
+							 $listado = $query->get();
 		return $listado;
 	}
 
@@ -328,6 +338,7 @@ class ExternosController extends Controller {
 		$telMovil 			= Input::get('telMovil');
 		$tipo 					= Input::get('tipo');
 		$username 			= Input::get('username');
+		$usuCreador			= Input::get('USU_creador');
 
 		//se verifica que no exista el username solicitado
 		$verificacion = ExternosController::verificaUsuario( $username );
@@ -367,7 +378,8 @@ class ExternosController extends Controller {
 																		'USU_activo'		=> DB::raw('1'),
 																		'USU_fechaAlta'	=> DB::raw('now()'),
 																		'USU_fechaMod' 	=> DB::raw('now()'),
-																		'TIU_id' 				=> $tipoUsuario]);
+																		'TIU_id' 				=> $tipoUsuario,
+																		'USU_creador' 	=> $usuCreador]);
 
 			//Si se guardó correctamente el usuario procedemos a guardar telefonos y cuenta
 			if ($idUsuario > 0) {
