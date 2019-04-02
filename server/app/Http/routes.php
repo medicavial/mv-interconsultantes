@@ -93,3 +93,30 @@ Route::group(['prefix' => 'tienda'], function()
   Route::post('vista-venta', 'TiendaController@vistaVenta');
   Route::post('pdf-venta', 'TiendaController@pdfVenta');
 });
+
+
+Route::group(['prefix' => 'directorios'], function()
+{
+    Route::get('test', function(){
+      return 'It works!';
+    });
+
+    Route::group(['prefix' => 'catalogos'], function(){
+        Route::get('tipo-clave-unidad/{usuario?}', 'DirectoriosController@tipoClaveUnidad');
+        Route::get('tipo-contribuyente/{usuario?}', 'DirectoriosController@tipoContribuyente');
+        Route::get('tipo-creacion-usuario/{usuario?}', 'DirectoriosController@tipoCreacionUsuario');
+        Route::get('tipo-imagen/{usuario?}', 'DirectoriosController@tipoImagen');
+        Route::get('tipo-paquete/{usuario?}', 'DirectoriosController@tipoPaquete');
+        Route::get('tipo-unidad/{usuario?}', 'DirectoriosController@tipoUnidad');
+    });
+
+    Route::group(['prefix' => 'busquedas'], function(){
+        Route::get('unidades/{unidad?}/{usuario?}', 'DirectoriosController@unidades');
+    });
+
+    Route::group(['prefix' => 'operacion'], function(){
+      Route::get('test', function(){
+        return 'OPERACION works!';
+      });
+    });
+});
